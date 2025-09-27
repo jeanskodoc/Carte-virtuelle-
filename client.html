@@ -1,0 +1,2282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système de Paiement en Ligne</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+    <style>
+        :root {
+            --primary: #3a86ff;
+            --secondary: #8338ec;
+            --success: #06d6a0;
+            --danger: #ef476f;
+            --warning: #ffd166;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--light);
+        }
+        
+        .logo span {
+            color: var(--primary);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .balance {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .virtual-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 15px;
+            padding: 25px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card-chip {
+            width: 50px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .card-number {
+            font-size: 22px;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .card-details {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .card-holder, .card-expiry {
+            font-size: 14px;
+        }
+        
+        .card-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .card-logo {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .card-back {
+            background: linear-gradient(135deg, #2d3047 0%, #1a1a2e 100%);
+            border-radius: 15px;
+            padding: 25px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        
+        .card-strip {
+            background: #000;
+            height: 40px;
+            margin: 0 -25px;
+            margin-bottom: 20px;
+        }
+        
+        .card-cvv {
+            background: white;
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 5px;
+            width: 60px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: var(--dark);
+        }
+        
+        .btn-info {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-mobile-money {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 16px;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .currency-converter {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .currency-converter input {
+            flex: 1;
+        }
+        
+        .currency-converter span {
+            font-size: 18px;
+            opacity: 0.7;
+        }
+        
+        .conversion-result {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .fee-info {
+            background: rgba(255, 193, 7, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 10px 15px;
+            margin-top: 10px;
+            border-radius: 0 8px 8px 0;
+            font-size: 14px;
+        }
+        
+        .transaction-history {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .transaction-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .send {
+            background: rgba(239, 71, 111, 0.2);
+            color: var(--danger);
+        }
+        
+        .receive {
+            background: rgba(6, 214, 160, 0.2);
+            color: var(--success);
+        }
+        
+        .load {
+            background: rgba(58, 134, 255, 0.2);
+            color: var(--primary);
+        }
+        
+        .mobile-money {
+            background: rgba(255, 107, 107, 0.2);
+            color: #FF6B6B;
+        }
+        
+        .transaction-details h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .transaction-details p {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        .transaction-amount {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .negative {
+            color: var(--danger);
+        }
+        
+        .positive {
+            color: var(--success);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: #1a1a2e;
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            opacity: 1;
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .security-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .security-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .security-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            background: var(--success);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1100;
+            display: none;
+        }
+        
+        .qr-code-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        #qrcode, #receive-qrcode, #scanner-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        #scanner-container {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        #scanner-video {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .scanner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            pointer-events: none;
+        }
+        
+        .scanner-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            animation: scan 2s infinite linear;
+        }
+        
+        @keyframes scan {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+        
+        .file-upload {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-upload-btn {
+            background: var(--primary);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .file-upload input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .summary {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .summary-total {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 10px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .scanner-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            width: 100%;
+        }
+        
+        .scanner-actions .btn {
+            flex: 1;
+        }
+        
+        .import-result {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .import-result.success {
+            border-left: 4px solid var(--success);
+        }
+        
+        .import-result.error {
+            border-left: 4px solid var(--danger);
+        }
+        
+        .transaction-preview {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .beneficiary-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        @media (max-width: 480px) {
+            .beneficiary-info {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .auto-generate-notice {
+            background: rgba(58, 134, 255, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 10px 15px;
+            margin-top: 10px;
+            border-radius: 0 8px 8px 0;
+            font-size: 14px;
+        }
+        
+        .qr-actions {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        .qr-actions .btn {
+            flex: 1;
+        }
+        
+        .send-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .send-actions .btn {
+            flex: 1;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        .mobile-money-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .mobile-money-option {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-money-option.active {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid #FF6B6B;
+        }
+        
+        .mobile-money-option img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">Pay<span>Secure</span></div>
+            <div class="user-info">
+                <div class="balance">Solde: <span id="balance-amount">1 250,00 €</span></div>
+                <div class="avatar">JD</div>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="card-section">
+                <h2 class="section-title"><i class="fas fa-credit-card"></i> Ma Carte Virtuelle</h2>
+                
+                <div class="virtual-card">
+                    <div class="card-chip"></div>
+                    <div class="card-number" id="card-number">**** **** **** 4512</div>
+                    <div class="card-details">
+                        <div class="card-holder">
+                            <div class="card-label">Titulaire</div>
+                            <div id="card-holder">JEAN DUPONT</div>
+                        </div>
+                        <div class="card-expiry">
+                            <div class="card-label">Expire le</div>
+                            <div id="card-expiry">12/25</div>
+                        </div>
+                    </div>
+                    <div class="card-logo">VISA</div>
+                </div>
+                
+                <div class="card-back">
+                    <div class="card-strip"></div>
+                    <div class="card-details">
+                        <div class="card-cvv" id="card-cvv">123</div>
+                        <div class="card-logo">VISA</div>
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <button class="btn btn-primary" id="show-card-details">
+                        <i class="fas fa-eye"></i> Afficher les détails
+                    </button>
+                    <button class="btn btn-secondary" id="generate-new-card">
+                        <i class="fas fa-sync-alt"></i> Nouvelle carte
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card-section">
+                <h2 class="section-title"><i class="fas fa-bolt"></i> Actions Rapides</h2>
+                
+                <div class="actions">
+                    <button class="btn btn-success" id="send-money-btn">
+                        <i class="fas fa-paper-plane"></i> Envoyer
+                    </button>
+                    <button class="btn btn-primary" id="receive-money-btn">
+                        <i class="fas fa-download"></i> Recevoir
+                    </button>
+                    <button class="btn btn-warning" id="load-card-btn">
+                        <i class="fas fa-credit-card"></i> Charger carte
+                    </button>
+                    <button class="btn btn-mobile-money" id="mobile-money-btn">
+                        <i class="fas fa-mobile-alt"></i> Mobile Money
+                    </button>
+                    <button class="btn btn-secondary" id="transaction-history-btn">
+                        <i class="fas fa-history"></i> Historique
+                    </button>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Solde initial</div>
+                        <div class="stat-value" id="initial-balance">1 250,00 €</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total envoyé</div>
+                        <div class="stat-value negative" id="total-sent">- 450,00 €</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total reçu</div>
+                        <div class="stat-value positive" id="total-received">+ 680,00 €</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Solde actuel</div>
+                        <div class="stat-value" id="current-balance">1 480,00 €</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-section">
+                <h2 class="section-title"><i class="fas fa-chart-bar"></i> Statistiques</h2>
+                
+                <div class="stats">
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="transaction-icon send"><i class="fas fa-arrow-up"></i></div>
+                            <div class="transaction-details">
+                                <h4>Dépenses ce mois</h4>
+                                <p>Total des transactions sortantes</p>
+                            </div>
+                        </div>
+                        <div class="transaction-amount negative">- 450,00 €</div>
+                    </div>
+                    
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="transaction-icon receive"><i class="fas fa-arrow-down"></i></div>
+                            <div class="transaction-details">
+                                <h4>Revenus ce mois</h4>
+                                <p>Total des transactions entrantes</p>
+                            </div>
+                        </div>
+                        <div class="transaction-amount positive">+ 680,00 €</div>
+                    </div>
+                    
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="transaction-icon load"><i class="fas fa-plus-circle"></i></div>
+                            <div class="transaction-details">
+                                <h4>Chargements</h4>
+                                <p>Total des rechargements de compte</p>
+                            </div>
+                        </div>
+                        <div class="transaction-amount positive">+ 500,00 €</div>
+                    </div>
+                    
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="transaction-icon mobile-money"><i class="fas fa-mobile-alt"></i></div>
+                            <div class="transaction-details">
+                                <h4>Mobile Money</h4>
+                                <p>Total des transferts Mobile Money</p>
+                            </div>
+                        </div>
+                        <div class="transaction-amount negative">- 120,00 €</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-section">
+                <h2 class="section-title"><i class="fas fa-clock"></i> Dernières Transactions</h2>
+                
+                <div class="transaction-history" id="transaction-list">
+                    <!-- Les transactions seront ajoutées ici par JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>PaySecure - Système de paiement sécurisé © 2023. Tous droits réservés.</p>
+        </footer>
+    </div>
+    
+    <!-- Modal pour l'envoi d'argent -->
+    <div class="modal" id="send-money-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-paper-plane"></i> Envoyer de l'argent</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="recipient">Nom du bénéficiaire</label>
+                <input type="text" id="recipient" placeholder="Nom complet du bénéficiaire">
+            </div>
+            <div class="beneficiary-info">
+                <div class="form-group">
+                    <label for="beneficiary-phone">Téléphone du bénéficiaire</label>
+                    <input type="tel" id="beneficiary-phone" placeholder="Numéro de téléphone">
+                </div>
+                <div class="form-group">
+                    <label for="beneficiary-email">Email du bénéficiaire</label>
+                    <input type="email" id="beneficiary-email" placeholder="Adresse email">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="send-amount">Montant</label>
+                <div class="currency-converter">
+                    <input type="number" id="send-amount" placeholder="0,00">
+                    <select id="currency-from">
+                        <option value="EUR">EUR</option>
+                        <option value="USD">USD</option>
+                        <option value="GBP">GBP</option>
+                        <option value="JPY">JPY</option>
+                        <option value="CAD">CAD</option>
+                        <option value="AUD">AUD</option>
+                        <option value="CHF">CHF</option>
+                        <option value="CNY">CNY</option>
+                        <option value="XOF">XOF</option>
+                    </select>
+                    <span><i class="fas fa-exchange-alt"></i></span>
+                    <select id="currency-to">
+                        <option value="EUR">EUR</option>
+                        <option value="USD">USD</option>
+                        <option value="GBP">GBP</option>
+                        <option value="JPY">JPY</option>
+                        <option value="CAD">CAD</option>
+                        <option value="AUD">AUD</option>
+                        <option value="CHF">CHF</option>
+                        <option value="CNY">CNY</option>
+                        <option value="XOF">XOF</option>
+                    </select>
+                </div>
+                <div class="conversion-result" id="conversion-result">
+                    <span id="conversion-text"></span>
+                </div>
+                <div class="fee-info" id="fee-info">
+                    Frais de transfert (5%): <span id="fee-amount">0.00</span> <span id="fee-currency">EUR</span>
+                </div>
+                <div class="summary">
+                    <div class="summary-item">
+                        <span>Montant à envoyer:</span>
+                        <span id="send-summary">0.00 EUR</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Frais de transfert (5%):</span>
+                        <span id="fee-summary">0.00 EUR</span>
+                    </div>
+                    <div class="summary-item summary-total">
+                        <span>Total débité:</span>
+                        <span id="total-summary">0.00 EUR</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="send-message">Message (optionnel)</label>
+                <textarea id="send-message" placeholder="Raison du paiement" rows="3"></textarea>
+            </div>
+            <div class="auto-generate-notice">
+                <i class="fas fa-info-circle"></i> Le QR Code se génère automatiquement, mais vous pouvez aussi le générer manuellement
+            </div>
+            <div class="qr-code-container">
+                <div id="qrcode"></div>
+                <div class="qr-actions">
+                    <button class="btn btn-primary" id="generate-qr">
+                        <i class="fas fa-qrcode"></i> Générer QR Code
+                    </button>
+                    <button class="btn btn-warning" id="download-qr">
+                        <i class="fas fa-download"></i> Télécharger
+                    </button>
+                </div>
+            </div>
+            <div class="send-actions">
+                <button class="btn btn-whatsapp" id="send-whatsapp">
+                    <i class="fab fa-whatsapp"></i> Envoyer par WhatsApp
+                </button>
+                <button class="btn btn-success" id="confirm-send">
+                    <i class="fas fa-check"></i> Confirmer l'envoi
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal pour la réception d'argent -->
+    <div class="modal" id="receive-money-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-download"></i> Recevoir de l'argent</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="receive">Recevoir un paiement</div>
+                <div class="tab" data-tab="scan">Scanner un QR Code</div>
+            </div>
+            
+            <div class="tab-content active" id="tab-receive">
+                <div class="form-group">
+                    <label>Votre adresse de paiement</label>
+                    <input type="text" value="paysecure.me/jeandupont" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Code QR de paiement</label>
+                    <div class="qr-code-container">
+                        <div id="receive-qrcode"></div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" id="copy-address">
+                    <i class="fas fa-copy"></i> Copier l'adresse
+                </button>
+            </div>
+            
+            <div class="tab-content" id="tab-scan">
+                <div class="form-group">
+                    <label>Scanner un QR Code de paiement</label>
+                    <div class="qr-code-container">
+                        <div id="scanner-container">
+                            <video id="scanner-video"></video>
+                            <div class="scanner-overlay">
+                                <div class="scanner-line"></div>
+                            </div>
+                            <div id="scanner-placeholder">
+                                <i class="fas fa-qrcode" style="font-size: 60px; color: #ccc; margin-bottom: 15px;"></i>
+                                <p>Scanner un QR Code de paiement</p>
+                            </div>
+                        </div>
+                        <div class="scanner-actions">
+                            <button class="btn btn-info" id="start-scanner">
+                                <i class="fas fa-camera"></i> Démarrer le scanner
+                            </button>
+                            <button class="btn btn-secondary" id="stop-scanner" style="display: none;">
+                                <i class="fas fa-stop"></i> Arrêter le scanner
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Ou importer une image de QR Code</label>
+                    <div class="file-upload">
+                        <div class="file-upload-btn">
+                            <i class="fas fa-upload"></i> Choisir un fichier QR Code
+                        </div>
+                        <input type="file" id="import-qr" accept="image/*">
+                    </div>
+                </div>
+                
+                <div class="import-result" id="import-result">
+                    <div id="import-result-text"></div>
+                </div>
+                
+                <div class="transaction-preview" id="transaction-preview">
+                    <h4>Détails de la transaction</h4>
+                    <div class="summary-item">
+                        <span>Expéditeur:</span>
+                        <span id="preview-sender">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Montant:</span>
+                        <span id="preview-amount">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Devise:</span>
+                        <span id="preview-currency">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Message:</span>
+                        <span id="preview-message">-</span>
+                    </div>
+                    <button class="btn btn-success" id="confirm-receive" style="width: 100%; margin-top: 15px;">
+                        <i class="fas fa-check"></i> Confirmer la réception
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal pour charger la carte -->
+    <div class="modal" id="load-card-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-credit-card"></i> Charger la carte virtuelle</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="load-amount">Montant à charger (€)</label>
+                <input type="number" id="load-amount" placeholder="0,00">
+            </div>
+            <div class="form-group">
+                <label for="load-method">Méthode de paiement</label>
+                <select id="load-method">
+                    <option value="card">Carte bancaire</option>
+                    <option value="transfer">Virement bancaire</option>
+                    <option value="paypal">PayPal</option>
+                    <option value="crypto">Cryptomonnaie</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="load-message">Message (optionnel)</label>
+                <textarea id="load-message" placeholder="Raison du chargement" rows="2"></textarea>
+            </div>
+            <div class="fee-info">
+                Frais de chargement (2%): <span id="load-fee-amount">0.00</span> EUR
+            </div>
+            <div class="summary">
+                <div class="summary-item">
+                    <span>Montant à charger:</span>
+                    <span id="load-summary">0.00 EUR</span>
+                </div>
+                <div class="summary-item">
+                    <span>Frais de chargement (2%):</span>
+                    <span id="load-fee-summary">0.00 EUR</span>
+                </div>
+                <div class="summary-item summary-total">
+                    <span>Total à payer:</span>
+                    <span id="load-total-summary">0.00 EUR</span>
+                </div>
+            </div>
+            <button class="btn btn-success" style="width: 100%; margin-top: 20px;" id="confirm-load">
+                <i class="fas fa-check"></i> Confirmer le chargement
+            </button>
+        </div>
+    </div>
+    
+    <!-- Modal pour Mobile Money -->
+    <div class="modal" id="mobile-money-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-mobile-alt"></i> Transfert Mobile Money</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="mobile-money-options">
+                <div class="mobile-money-option active" data-provider="tmoney">
+                    <div>T-Money</div>
+                </div>
+                <div class="mobile-money-option" data-provider="flooz">
+                    <div>Flooz</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="mobile-number">Numéro de téléphone</label>
+                <input type="tel" id="mobile-number" placeholder="Numéro du bénéficiaire">
+            </div>
+            <div class="form-group">
+                <label for="mobile-amount">Montant (€)</label>
+                <input type="number" id="mobile-amount" placeholder="0,00">
+            </div>
+            <div class="form-group">
+                <label for="mobile-message">Message (optionnel)</label>
+                <textarea id="mobile-message" placeholder="Raison du transfert" rows="2"></textarea>
+            </div>
+            <div class="fee-info">
+                Frais de transfert (3%): <span id="mobile-fee-amount">0.00</span> EUR
+            </div>
+            <div class="summary">
+                <div class="summary-item">
+                    <span>Montant à envoyer:</span>
+                    <span id="mobile-summary">0.00 EUR</span>
+                </div>
+                <div class="summary-item">
+                    <span>Frais de transfert (3%):</span>
+                    <span id="mobile-fee-summary">0.00 EUR</span>
+                </div>
+                <div class="summary-item summary-total">
+                    <span>Total débité:</span>
+                    <span id="mobile-total-summary">0.00 EUR</span>
+                </div>
+            </div>
+            <button class="btn btn-mobile-money" style="width: 100%; margin-top: 20px;" id="confirm-mobile">
+                <i class="fas fa-check"></i> Confirmer le transfert
+            </button>
+        </div>
+    </div>
+    
+    <!-- Modal pour l'historique des transactions -->
+    <div class="modal" id="transaction-history-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-history"></i> Historique des Transactions</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="all">Toutes</div>
+                <div class="tab" data-tab="sent">Envoyées</div>
+                <div class="tab" data-tab="received">Reçues</div>
+                <div class="tab" data-tab="load">Chargements</div>
+                <div class="tab" data-tab="mobile">Mobile Money</div>
+            </div>
+            
+            <div class="tab-content active" id="tab-all">
+                <div class="transaction-history">
+                    <!-- Toutes les transactions -->
+                </div>
+            </div>
+            
+            <div class="tab-content" id="tab-sent">
+                <div class="transaction-history">
+                    <!-- Transactions envoyées -->
+                </div>
+            </div>
+            
+            <div class="tab-content" id="tab-received">
+                <div class="transaction-history">
+                    <!-- Transactions reçues -->
+                </div>
+            </div>
+            
+            <div class="tab-content" id="tab-load">
+                <div class="transaction-history">
+                    <!-- Chargements -->
+                </div>
+            </div>
+            
+            <div class="tab-content" id="tab-mobile">
+                <div class="transaction-history">
+                    <!-- Mobile Money -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span id="notification-text">Opération réussie!</span>
+    </div>
+
+    <script>
+        // Données de la carte virtuelle
+        let cardDetails = {
+            number: "4512 8945 6732 4512",
+            holder: "JEAN DUPONT",
+            expiry: "12/25",
+            cvv: "123"
+        };
+        
+        // Données des transactions
+        let transactions = [
+            { id: 1, type: "send", name: "Amazon Marketplace", amount: -45.99, date: "2023-10-15", time: "14:30", currency: "EUR", fee: 2.30 },
+            { id: 2, type: "receive", name: "Marie Martin", amount: 120.00, date: "2023-10-14", time: "09:15", currency: "EUR" },
+            { id: 3, type: "send", name: "Netflix", amount: -15.99, date: "2023-10-12", time: "18:45", currency: "EUR", fee: 0.80 },
+            { id: 4, type: "send", name: "Supermarket", amount: -86.43, date: "2023-10-10", time: "11:20", currency: "EUR", fee: 4.32 },
+            { id: 5, type: "receive", name: "Freelance Payment", amount: 450.00, date: "2023-10-08", time: "16:00", currency: "EUR" },
+            { id: 6, type: "load", name: "Rechargement carte", amount: 200.00, date: "2023-10-05", time: "10:15", currency: "EUR", fee: 4.00 },
+            { id: 7, type: "mobile_money", name: "T-Money Transfer", amount: -50.00, date: "2023-10-03", time: "17:30", currency: "EUR", fee: 1.50, provider: "tmoney" },
+            { id: 8, type: "load", name: "Rechargement compte", amount: 300.00, date: "2023-09-28", time: "14:20", currency: "EUR", fee: 6.00 },
+            { id: 9, type: "mobile_money", name: "Flooz Transfer", amount: -70.00, date: "2023-09-25", time: "11:45", currency: "EUR", fee: 2.10, provider: "flooz" }
+        ];
+        
+        // Solde initial
+        const initialBalance = 1250.00;
+        
+        // Taux de change fictifs
+        const exchangeRates = {
+            EUR: { USD: 1.08, GBP: 0.85, JPY: 157.42, CAD: 1.46, AUD: 1.65, CHF: 0.95, CNY: 7.76, XOF: 655.96, EUR: 1 },
+            USD: { EUR: 0.93, GBP: 0.79, JPY: 145.83, CAD: 1.35, AUD: 1.53, CHF: 0.88, CNY: 7.18, XOF: 607.37, USD: 1 },
+            GBP: { EUR: 1.18, USD: 1.27, JPY: 185.20, CAD: 1.71, AUD: 1.94, CHF: 1.11, CNY: 9.12, XOF: 771.72, GBP: 1 },
+            JPY: { EUR: 0.0064, USD: 0.0069, GBP: 0.0054, CAD: 0.0092, AUD: 0.0105, CHF: 0.0060, CNY: 0.049, XOF: 4.17, JPY: 1 },
+            CAD: { EUR: 0.68, USD: 0.74, GBP: 0.58, JPY: 108.70, AUD: 1.13, CHF: 0.65, CNY: 5.32, XOF: 450.66, CAD: 1 },
+            AUD: { EUR: 0.61, USD: 0.65, GBP: 0.52, JPY: 95.15, CAD: 0.88, CHF: 0.57, CNY: 4.70, XOF: 397.55, AUD: 1 },
+            CHF: { EUR: 1.05, USD: 1.14, GBP: 0.90, JPY: 166.67, CAD: 1.54, AUD: 1.75, CNY: 8.17, XOF: 690.48, CHF: 1 },
+            CNY: { EUR: 0.13, USD: 0.14, GBP: 0.11, JPY: 20.41, CAD: 0.19, AUD: 0.21, CHF: 0.12, XOF: 84.53, CNY: 1 },
+            XOF: { EUR: 0.0015, USD: 0.0016, GBP: 0.0013, JPY: 0.24, CAD: 0.0022, AUD: 0.0025, CHF: 0.0014, CNY: 0.012, XOF: 1 }
+        };
+        
+        // Éléments DOM
+        const balanceAmount = document.getElementById('balance-amount');
+        const initialBalanceElement = document.getElementById('initial-balance');
+        const totalSentElement = document.getElementById('total-sent');
+        const totalReceivedElement = document.getElementById('total-received');
+        const currentBalanceElement = document.getElementById('current-balance');
+        const cardNumber = document.getElementById('card-number');
+        const cardHolder = document.getElementById('card-holder');
+        const cardExpiry = document.getElementById('card-expiry');
+        const cardCvv = document.getElementById('card-cvv');
+        const showCardDetailsBtn = document.getElementById('show-card-details');
+        const generateNewCardBtn = document.getElementById('generate-new-card');
+        const sendMoneyBtn = document.getElementById('send-money-btn');
+        const receiveMoneyBtn = document.getElementById('receive-money-btn');
+        const loadCardBtn = document.getElementById('load-card-btn');
+        const mobileMoneyBtn = document.getElementById('mobile-money-btn');
+        const transactionHistoryBtn = document.getElementById('transaction-history-btn');
+        const transactionList = document.getElementById('transaction-list');
+        const sendMoneyModal = document.getElementById('send-money-modal');
+        const receiveMoneyModal = document.getElementById('receive-money-modal');
+        const loadCardModal = document.getElementById('load-card-modal');
+        const mobileMoneyModal = document.getElementById('mobile-money-modal');
+        const transactionHistoryModal = document.getElementById('transaction-history-modal');
+        const closeModalButtons = document.querySelectorAll('.close-modal');
+        const confirmSendBtn = document.getElementById('confirm-send');
+        const sendWhatsAppBtn = document.getElementById('send-whatsapp');
+        const copyAddressBtn = document.getElementById('copy-address');
+        const confirmLoadBtn = document.getElementById('confirm-load');
+        const confirmMobileBtn = document.getElementById('confirm-mobile');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const sendAmountInput = document.getElementById('send-amount');
+        const currencyFromSelect = document.getElementById('currency-from');
+        const currencyToSelect = document.getElementById('currency-to');
+        const conversionResult = document.getElementById('conversion-result');
+        const conversionText = document.getElementById('conversion-text');
+        const feeInfo = document.getElementById('fee-info');
+        const feeAmount = document.getElementById('fee-amount');
+        const feeCurrency = document.getElementById('fee-currency');
+        const sendSummary = document.getElementById('send-summary');
+        const feeSummary = document.getElementById('fee-summary');
+        const totalSummary = document.getElementById('total-summary');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notification-text');
+        const downloadQrBtn = document.getElementById('download-qr');
+        const importQrInput = document.getElementById('import-qr');
+        const importResult = document.getElementById('import-result');
+        const importResultText = document.getElementById('import-result-text');
+        const startScannerBtn = document.getElementById('start-scanner');
+        const stopScannerBtn = document.getElementById('stop-scanner');
+        const scannerVideo = document.getElementById('scanner-video');
+        const scannerPlaceholder = document.getElementById('scanner-placeholder');
+        const transactionPreview = document.getElementById('transaction-preview');
+        const confirmReceiveBtn = document.getElementById('confirm-receive');
+        const previewSender = document.getElementById('preview-sender');
+        const previewAmount = document.getElementById('preview-amount');
+        const previewCurrency = document.getElementById('preview-currency');
+        const previewMessage = document.getElementById('preview-message');
+        const recipientInput = document.getElementById('recipient');
+        const beneficiaryPhoneInput = document.getElementById('beneficiary-phone');
+        const beneficiaryEmailInput = document.getElementById('beneficiary-email');
+        const sendMessageInput = document.getElementById('send-message');
+        const generateQrBtn = document.getElementById('generate-qr');
+        const loadAmountInput = document.getElementById('load-amount');
+        const loadFeeAmount = document.getElementById('load-fee-amount');
+        const loadSummary = document.getElementById('load-summary');
+        const loadFeeSummary = document.getElementById('load-fee-summary');
+        const loadTotalSummary = document.getElementById('load-total-summary');
+        const mobileAmountInput = document.getElementById('mobile-amount');
+        const mobileFeeAmount = document.getElementById('mobile-fee-amount');
+        const mobileSummary = document.getElementById('mobile-summary');
+        const mobileFeeSummary = document.getElementById('mobile-fee-summary');
+        const mobileTotalSummary = document.getElementById('mobile-total-summary');
+        const mobileMoneyOptions = document.querySelectorAll('.mobile-money-option');
+        
+        // Variables pour le QR code et le scanner
+        let currentQrCode = null;
+        let scannerActive = false;
+        let stream = null;
+        let scannedTransactionData = null;
+        let selectedMobileProvider = 'tmoney';
+        
+        // Afficher les détails de la carte
+        let cardDetailsVisible = false;
+        showCardDetailsBtn.addEventListener('click', function() {
+            cardDetailsVisible = !cardDetailsVisible;
+            
+            if (cardDetailsVisible) {
+                cardNumber.textContent = cardDetails.number;
+                cardCvv.textContent = cardDetails.cvv;
+                showCardDetailsBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Masquer les détails';
+            } else {
+                cardNumber.textContent = "**** **** **** " + cardDetails.number.slice(-4);
+                cardCvv.textContent = "***";
+                showCardDetailsBtn.innerHTML = '<i class="fas fa-eye"></i> Afficher les détails';
+            }
+        });
+        
+        // Générer une nouvelle carte
+        generateNewCardBtn.addEventListener('click', function() {
+            // Générer de nouveaux détails de carte
+            const newNumber = generateCardNumber();
+            const newExpiry = generateExpiryDate();
+            const newCvv = generateCVV();
+            
+            // Mettre à jour les détails de la carte
+            cardDetails.number = newNumber;
+            cardDetails.expiry = newExpiry;
+            cardDetails.cvv = newCvv;
+            
+            // Mettre à jour l'affichage
+            if (cardDetailsVisible) {
+                cardNumber.textContent = newNumber;
+                cardCvv.textContent = newCvv;
+            } else {
+                cardNumber.textContent = "**** **** **** " + newNumber.slice(-4);
+            }
+            
+            cardExpiry.textContent = newExpiry;
+            
+            // Afficher un message de confirmation
+            showNotification("Nouvelle carte virtuelle générée avec succès!");
+        });
+        
+        // Ouvrir les modales
+        sendMoneyBtn.addEventListener('click', function() {
+            sendMoneyModal.style.display = 'flex';
+            // Réinitialiser le formulaire
+            recipientInput.value = '';
+            beneficiaryPhoneInput.value = '';
+            beneficiaryEmailInput.value = '';
+            sendAmountInput.value = '';
+            sendMessageInput.value = '';
+            currencyFromSelect.value = 'EUR';
+            currencyToSelect.value = 'EUR';
+            conversionResult.style.display = 'none';
+            feeInfo.style.display = 'none';
+            updateTransactionSummary();
+            // Générer le QR code initial
+            generateSendQrCode();
+        });
+        
+        receiveMoneyBtn.addEventListener('click', function() {
+            receiveMoneyModal.style.display = 'flex';
+            // Générer le QR code pour la réception
+            generateReceiveQrCode();
+            // Réinitialiser l'interface de scan
+            resetScannerInterface();
+        });
+        
+        loadCardBtn.addEventListener('click', function() {
+            loadCardModal.style.display = 'flex';
+            loadAmountInput.value = '';
+            updateLoadSummary();
+        });
+        
+        mobileMoneyBtn.addEventListener('click', function() {
+            mobileMoneyModal.style.display = 'flex';
+            mobileAmountInput.value = '';
+            updateMobileSummary();
+        });
+        
+        transactionHistoryBtn.addEventListener('click', function() {
+            transactionHistoryModal.style.display = 'flex';
+            updateTransactionHistoryTabs();
+        });
+        
+        // Fermer les modales
+        closeModalButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                sendMoneyModal.style.display = 'none';
+                receiveMoneyModal.style.display = 'none';
+                loadCardModal.style.display = 'none';
+                mobileMoneyModal.style.display = 'none';
+                transactionHistoryModal.style.display = 'none';
+                // Arrêter le scanner si actif
+                if (scannerActive) {
+                    stopScanner();
+                }
+            });
+        });
+        
+        // Fermer les modales en cliquant à l'extérieur
+        window.addEventListener('click', function(event) {
+            if (event.target === sendMoneyModal) {
+                sendMoneyModal.style.display = 'none';
+            }
+            if (event.target === receiveMoneyModal) {
+                receiveMoneyModal.style.display = 'none';
+                // Arrêter le scanner si actif
+                if (scannerActive) {
+                    stopScanner();
+                }
+            }
+            if (event.target === loadCardModal) {
+                loadCardModal.style.display = 'none';
+            }
+            if (event.target === mobileMoneyModal) {
+                mobileMoneyModal.style.display = 'none';
+            }
+            if (event.target === transactionHistoryModal) {
+                transactionHistoryModal.style.display = 'none';
+            }
+        });
+        
+        // Gestion des onglets de réception
+        document.querySelectorAll('#receive-money-modal .tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+                
+                // Désactiver tous les onglets
+                document.querySelectorAll('#receive-money-modal .tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('#receive-money-modal .tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Activer l'onglet sélectionné
+                this.classList.add('active');
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+                
+                // Arrêter le scanner si on quitte l'onglet scan
+                if (tabId !== 'scan' && scannerActive) {
+                    stopScanner();
+                }
+            });
+        });
+        
+        // Sélection du fournisseur Mobile Money
+        mobileMoneyOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                mobileMoneyOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                selectedMobileProvider = this.getAttribute('data-provider');
+            });
+        });
+        
+        // Écouteurs pour la génération automatique du QR code
+        recipientInput.addEventListener('input', generateSendQrCode);
+        beneficiaryPhoneInput.addEventListener('input', generateSendQrCode);
+        beneficiaryEmailInput.addEventListener('input', generateSendQrCode);
+        sendAmountInput.addEventListener('input', function() {
+            updateCurrencyConversion();
+            generateSendQrCode();
+            updateTransactionSummary();
+        });
+        currencyFromSelect.addEventListener('change', function() {
+            updateCurrencyConversion();
+            generateSendQrCode();
+            updateTransactionSummary();
+        });
+        currencyToSelect.addEventListener('change', function() {
+            updateCurrencyConversion();
+            generateSendQrCode();
+            updateTransactionSummary();
+        });
+        sendMessageInput.addEventListener('input', generateSendQrCode);
+        
+        // Mise à jour des résumés pour le chargement
+        loadAmountInput.addEventListener('input', updateLoadSummary);
+        
+        // Mise à jour des résumés pour Mobile Money
+        mobileAmountInput.addEventListener('input', updateMobileSummary);
+        
+        // Bouton de génération manuelle du QR code
+        generateQrBtn.addEventListener('click', function() {
+            generateSendQrCode();
+            showNotification("QR Code généré manuellement avec succès!");
+        });
+        
+        // Conversion de devise en temps réel
+        function updateCurrencyConversion() {
+            const amount = parseFloat(sendAmountInput.value) || 0;
+            const fromCurrency = currencyFromSelect.value;
+            const toCurrency = currencyToSelect.value;
+            
+            if (fromCurrency === toCurrency) {
+                conversionResult.style.display = 'none';
+            } else {
+                const rate = exchangeRates[fromCurrency][toCurrency];
+                const convertedAmount = amount * rate;
+                
+                conversionText.textContent = `${amount.toFixed(2)} ${fromCurrency} = ${convertedAmount.toFixed(2)} ${toCurrency}`;
+                conversionResult.style.display = 'block';
+            }
+        }
+        
+        // Mettre à jour le résumé de la transaction avec les frais
+        function updateTransactionSummary() {
+            const amount = parseFloat(sendAmountInput.value) || 0;
+            const currency = currencyFromSelect.value;
+            const fee = amount * 0.05; // Frais de 5%
+            const total = amount + fee;
+            
+            if (amount > 0) {
+                feeInfo.style.display = 'block';
+                feeAmount.textContent = fee.toFixed(2);
+                feeCurrency.textContent = currency;
+                
+                sendSummary.textContent = `${amount.toFixed(2)} ${currency}`;
+                feeSummary.textContent = `${fee.toFixed(2)} ${currency}`;
+                totalSummary.textContent = `${total.toFixed(2)} ${currency}`;
+            } else {
+                feeInfo.style.display = 'none';
+                sendSummary.textContent = `0.00 ${currency}`;
+                feeSummary.textContent = `0.00 ${currency}`;
+                totalSummary.textContent = `0.00 ${currency}`;
+            }
+        }
+        
+        // Mettre à jour le résumé pour le chargement
+        function updateLoadSummary() {
+            const amount = parseFloat(loadAmountInput.value) || 0;
+            const fee = amount * 0.02; // Frais de 2%
+            const total = amount + fee;
+            
+            loadFeeAmount.textContent = fee.toFixed(2);
+            loadSummary.textContent = `${amount.toFixed(2)} EUR`;
+            loadFeeSummary.textContent = `${fee.toFixed(2)} EUR`;
+            loadTotalSummary.textContent = `${total.toFixed(2)} EUR`;
+        }
+        
+        // Mettre à jour le résumé pour Mobile Money
+        function updateMobileSummary() {
+            const amount = parseFloat(mobileAmountInput.value) || 0;
+            const fee = amount * 0.03; // Frais de 3%
+            const total = amount + fee;
+            
+            mobileFeeAmount.textContent = fee.toFixed(2);
+            mobileSummary.textContent = `${amount.toFixed(2)} EUR`;
+            mobileFeeSummary.textContent = `${fee.toFixed(2)} EUR`;
+            mobileTotalSummary.textContent = `${total.toFixed(2)} EUR`;
+        }
+        
+        // Calculer les totaux
+        function calculateTotals() {
+            let totalSent = 0;
+            let totalReceived = 0;
+            let totalLoad = 0;
+            let totalMobile = 0;
+            
+            transactions.forEach(transaction => {
+                if (transaction.type === "send") {
+                    totalSent += Math.abs(transaction.amount);
+                } else if (transaction.type === "receive") {
+                    totalReceived += transaction.amount;
+                } else if (transaction.type === "load") {
+                    totalLoad += transaction.amount;
+                } else if (transaction.type === "mobile_money") {
+                    totalMobile += Math.abs(transaction.amount);
+                }
+            });
+            
+            const currentBalance = initialBalance - totalSent + totalReceived + totalLoad - totalMobile;
+            
+            // Mettre à jour l'affichage
+            initialBalanceElement.textContent = initialBalance.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €';
+            totalSentElement.textContent = '- ' + totalSent.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €';
+            totalReceivedElement.textContent = '+ ' + totalReceived.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €';
+            currentBalanceElement.textContent = currentBalance.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €';
+            balanceAmount.textContent = currentBalance.toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' €';
+            
+            return currentBalance;
+        }
+        
+        // Générer le QR code pour l'envoi (automatiquement et manuellement)
+        function generateSendQrCode() {
+            const amount = parseFloat(sendAmountInput.value) || 0;
+            const currency = currencyFromSelect.value;
+            const recipient = recipientInput.value || "Bénéficiaire";
+            const phone = beneficiaryPhoneInput.value || "Non spécifié";
+            const email = beneficiaryEmailInput.value || "Non spécifié";
+            const message = sendMessageInput.value || "";
+            const fee = amount * 0.05;
+            const total = amount + fee;
+            
+            const qrData = {
+                type: "send",
+                amount: amount,
+                currency: currency,
+                recipient: recipient,
+                phone: phone,
+                email: email,
+                message: message,
+                fee: fee,
+                total: total,
+                timestamp: new Date().toISOString()
+            };
+            
+            const qrString = JSON.stringify(qrData);
+            
+            // Effacer le QR code précédent
+            const qrcodeElement = document.getElementById('qrcode');
+            qrcodeElement.innerHTML = '';
+            
+            // Générer le nouveau QR code
+            if (amount > 0 && recipient) {
+                QRCode.toCanvas(qrcodeElement, qrString, { width: 200 }, function(error) {
+                    if (error) console.error(error);
+                });
+                
+                currentQrCode = qrString;
+                downloadQrBtn.disabled = false;
+                generateQrBtn.disabled = false;
+                sendWhatsAppBtn.disabled = false;
+            } else {
+                qrcodeElement.innerHTML = '<p style="color: #666; text-align: center;">Remplissez le nom du bénéficiaire et le montant pour générer le QR code</p>';
+                downloadQrBtn.disabled = true;
+                generateQrBtn.disabled = false;
+                sendWhatsAppBtn.disabled = true;
+            }
+        }
+        
+        // Générer le QR code pour la réception
+        function generateReceiveQrCode() {
+            const qrData = {
+                type: "receive",
+                address: "paysecure.me/jeandupont",
+                name: "JEAN DUPONT",
+                timestamp: new Date().toISOString()
+            };
+            
+            const qrString = JSON.stringify(qrData);
+            
+            // Effacer le QR code précédent
+            const qrcodeElement = document.getElementById('receive-qrcode');
+            qrcodeElement.innerHTML = '';
+            
+            // Générer le nouveau QR code
+            QRCode.toCanvas(qrcodeElement, qrString, { width: 200 }, function(error) {
+                if (error) console.error(error);
+            });
+        }
+        
+        // Télécharger le QR code
+        downloadQrBtn.addEventListener('click', function() {
+            if (!currentQrCode) {
+                showNotification("Veuillez d'abord générer un QR code en remplissant le formulaire.", "error");
+                return;
+            }
+            
+            const canvas = document.querySelector('#qrcode canvas');
+            const link = document.createElement('a');
+            link.download = 'qrcode-paiement.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            
+            showNotification("QR Code téléchargé avec succès!");
+        });
+        
+        // Démarrer le scanner
+        startScannerBtn.addEventListener('click', function() {
+            startScanner();
+        });
+        
+        // Arrêter le scanner
+        stopScannerBtn.addEventListener('click', function() {
+            stopScanner();
+        });
+        
+        // Démarrer le scanner de QR code
+        function startScanner() {
+            if (scannerActive) return;
+            
+            // Demander l'accès à la caméra
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then(function(mediaStream) {
+                    stream = mediaStream;
+                    scannerVideo.srcObject = stream;
+                    scannerVideo.play();
+                    
+                    // Afficher la vidéo et masquer le placeholder
+                    scannerVideo.style.display = 'block';
+                    scannerPlaceholder.style.display = 'none';
+                    startScannerBtn.style.display = 'none';
+                    stopScannerBtn.style.display = 'block';
+                    
+                    scannerActive = true;
+                    
+                    // Démarrer la détection de QR code
+                    scanQRCode();
+                })
+                .catch(function(error) {
+                    console.error("Erreur d'accès à la caméra: ", error);
+                    showNotification("Impossible d'accéder à la caméra. Vérifiez les permissions.", "error");
+                });
+        }
+        
+        // Arrêter le scanner
+        function stopScanner() {
+            if (!scannerActive) return;
+            
+            // Arrêter le flux vidéo
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            
+            // Réinitialiser l'interface
+            scannerVideo.style.display = 'none';
+            scannerPlaceholder.style.display = 'block';
+            startScannerBtn.style.display = 'block';
+            stopScannerBtn.style.display = 'none';
+            
+            scannerActive = false;
+        }
+        
+        // Scanner les QR codes en temps réel
+        function scanQRCode() {
+            if (!scannerActive) return;
+            
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            
+            // Vérifier si la vidéo est prête
+            if (scannerVideo.readyState === scannerVideo.HAVE_ENOUGH_DATA) {
+                canvas.width = scannerVideo.videoWidth;
+                canvas.height = scannerVideo.videoHeight;
+                context.drawImage(scannerVideo, 0, 0, canvas.width, canvas.height);
+                
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+                
+                if (code) {
+                    // QR code détecté
+                    processScannedQRCode(code.data);
+                }
+            }
+            
+            // Continuer à scanner
+            if (scannerActive) {
+                requestAnimationFrame(scanQRCode);
+            }
+        }
+        
+        // Traiter le QR code scanné
+        function processScannedQRCode(qrData) {
+            try {
+                const transactionData = JSON.parse(qrData);
+                
+                // Vérifier que c'est un QR code d'envoi
+                if (transactionData.type === "send") {
+                    scannedTransactionData = transactionData;
+                    
+                    // Afficher les détails de la transaction
+                    previewSender.textContent = transactionData.recipient || "Expéditeur inconnu";
+                    previewAmount.textContent = `${transactionData.amount} ${transactionData.currency}`;
+                    previewCurrency.textContent = transactionData.currency;
+                    previewMessage.textContent = transactionData.message || "Aucun message";
+                    
+                    // Afficher la prévisualisation
+                    transactionPreview.style.display = 'block';
+                    
+                    // Arrêter le scanner
+                    stopScanner();
+                    
+                    showNotification("QR Code scanné avec succès! Veuillez confirmer la réception.", "success");
+                } else {
+                    showNotification("Ce QR code n'est pas un code de paiement valide.", "error");
+                }
+            } catch (error) {
+                console.error("Erreur de décodage du QR code: ", error);
+                showNotification("QR Code invalide ou endommagé.", "error");
+            }
+        }
+        
+        // Importer un QR code depuis un fichier
+        importQrInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Créer une image pour décoder le QR code
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    context.drawImage(img, 0, 0);
+                    
+                    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height);
+                    
+                    if (code) {
+                        processScannedQRCode(code.data);
+                    } else {
+                        showNotification("Aucun QR Code valide trouvé dans l'image.", "error");
+                    }
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        // Confirmer la réception d'argent
+        confirmReceiveBtn.addEventListener('click', function() {
+            if (!scannedTransactionData) {
+                showNotification("Aucune transaction à confirmer.", "error");
+                return;
+            }
+            
+            // Ajouter la transaction à l'historique
+            const newTransaction = {
+                id: transactions.length + 1,
+                type: "receive",
+                name: scannedTransactionData.recipient || "Expéditeur inconnu",
+                amount: scannedTransactionData.amount,
+                date: new Date().toISOString().split('T')[0],
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                currency: scannedTransactionData.currency,
+                message: scannedTransactionData.message
+            };
+            
+            transactions.unshift(newTransaction);
+            updateTransactionList();
+            calculateTotals();
+            
+            // Réinitialiser l'interface
+            transactionPreview.style.display = 'none';
+            scannedTransactionData = null;
+            importQrInput.value = '';
+            
+            showNotification(`Paiement de ${newTransaction.amount} ${newTransaction.currency} reçu avec succès!`);
+        });
+        
+        // Réinitialiser l'interface du scanner
+        function resetScannerInterface() {
+            transactionPreview.style.display = 'none';
+            importResult.style.display = 'none';
+            scannedTransactionData = null;
+            importQrInput.value = '';
+            
+            if (scannerActive) {
+                stopScanner();
+            }
+        }
+        
+        // Confirmer l'envoi d'argent
+        confirmSendBtn.addEventListener('click', function() {
+            const recipient = recipientInput.value;
+            const phone = beneficiaryPhoneInput.value;
+            const email = beneficiaryEmailInput.value;
+            const amount = parseFloat(sendAmountInput.value);
+            const message = sendMessageInput.value;
+            const currency = currencyFromSelect.value;
+            const fee = amount * 0.05;
+            const total = amount + fee;
+            
+            if (!recipient || !amount || amount <= 0) {
+                showNotification("Veuillez remplir tous les champs obligatoires avec des valeurs valides.", "error");
+                return;
+            }
+            
+            // Vérifier si le solde est suffisant
+            const currentBalance = calculateTotals();
+            if (total > currentBalance) {
+                showNotification("Solde insuffisant pour effectuer cette transaction.", "error");
+                return;
+            }
+            
+            // Ajouter la transaction
+            const newTransaction = {
+                id: transactions.length + 1,
+                type: "send",
+                name: recipient,
+                amount: -amount,
+                date: new Date().toISOString().split('T')[0],
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                currency: currency,
+                fee: fee,
+                message: message,
+                phone: phone,
+                email: email
+            };
+            
+            transactions.unshift(newTransaction);
+            updateTransactionList();
+            calculateTotals();
+            
+            // Fermer la modale et réinitialiser le formulaire
+            sendMoneyModal.style.display = 'none';
+            recipientInput.value = '';
+            beneficiaryPhoneInput.value = '';
+            beneficiaryEmailInput.value = '';
+            sendAmountInput.value = '';
+            sendMessageInput.value = '';
+            
+            showNotification(`Paiement de ${amount.toFixed(2)} ${currency} (frais: ${fee.toFixed(2)} ${currency}) envoyé à ${recipient} avec succès!`);
+        });
+        
+        // Confirmer le chargement de la carte
+        confirmLoadBtn.addEventListener('click', function() {
+            const amount = parseFloat(loadAmountInput.value);
+            const method = document.getElementById('load-method').value;
+            const message = document.getElementById('load-message').value || "";
+            const fee = amount * 0.02;
+            const total = amount + fee;
+            
+            if (!amount || amount <= 0) {
+                showNotification("Veuillez saisir un montant valide.", "error");
+                return;
+            }
+            
+            // Ajouter la transaction
+            const newTransaction = {
+                id: transactions.length + 1,
+                type: "load",
+                name: "Rechargement compte",
+                amount: amount,
+                date: new Date().toISOString().split('T')[0],
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                currency: "EUR",
+                fee: fee,
+                message: message,
+                method: method
+            };
+            
+            transactions.unshift(newTransaction);
+            updateTransactionList();
+            calculateTotals();
+            
+            // Fermer la modale et réinitialiser le formulaire
+            loadCardModal.style.display = 'none';
+            loadAmountInput.value = '';
+            
+            showNotification(`Carte rechargée de ${amount.toFixed(2)} € avec succès!`);
+        });
+        
+        // Confirmer le transfert Mobile Money
+        confirmMobileBtn.addEventListener('click', function() {
+            const number = document.getElementById('mobile-number').value;
+            const amount = parseFloat(mobileAmountInput.value);
+            const message = document.getElementById('mobile-message').value || "";
+            const fee = amount * 0.03;
+            const total = amount + fee;
+            const provider = selectedMobileProvider;
+            
+            if (!number || !amount || amount <= 0) {
+                showNotification("Veuillez remplir tous les champs obligatoires.", "error");
+                return;
+            }
+            
+            // Vérifier si le solde est suffisant
+            const currentBalance = calculateTotals();
+            if (total > currentBalance) {
+                showNotification("Solde insuffisant pour effectuer cette transaction.", "error");
+                return;
+            }
+            
+            // Ajouter la transaction
+            const newTransaction = {
+                id: transactions.length + 1,
+                type: "mobile_money",
+                name: `${provider === 'tmoney' ? 'T-Money' : 'Flooz'} Transfer`,
+                amount: -amount,
+                date: new Date().toISOString().split('T')[0],
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                currency: "EUR",
+                fee: fee,
+                message: message,
+                provider: provider,
+                number: number
+            };
+            
+            transactions.unshift(newTransaction);
+            updateTransactionList();
+            calculateTotals();
+            
+            // Fermer la modale et réinitialiser le formulaire
+            mobileMoneyModal.style.display = 'none';
+            mobileAmountInput.value = '';
+            document.getElementById('mobile-number').value = '';
+            
+            showNotification(`Transfert de ${amount.toFixed(2)} € vers ${provider === 'tmoney' ? 'T-Money' : 'Flooz'} effectué avec succès!`);
+        });
+        
+        // Envoyer par WhatsApp avec les informations du bénéficiaire (avant confirmation)
+        sendWhatsAppBtn.addEventListener('click', function() {
+            const recipient = recipientInput.value;
+            const phone = beneficiaryPhoneInput.value;
+            const email = beneficiaryEmailInput.value;
+            const amount = parseFloat(sendAmountInput.value);
+            const message = sendMessageInput.value;
+            const currency = currencyFromSelect.value;
+            const fee = amount * 0.05;
+            const total = amount + fee;
+            
+            if (!recipient || !amount || amount <= 0) {
+                showNotification("Veuillez remplir le nom du bénéficiaire et le montant avant d'envoyer par WhatsApp.", "error");
+                return;
+            }
+            
+            // Créer le message WhatsApp avec les informations du bénéficiaire
+            let whatsappMessage = `Bonjour, je souhaite effectuer un virement de ${amount.toFixed(2)} ${currency} via PaySecure.\n\n`;
+            whatsappMessage += `Détails du bénéficiaire:\n`;
+            whatsappMessage += `- Nom: ${recipient}\n`;
+            whatsappMessage += `- Téléphone: ${phone || 'Non spécifié'}\n`;
+            whatsappMessage += `- Email: ${email || 'Non spécifié'}\n\n`;
+            whatsappMessage += `Détails de la transaction:\n`;
+            whatsappMessage += `- Montant: ${amount.toFixed(2)} ${currency}\n`;
+            whatsappMessage += `- Frais: ${fee.toFixed(2)} ${currency}\n`;
+            whatsappMessage += `- Total: ${total.toFixed(2)} ${currency}\n`;
+            
+            if (message) {
+                whatsappMessage += `- Message: ${message}\n`;
+            }
+            
+            whatsappMessage += `\nMerci de procéder au virement.`;
+            
+            const encodedMessage = encodeURIComponent(whatsappMessage);
+            const phoneNumber = "92871605"; // Numéro de téléphone
+            
+            // Ouvrir WhatsApp
+            window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+            
+            showNotification("Demande de virement envoyée via WhatsApp! Vous pouvez maintenant confirmer l'envoi.");
+        });
+        
+        // Copier l'adresse de paiement
+        copyAddressBtn.addEventListener('click', function() {
+            navigator.clipboard.writeText("paysecure.me/jeandupont")
+                .then(() => {
+                    showNotification("Adresse de paiement copiée dans le presse-papier!");
+                })
+                .catch(err => {
+                    console.error('Erreur lors de la copie: ', err);
+                    showNotification("Erreur lors de la copie de l'adresse.", "error");
+                });
+        });
+        
+        // Gestion des onglets de l'historique
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+                
+                // Désactiver tous les onglets
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // Activer l'onglet sélectionné
+                this.classList.add('active');
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+                
+                // Mettre à jour le contenu de l'onglet
+                updateTransactionHistoryTabs();
+            });
+        });
+        
+        // Mettre à jour la liste des transactions
+        function updateTransactionList() {
+            transactionList.innerHTML = '';
+            
+            // Afficher les 5 dernières transactions
+            const recentTransactions = transactions.slice(0, 5);
+            
+            recentTransactions.forEach(transaction => {
+                const transactionItem = document.createElement('div');
+                transactionItem.className = 'transaction-item';
+                
+                const isSend = transaction.type === 'send';
+                const isReceive = transaction.type === 'receive';
+                const isLoad = transaction.type === 'load';
+                const isMobile = transaction.type === 'mobile_money';
+                
+                const amountClass = transaction.amount < 0 ? 'negative' : 'positive';
+                const amountSign = transaction.amount < 0 ? '' : '+';
+                
+                let iconClass = '';
+                let icon = '';
+                
+                if (isSend) {
+                    iconClass = 'send';
+                    icon = '<i class="fas fa-arrow-up"></i>';
+                } else if (isReceive) {
+                    iconClass = 'receive';
+                    icon = '<i class="fas fa-arrow-down"></i>';
+                } else if (isLoad) {
+                    iconClass = 'load';
+                    icon = '<i class="fas fa-plus-circle"></i>';
+                } else if (isMobile) {
+                    iconClass = 'mobile-money';
+                    icon = '<i class="fas fa-mobile-alt"></i>';
+                }
+                
+                transactionItem.innerHTML = `
+                    <div class="transaction-info">
+                        <div class="transaction-icon ${iconClass}">
+                            ${icon}
+                        </div>
+                        <div class="transaction-details">
+                            <h4>${transaction.name}</h4>
+                            <p>${transaction.date} à ${transaction.time}</p>
+                            ${transaction.fee ? `<p style="font-size: 10px; color: var(--warning);">Frais: ${transaction.fee.toFixed(2)} ${transaction.currency}</p>` : ''}
+                            ${transaction.message ? `<p style="font-size: 10px; opacity: 0.7;">${transaction.message}</p>` : ''}
+                            ${transaction.phone ? `<p style="font-size: 10px; opacity: 0.7;">Tél: ${transaction.phone}</p>` : ''}
+                            ${transaction.provider ? `<p style="font-size: 10px; opacity: 0.7;">${transaction.provider === 'tmoney' ? 'T-Money' : 'Flooz'}</p>` : ''}
+                        </div>
+                    </div>
+                    <div class="transaction-amount ${amountClass}">
+                        ${amountSign} ${Math.abs(transaction.amount).toFixed(2)} ${transaction.currency}
+                    </div>
+                `;
+                
+                transactionList.appendChild(transactionItem);
+            });
+        }
+        
+        // Mettre à jour l'historique des transactions dans les onglets
+        function updateTransactionHistoryTabs() {
+            const allTransactions = document.querySelector('#tab-all .transaction-history');
+            const sentTransactions = document.querySelector('#tab-sent .transaction-history');
+            const receivedTransactions = document.querySelector('#tab-received .transaction-history');
+            const loadTransactions = document.querySelector('#tab-load .transaction-history');
+            const mobileTransactions = document.querySelector('#tab-mobile .transaction-history');
+            
+            // Vider les listes
+            allTransactions.innerHTML = '';
+            sentTransactions.innerHTML = '';
+            receivedTransactions.innerHTML = '';
+            loadTransactions.innerHTML = '';
+            mobileTransactions.innerHTML = '';
+            
+            // Remplir les listes
+            transactions.forEach(transaction => {
+                const transactionItem = document.createElement('div');
+                transactionItem.className = 'transaction-item';
+                
+                const isSend = transaction.type === 'send';
+                const isReceive = transaction.type === 'receive';
+                const isLoad = transaction.type === 'load';
+                const isMobile = transaction.type === 'mobile_money';
+                
+                const amountClass = transaction.amount < 0 ? 'negative' : 'positive';
+                const amountSign = transaction.amount < 0 ? '' : '+';
+                
+                let iconClass = '';
+                let icon = '';
+                
+                if (isSend) {
+                    iconClass = 'send';
+                    icon = '<i class="fas fa-arrow-up"></i>';
+                } else if (isReceive) {
+                    iconClass = 'receive';
+                    icon = '<i class="fas fa-arrow-down"></i>';
+                } else if (isLoad) {
+                    iconClass = 'load';
+                    icon = '<i class="fas fa-plus-circle"></i>';
+                } else if (isMobile) {
+                    iconClass = 'mobile-money';
+                    icon = '<i class="fas fa-mobile-alt"></i>';
+                }
+                
+                transactionItem.innerHTML = `
+                    <div class="transaction-info">
+                        <div class="transaction-icon ${iconClass}">
+                            ${icon}
+                        </div>
+                        <div class="transaction-details">
+                            <h4>${transaction.name}</h4>
+                            <p>${transaction.date} à ${transaction.time}</p>
+                            ${transaction.fee ? `<p style="font-size: 10px; color: var(--warning);">Frais: ${transaction.fee.toFixed(2)} ${transaction.currency}</p>` : ''}
+                            ${transaction.message ? `<p style="font-size: 10px; opacity: 0.7;">${transaction.message}</p>` : ''}
+                            ${transaction.phone ? `<p style="font-size: 10px; opacity: 0.7;">Tél: ${transaction.phone}</p>` : ''}
+                            ${transaction.provider ? `<p style="font-size: 10px; opacity: 0.7;">${transaction.provider === 'tmoney' ? 'T-Money' : 'Flooz'}</p>` : ''}
+                        </div>
+                    </div>
+                    <div class="transaction-amount ${amountClass}">
+                        ${amountSign} ${Math.abs(transaction.amount).toFixed(2)} ${transaction.currency}
+                    </div>
+                `;
+                
+                // Ajouter à toutes les transactions
+                allTransactions.appendChild(transactionItem.cloneNode(true));
+                
+                // Ajouter aux transactions correspondantes
+                if (isSend) {
+                    sentTransactions.appendChild(transactionItem.cloneNode(true));
+                } else if (isReceive) {
+                    receivedTransactions.appendChild(transactionItem.cloneNode(true));
+                } else if (isLoad) {
+                    loadTransactions.appendChild(transactionItem.cloneNode(true));
+                } else if (isMobile) {
+                    mobileTransactions.appendChild(transactionItem.cloneNode(true));
+                }
+            });
+        }
+        
+        // Afficher une notification
+        function showNotification(message, type = "success") {
+            notificationText.textContent = message;
+            notification.style.background = type === "error" ? "var(--danger)" : "var(--success)";
+            notification.style.display = "block";
+            
+            setTimeout(() => {
+                notification.style.display = "none";
+            }, 3000);
+        }
+        
+        // Générer un numéro de carte aléatoire
+        function generateCardNumber() {
+            let number = '';
+            for (let i = 0; i < 16; i++) {
+                number += Math.floor(Math.random() * 10);
+                if ((i + 1) % 4 === 0 && i < 15) number += ' ';
+            }
+            return number;
+        }
+        
+        // Générer une date d'expiration aléatoire
+        function generateExpiryDate() {
+            const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+            const year = String(new Date().getFullYear() + Math.floor(Math.random() * 5) + 1).slice(-2);
+            return `${month}/${year}`;
+        }
+        
+        // Générer un CVV aléatoire
+        function generateCVV() {
+            return String(Math.floor(Math.random() * 900) + 100);
+        }
+        
+        // Initialiser l'application
+        function init() {
+            updateTransactionList();
+            calculateTotals();
+            generateReceiveQrCode();
+        }
+        
+        // Démarrer l'application
+        init();
+    </script>
+</body>
+</html>
