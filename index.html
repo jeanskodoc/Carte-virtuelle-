@@ -74,6 +74,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            text-decoration: none;
         }
         
         .nav-btn:hover {
@@ -350,15 +351,15 @@
                 <div class="logo">Générateur de Cartes Bancaires</div>
             </div>
             <nav>
-                <button class="nav-btn" id="adminBtn">
+                <a href="admin.html" class="nav-btn">
                     <i class="fas fa-user-shield"></i> Administrateur
-                </button>
-                <button class="nav-btn" id="orderBtn">
+                </a>
+                <a href="inscription.html" class="nav-btn">
                     <i class="fas fa-shopping-cart"></i> Commande
-                </button>
-                <button class="nav-btn" id="cardBtn">
+                </a>
+                <a href="client.html" class="nav-btn">
                     <i class="fas fa-credit-card"></i> Carte Bancaire
-                </button>
+                </a>
             </nav>
         </div>
     </header>
@@ -438,36 +439,24 @@
     
     <footer>
         <div class="container">
-            <p>&copy; 2025 Générateur de Cartes Bancaires. Tous droits réservés.</p>
+            <p>&copy; 2023 Générateur de Cartes Bancaires. Tous droits réservés.</p>
             <p>Solution sécurisée pour les paiements en ligne</p>
             <div class="social-links">
                 <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
                 <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-               
+                <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-github"></i></a>
             </div>
         </div>
     </footer>
 
     <script>
-        // Gestion des boutons de navigation
-        document.getElementById('adminBtn').addEventListener('click', function() {
-            alert('Redirection vers le panneau administrateur');
-            // window.location.href = 'admin.html';
-        });
-        
-        document.getElementById('orderBtn').addEventListener('click', function() {
-            alert('Redirection vers la gestion des commandes');
-            // window.location.href = 'inscription.html';
-        });
-        
-        document.getElementById('cardBtn').addEventListener('click', function() {
-            alert('Redirection vers le générateur de cartes');
-            // window.location.href = 'client.html';
-        });
+        // Gestion des boutons de navigation (maintenant gérés par les liens)
         
         // Démo interactive
         document.getElementById('tryDemo').addEventListener('click', function() {
-            document.getElementById('cardBtn').click();
+            // Redirection vers la page client.html
+            window.location.href = 'client.html';
         });
         
         document.getElementById('learnMore').addEventListener('click', function() {
