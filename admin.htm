@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Cartes Bancaires - Gestion des Clients</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        h2 {
+            color: #1a2a6c;
+            border-bottom: 2px solid #fdbb2d;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        button {
+            background: linear-gradient(to right, #1a2a6c, #b21f1f);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            border-radius: 15px;
+            padding: 25px;
+            color: white;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin: 0 auto 20px;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+            z-index: 0;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .card-logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .card-type {
+            background: #fdbb2d;
+            color: #1a2a6c;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .card-number {
+            font-size: 24px;
+            letter-spacing: 3px;
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+            z-index: 1;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .card-details {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .card-holder, .card-expiry {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .card-value {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .card-cvv {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        .credentials {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto 0;
+        }
+        
+        .credential-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #ddd;
+        }
+        
+        .credential-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .credential-label {
+            font-weight: 600;
+        }
+        
+        .credential-value {
+            font-family: 'Courier New', monospace;
+            background: #eee;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .success-message {
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .card-chip {
+            width: 50px;
+            height: 40px;
+            background: linear-gradient(135deg, #c9c9c9, #e0e0e0);
+            border-radius: 5px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .card-chip::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 25px;
+            background: linear-gradient(135deg, #a0a0a0, #c0c0c0);
+            border-radius: 3px;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .clients-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .clients-table th, .clients-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .clients-table th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+            color: #1a2a6c;
+        }
+        
+        .clients-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-active {
+            background-color: #e7f7ef;
+            color: #2ecc71;
+        }
+        
+        .status-expired {
+            background-color: #fdeaea;
+            color: #e74c3c;
+        }
+        
+        .status-warning {
+            background-color: #fef5e7;
+            color: #f39c12;
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            color: #1a2a6c;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            padding: 5px;
+        }
+        
+        .action-btn:hover {
+            text-decoration: underline;
+        }
+        
+        .card-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #777;
+        }
+        
+        .empty-state p {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Générateur de Cartes Bancaires - Gestion des Clients</h1>
+    
+    <div class="container">
+        <div>
+            <div class="panel">
+                <h2>Enregistrement du Client</h2>
+                <form id="clientForm">
+                    <div class="form-group">
+                        <label for="firstName">Prénom</label>
+                        <input type="text" id="firstName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lastName">Nom</label>
+                        <input type="text" id="lastName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="birthDate">Date de Naissance</label>
+                        <input type="date" id="birthDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address">Adresse</label>
+                        <input type="text" id="address" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="city">Ville</label>
+                        <input type="text" id="city" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cardType">Type de Carte</label>
+                        <select id="cardType" required>
+                            <option value="visa">Visa</option>
+                            <option value="mastercard">Mastercard</option>
+                            <option value="virtual">Carte Virtuelle</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit">Générer la Carte</button>
+                </form>
+                
+                <div id="successMessage" class="success-message">
+                    Carte générée avec succès! Valide pour 2 ans à partir d'aujourd'hui.
+                </div>
+            </div>
+            
+            <div class="panel card-preview">
+                <h2>Votre Carte Bancaire</h2>
+                <div class="card hidden" id="bankCard">
+                    <div class="card-header">
+                        <div class="card-logo" id="cardLogo">VISA</div>
+                        <div class="card-type" id="cardTypeDisplay">Virtuelle</div>
+                    </div>
+                    
+                    <div class="card-chip"></div>
+                    
+                    <div class="card-number" id="cardNumberDisplay">**** **** **** ****</div>
+                    
+                    <div class="card-details">
+                        <div class="card-holder">
+                            <div class="card-label">Titulaire</div>
+                            <div class="card-value" id="cardHolderDisplay">-</div>
+                        </div>
+                        
+                        <div class="card-expiry">
+                            <div class="card-label">Expire</div>
+                            <div class="card-value" id="cardExpiryDisplay">-</div>
+                        </div>
+                        
+                        <div class="card-cvv">
+                            <div class="card-label">CVV</div>
+                            <div class="card-value" id="cardCvvDisplay">-</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="credentials hidden" id="credentials">
+                    <div class="credential-item">
+                        <div class="credential-label">Identifiant de connexion:</div>
+                        <div class="credential-value" id="userIdDisplay">-</div>
+                    </div>
+                    
+                    <div class="credential-item">
+                        <div class="credential-label">Mot de passe temporaire:</div>
+                        <div class="credential-value" id="passwordDisplay">-</div>
+                    </div>
+                    
+                    <div class="credential-item">
+                        <div class="credential-label">Date d'expiration:</div>
+                        <div class="credential-value" id="expiryDateDisplay">-</div>
+                    </div>
+                </div>
+                
+                <div id="noCardMessage" class="empty-state">
+                    <p>Aucune carte générée. Veuillez remplir le formulaire.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Liste des Clients et Cartes</h2>
+            
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="searchClient">Rechercher un client</label>
+                    <input type="text" id="searchClient" placeholder="Nom, prénom ou ville">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filterStatus">Filtrer par statut</label>
+                    <select id="filterStatus">
+                        <option value="all">Tous les statuts</option>
+                        <option value="active">Valide</option>
+                        <option value="warning">Bientôt expiré</option>
+                        <option value="expired">Expiré</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filterCardType">Filtrer par type de carte</label>
+                    <select id="filterCardType">
+                        <option value="all">Tous les types</option>
+                        <option value="visa">Visa</option>
+                        <option value="mastercard">Mastercard</option>
+                        <option value="virtual">Virtuelle</option>
+                    </select>
+                </div>
+            </div>
+            
+            <table class="clients-table">
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Type de carte</th>
+                        <th>Numéro de carte</th>
+                        <th>Date d'expiration</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="clientsTableBody">
+                    <!-- Les lignes seront ajoutées dynamiquement -->
+                </tbody>
+            </table>
+            
+            <div id="noClientsMessage" class="empty-state">
+                <p>Aucun client enregistré pour le moment.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Stockage des clients (simulation d'une base de données)
+        let clients = JSON.parse(localStorage.getItem('bankClients')) || [];
+        
+        // Initialisation de l'interface
+        document.addEventListener('DOMContentLoaded', function() {
+            updateClientsTable();
+            document.getElementById('filterStatus').addEventListener('change', updateClientsTable);
+            document.getElementById('filterCardType').addEventListener('change', updateClientsTable);
+            document.getElementById('searchClient').addEventListener('input', updateClientsTable);
+        });
+        
+        // Gestion du formulaire
+        document.getElementById('clientForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Récupération des données du formulaire
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const birthDate = document.getElementById('birthDate').value;
+            const address = document.getElementById('address').value;
+            const city = document.getElementById('city').value;
+            const cardType = document.getElementById('cardType').value;
+            
+            // Génération des informations de la carte
+            const cardNumber = generateCardNumber(cardType);
+            const cvv = generateCVV();
+            const issueDate = new Date();
+            const expiryDate = new Date();
+            expiryDate.setFullYear(expiryDate.getFullYear() + 2); // Validité de 2 ans
+            
+            // Génération des identifiants
+            const userId = generateUserId();
+            const password = generatePassword();
+            
+            // Formatage des dates
+            const formattedExpiryDate = formatDate(expiryDate);
+            const formattedExpiryDisplay = `${('0' + (expiryDate.getMonth() + 1)).slice(-2)}/${expiryDate.getFullYear().toString().slice(-2)}`;
+            
+            // Création de l'objet client
+            const client = {
+                id: generateClientId(),
+                firstName: firstName,
+                lastName: lastName,
+                birthDate: birthDate,
+                address: address,
+                city: city,
+                cardType: cardType,
+                cardNumber: cardNumber,
+                cvv: cvv,
+                issueDate: issueDate.toISOString(),
+                expiryDate: expiryDate.toISOString(),
+                userId: userId,
+                password: password,
+                status: getCardStatus(expiryDate)
+            };
+            
+            // Ajout du client à la liste
+            clients.push(client);
+            
+            // Sauvegarde dans le localStorage
+            localStorage.setItem('bankClients', JSON.stringify(clients));
+            
+            // Mise à jour de la carte affichée
+            document.getElementById('cardHolderDisplay').textContent = `${firstName} ${lastName}`.toUpperCase();
+            document.getElementById('cardNumberDisplay').textContent = formatCardNumber(cardNumber);
+            document.getElementById('cardExpiryDisplay').textContent = formattedExpiryDisplay;
+            document.getElementById('cardCvvDisplay').textContent = cvv;
+            document.getElementById('cardTypeDisplay').textContent = getCardTypeDisplay(cardType);
+            document.getElementById('cardLogo').textContent = getCardLogo(cardType);
+            
+            // Mise à jour des identifiants
+            document.getElementById('userIdDisplay').textContent = userId;
+            document.getElementById('passwordDisplay').textContent = password;
+            document.getElementById('expiryDateDisplay').textContent = formattedExpiryDate;
+            
+            // Affichage de la carte et des identifiants
+            document.getElementById('bankCard').classList.remove('hidden');
+            document.getElementById('credentials').classList.remove('hidden');
+            document.getElementById('noCardMessage').classList.add('hidden');
+            
+            // Affichage du message de succès
+            document.getElementById('successMessage').style.display = 'block';
+            
+            // Mise à jour du tableau des clients
+            updateClientsTable();
+            
+            // Réinitialisation du formulaire
+            this.reset();
+        });
+        
+        // Fonction pour mettre à jour le tableau des clients
+        function updateClientsTable() {
+            const tableBody = document.getElementById('clientsTableBody');
+            const noClientsMessage = document.getElementById('noClientsMessage');
+            
+            // Vider le tableau
+            tableBody.innerHTML = '';
+            
+            // Appliquer les filtres
+            const searchTerm = document.getElementById('searchClient').value.toLowerCase();
+            const statusFilter = document.getElementById('filterStatus').value;
+            const cardTypeFilter = document.getElementById('filterCardType').value;
+            
+            const filteredClients = clients.filter(client => {
+                const matchesSearch = 
+                    client.firstName.toLowerCase().includes(searchTerm) ||
+                    client.lastName.toLowerCase().includes(searchTerm) ||
+                    client.city.toLowerCase().includes(searchTerm);
+                
+                const matchesStatus = statusFilter === 'all' || client.status === statusFilter;
+                const matchesCardType = cardTypeFilter === 'all' || client.cardType === cardTypeFilter;
+                
+                return matchesSearch && matchesStatus && matchesCardType;
+            });
+            
+            // Afficher le message si aucun client ne correspond
+            if (filteredClients.length === 0) {
+                noClientsMessage.classList.remove('hidden');
+                tableBody.innerHTML = '';
+                return;
+            } else {
+                noClientsMessage.classList.add('hidden');
+            }
+            
+            // Ajouter chaque client au tableau
+            filteredClients.forEach(client => {
+                const expiryDate = new Date(client.expiryDate);
+                const daysRemaining = Math.ceil((expiryDate - new Date()) / (1000 * 60 * 60 * 24));
+                
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${client.firstName} ${client.lastName}<br><small>${client.city}</small></td>
+                    <td>${getCardTypeDisplay(client.cardType)}</td>
+                    <td>${formatCardNumber(client.cardNumber)}</td>
+                    <td>${formatDate(expiryDate)}</td>
+                    <td><span class="status-badge status-${client.status}">${getStatusText(client.status, daysRemaining)}</span></td>
+                    <td>
+                        <button class="action-btn view-client" data-id="${client.id}">Voir</button>
+                        <button class="action-btn delete-client" data-id="${client.id}">Supprimer</button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Ajouter les événements aux boutons
+            document.querySelectorAll('.view-client').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const clientId = this.getAttribute('data-id');
+                    viewClient(clientId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-client').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const clientId = this.getAttribute('data-id');
+                    deleteClient(clientId);
+                });
+            });
+        }
+        
+        // Fonction pour afficher les détails d'un client
+        function viewClient(clientId) {
+            const client = clients.find(c => c.id === clientId);
+            if (!client) return;
+            
+            const expiryDate = new Date(client.expiryDate);
+            const formattedExpiryDisplay = `${('0' + (expiryDate.getMonth() + 1)).slice(-2)}/${expiryDate.getFullYear().toString().slice(-2)}`;
+            
+            // Mise à jour de la carte affichée
+            document.getElementById('cardHolderDisplay').textContent = `${client.firstName} ${client.lastName}`.toUpperCase();
+            document.getElementById('cardNumberDisplay').textContent = formatCardNumber(client.cardNumber);
+            document.getElementById('cardExpiryDisplay').textContent = formattedExpiryDisplay;
+            document.getElementById('cardCvvDisplay').textContent = client.cvv;
+            document.getElementById('cardTypeDisplay').textContent = getCardTypeDisplay(client.cardType);
+            document.getElementById('cardLogo').textContent = getCardLogo(client.cardType);
+            
+            // Mise à jour des identifiants
+            document.getElementById('userIdDisplay').textContent = client.userId;
+            document.getElementById('passwordDisplay').textContent = client.password;
+            document.getElementById('expiryDateDisplay').textContent = formatDate(expiryDate);
+            
+            // Affichage de la carte et des identifiants
+            document.getElementById('bankCard').classList.remove('hidden');
+            document.getElementById('credentials').classList.remove('hidden');
+            document.getElementById('noCardMessage').classList.add('hidden');
+            document.getElementById('successMessage').style.display = 'none';
+            
+            // Défilement vers la carte
+            document.getElementById('bankCard').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Fonction pour supprimer un client
+        function deleteClient(clientId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce client ?')) {
+                clients = clients.filter(c => c.id !== clientId);
+                localStorage.setItem('bankClients', JSON.stringify(clients));
+                updateClientsTable();
+                
+                // Si le client supprimé était affiché, masquer la carte
+                const displayedCard = document.getElementById('bankCard');
+                if (!displayedCard.classList.contains('hidden')) {
+                    // Vérifier si la carte affichée appartient au client supprimé
+                    const cardNumber = document.getElementById('cardNumberDisplay').textContent.replace(/\s/g, '');
+                    const client = clients.find(c => formatCardNumber(c.cardNumber) === cardNumber);
+                    
+                    if (!client) {
+                        document.getElementById('bankCard').classList.add('hidden');
+                        document.getElementById('credentials').classList.add('hidden');
+                        document.getElementById('noCardMessage').classList.remove('hidden');
+                    }
+                }
+            }
+        }
+        
+        // Fonction pour générer un ID client unique
+        function generateClientId() {
+            return 'CLI' + Date.now() + Math.floor(Math.random() * 1000);
+        }
+        
+        // Fonction pour déterminer le statut de la carte
+        function getCardStatus(expiryDate) {
+            const today = new Date();
+            const diffTime = expiryDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays < 0) return 'expired';
+            if (diffDays < 30) return 'warning';
+            return 'active';
+        }
+        
+        // Fonction pour obtenir le texte du statut
+        function getStatusText(status, daysRemaining) {
+            switch(status) {
+                case 'active': return `Valide (${daysRemaining} jours)`; 
+                case 'warning': return `Expire dans ${daysRemaining} jours`;
+                case 'expired': return 'Expirée';
+                default: return 'Inconnu';
+            }
+        }
+        
+        // Fonction pour générer un numéro de carte selon le type
+        function generateCardNumber(type) {
+            let prefix;
+            switch(type) {
+                case 'visa':
+                    prefix = '4';
+                    break;
+                case 'mastercard':
+                    prefix = '5';
+                    break;
+                case 'virtual':
+                    prefix = '4'; // Les cartes virtuelles commencent souvent par 4
+                    break;
+                default:
+                    prefix = '4';
+            }
+            
+            let number = prefix;
+            // Générer les 15 chiffres restants
+            for (let i = 0; i < 15; i++) {
+                number += Math.floor(Math.random() * 10);
+            }
+            
+            return number;
+        }
+        
+        // Fonction pour formater le numéro de carte en groupes de 4 chiffres
+        function formatCardNumber(number) {
+            return number.replace(/(.{4})/g, '$1 ').trim();
+        }
+        
+        // Fonction pour générer un CVV
+        function generateCVV() {
+            let cvv = '';
+            for (let i = 0; i < 3; i++) {
+                cvv += Math.floor(Math.random() * 10);
+            }
+            return cvv;
+        }
+        
+        // Fonction pour générer un identifiant unique
+        function generateUserId() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 8; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+        
+        // Fonction pour générer un mot de passe sécurisé
+        function generatePassword() {
+            const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+            const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const numbers = '0123456789';
+            const symbols = '!@#$%^&*';
+            
+            let password = '';
+            
+            // Au moins un caractère de chaque type
+            password += lowercase.charAt(Math.floor(Math.random() * lowercase.length));
+            password += uppercase.charAt(Math.floor(Math.random() * uppercase.length));
+            password += numbers.charAt(Math.floor(Math.random() * numbers.length));
+            password += symbols.charAt(Math.floor(Math.random() * symbols.length));
+            
+            // Remplir le reste
+            const allChars = lowercase + uppercase + numbers + symbols;
+            for (let i = 4; i < 12; i++) {
+                password += allChars.charAt(Math.floor(Math.random() * allChars.length));
+            }
+            
+            // Mélanger le mot de passe
+            return password.split('').sort(() => 0.5 - Math.random()).join('');
+        }
+        
+        // Fonction pour formater une date
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+        
+        // Fonction pour obtenir l'affichage du type de carte
+        function getCardTypeDisplay(type) {
+            switch(type) {
+                case 'visa': return 'Visa';
+                case 'mastercard': return 'Mastercard';
+                case 'virtual': return 'Virtuelle';
+                default: return 'Carte';
+            }
+        }
+        
+        // Fonction pour obtenir le logo de la carte
+        function getCardLogo(type) {
+            switch(type) {
+                case 'visa': return 'VISA';
+                case 'mastercard': return 'MC';
+                case 'virtual': return 'Virtuelle';
+                default: return 'Carte';
+            }
+        }
+    </script>
+</body>
+</html>
