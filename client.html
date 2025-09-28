@@ -721,6 +721,21 @@
         .print-btn {
             margin-top: 15px;
         }
+        
+        .solde-actuel {
+            background-color: #e8f5e9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .solde-montant {
+            font-size: 1.2rem;
+            color: var(--success-color);
+        }
     </style>
 </head>
 <body>
@@ -901,6 +916,11 @@
             <!-- Formulaire de recharge -->
             <div class="tab-content active" id="recharge-tab">
                 <form id="recharge-form">
+                    <div class="solde-actuel">
+                        <div>Solde actuel</div>
+                        <div class="solde-montant" id="solde-recharge">0 FCFA</div>
+                    </div>
+                    
                     <div class="form-group">
                         <label for="recharge-montant">Montant à recharger (FCFA)</label>
                         <input type="number" id="recharge-montant" class="form-control" placeholder="Ex: 10000" min="100" required>
@@ -950,6 +970,11 @@
             <!-- Formulaire d'achat -->
             <div class="tab-content" id="achat-tab">
                 <form id="achat-form">
+                    <div class="solde-actuel">
+                        <div>Solde actuel</div>
+                        <div class="solde-montant" id="solde-achat">0 FCFA</div>
+                    </div>
+                    
                     <div class="form-group">
                         <label for="achat-montant">Montant de l'achat (FCFA)</label>
                         <input type="number" id="achat-montant" class="form-control" placeholder="Ex: 15000" min="100" required>
@@ -995,6 +1020,11 @@
             <!-- Formulaire de réception -->
             <div class="tab-content" id="recevoir-tab">
                 <form id="recevoir-form">
+                    <div class="solde-actuel">
+                        <div>Solde actuel</div>
+                        <div class="solde-montant" id="solde-recevoir">0 FCFA</div>
+                    </div>
+                    
                     <div class="form-group">
                         <label for="recevoir-montant">Montant à recevoir (FCFA)</label>
                         <input type="number" id="recevoir-montant" class="form-control" placeholder="Ex: 50000" min="100" required>
@@ -1040,6 +1070,11 @@
             <!-- Formulaire de retrait -->
             <div class="tab-content" id="retrait-tab">
                 <form id="retrait-form">
+                    <div class="solde-actuel">
+                        <div>Solde actuel</div>
+                        <div class="solde-montant" id="solde-retrait">0 FCFA</div>
+                    </div>
+                    
                     <div class="form-group">
                         <label for="retrait-montant">Montant à retirer (FCFA)</label>
                         <input type="number" id="retrait-montant" class="form-control" placeholder="Ex: 30000" min="100" required>
@@ -1314,11 +1349,25 @@
                             content.classList.add('active');
                         }
                     });
+                    
+                    // Mettre à jour l'affichage du solde pour l'onglet actif
+                    updateSoldeDisplay();
                 });
             });
             
             // Bouton d'impression QR Code
             printQrcodeBtn.addEventListener('click', printQRCode);
+        }
+        
+        // Mettre à jour l'affichage du solde dans les formulaires
+        function updateSoldeDisplay() {
+            if (!currentUser) return;
+            
+            // Mettre à jour tous les affichages de solde
+            document.getElementById('solde-recharge').textContent = formatCurrency(currentBalance);
+            document.getElementById('solde-achat').textContent = formatCurrency(currentBalance);
+            document.getElementById('solde-recevoir').textContent = formatCurrency(currentBalance);
+            document.getElementById('solde-retrait').textContent = formatCurrency(currentBalance);
         }
         
         // Gérer la connexion
@@ -1471,6 +1520,9 @@
                     content.classList.remove('active');
                 }
             });
+            
+            // Mettre à jour l'affichage du solde
+            updateSoldeDisplay();
         }
         
         // Fermer tous les modals
@@ -1514,11 +1566,12 @@
             const prenom = document.getElementById('recharge-prenom').value;
             const contact = document.getElementById('recharge-contact').value;
             
-            // Générer le message WhatsApp
+            // Générer le message WhatsApp avec le solde actuel
             const message = `DEMANDE DE RECHARGEMENT%0A%0A` +
                            `Nom: ${nom}%0A` +
                            `Prénom: ${prenom}%0A` +
                            `Contact: ${contact}%0A` +
+                           `Solde actuel: ${formatCurrency(currentBalance)}%0A` +
                            `Montant: ${formatCurrency(montant)}%0A` +
                            `Méthode: ${methode}%0A` +
                            `Date: ${new Date().toLocaleString('fr-FR')}`;
@@ -1555,12 +1608,13 @@
                 return;
             }
             
-            // Générer le message WhatsApp
+            // Générer le message WhatsApp avec le solde actuel
             const message = `DEMANDE D'ACHAT%0A%0A` +
                            `Client: ${nom} ${prenom}%0A` +
                            `Contact client: ${contact}%0A` +
                            `Commerçant: ${commercantNom}%0A` +
                            `Contact commerçant: ${commercantContact}%0A` +
+                           `Solde actuel: ${formatCurrency(currentBalance)}%0A` +
                            `Description: ${description}%0A` +
                            `Montant: ${formatCurrency(montant)}%0A` +
                            `Date: ${new Date().toLocaleString('fr-FR')}`;
@@ -1591,12 +1645,13 @@
             const clientPrenom = document.getElementById('recevoir-client-prenom').value;
             const clientContact = document.getElementById('recevoir-client-contact').value;
             
-            // Générer le message WhatsApp
+            // Générer le message WhatsApp avec le solde actuel
             const message = `CONFIRMATION DE RÉCEPTION%0A%0A` +
                            `Expéditeur: ${expediteurNom} ${expediteurPrenom}%0A` +
                            `Contact expéditeur: ${expediteurContact}%0A` +
                            `Destinataire: ${clientNom} ${clientPrenom}%0A` +
                            `Contact destinataire: ${clientContact}%0A` +
+                           `Solde actuel: ${formatCurrency(currentBalance)}%0A` +
                            `Montant: ${formatCurrency(montant)}%0A` +
                            `Date: ${new Date().toLocaleString('fr-FR')}`;
             
@@ -1628,11 +1683,12 @@
                 return;
             }
             
-            // Générer le message WhatsApp
+            // Générer le message WhatsApp avec le solde actuel
             const message = `DEMANDE DE RETRAIT%0A%0A` +
                            `Nom: ${nom}%0A` +
                            `Prénom: ${prenom}%0A` +
                            `Contact: ${contact}%0A` +
+                           `Solde actuel: ${formatCurrency(currentBalance)}%0A` +
                            `Numéro de réception: ${numeroReception}%0A` +
                            `Montant: ${formatCurrency(montant)}%0A` +
                            `Date: ${new Date().toLocaleString('fr-FR')}`;
