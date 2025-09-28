@@ -18,6 +18,36 @@
             color: #333;
         }
         
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+        }
+        
+        .login-title {
+            text-align: center;
+            color: #1a2a6c;
+            margin-bottom: 30px;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .login-error {
+            background: #fdeaea;
+            color: #e74c3c;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
+        }
+        
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -334,173 +364,270 @@
         .empty-state p {
             margin-bottom: 20px;
         }
+        
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
     </style>
 </head>
 <body>
-    <h1>Générateur de Cartes Bancaires - Gestion des Clients</h1>
+    <!-- Écran de connexion -->
+    <div id="loginScreen" class="login-container">
+        <h2 class="login-title">Connexion</h2>
+        <div id="loginError" class="login-error">
+            Identifiant ou mot de passe incorrect
+        </div>
+        <form id="loginForm" class="login-form">
+            <div class="form-group">
+                <label for="username">Identifiant</label>
+                <input type="text" id="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" required>
+            </div>
+            
+            <button type="submit">Se connecter</button>
+        </form>
+    </div>
     
-    <div class="container">
-        <div>
+    <!-- Application principale (cachée par défaut) -->
+    <div id="mainApp" class="hidden">
+        <button id="logoutBtn" class="logout-btn">Déconnexion</button>
+        <h1>Générateur de Cartes Bancaires - Gestion des Clients</h1>
+        
+        <div class="container">
+            <div>
+                <div class="panel">
+                    <h2>Enregistrement du Client</h2>
+                    <form id="clientForm">
+                        <div class="form-group">
+                            <label for="firstName">Prénom</label>
+                            <input type="text" id="firstName" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="lastName">Nom</label>
+                            <input type="text" id="lastName" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="birthDate">Date de Naissance</label>
+                            <input type="date" id="birthDate" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="address">Adresse</label>
+                            <input type="text" id="address" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="city">Ville</label>
+                            <input type="text" id="city" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cardType">Type de Carte</label>
+                            <select id="cardType" required>
+                                <option value="visa">Visa</option>
+                                <option value="mastercard">Mastercard</option>
+                                <option value="virtual">Carte Virtuelle</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit">Générer la Carte</button>
+                    </form>
+                    
+                    <div id="successMessage" class="success-message">
+                        Carte générée avec succès! Valide pour 2 ans à partir d'aujourd'hui.
+                    </div>
+                </div>
+                
+                <div class="panel card-preview">
+                    <h2>Votre Carte Bancaire</h2>
+                    <div class="card hidden" id="bankCard">
+                        <div class="card-header">
+                            <div class="card-logo" id="cardLogo">VISA</div>
+                            <div class="card-type" id="cardTypeDisplay">Virtuelle</div>
+                        </div>
+                        
+                        <div class="card-chip"></div>
+                        
+                        <div class="card-number" id="cardNumberDisplay">**** **** **** ****</div>
+                        
+                        <div class="card-details">
+                            <div class="card-holder">
+                                <div class="card-label">Titulaire</div>
+                                <div class="card-value" id="cardHolderDisplay">-</div>
+                            </div>
+                            
+                            <div class="card-expiry">
+                                <div class="card-label">Expire</div>
+                                <div class="card-value" id="cardExpiryDisplay">-</div>
+                            </div>
+                            
+                            <div class="card-cvv">
+                                <div class="card-label">CVV</div>
+                                <div class="card-value" id="cardCvvDisplay">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="credentials hidden" id="credentials">
+                        <div class="credential-item">
+                            <div class="credential-label">Identifiant de connexion:</div>
+                            <div class="credential-value" id="userIdDisplay">-</div>
+                        </div>
+                        
+                        <div class="credential-item">
+                            <div class="credential-label">Mot de passe temporaire:</div>
+                            <div class="credential-value" id="passwordDisplay">-</div>
+                        </div>
+                        
+                        <div class="credential-item">
+                            <div class="credential-label">Date d'expiration:</div>
+                            <div class="credential-value" id="expiryDateDisplay">-</div>
+                        </div>
+                    </div>
+                    
+                    <div id="noCardMessage" class="empty-state">
+                        <p>Aucune carte générée. Veuillez remplir le formulaire.</p>
+                    </div>
+                </div>
+            </div>
+            
             <div class="panel">
-                <h2>Enregistrement du Client</h2>
-                <form id="clientForm">
-                    <div class="form-group">
-                        <label for="firstName">Prénom</label>
-                        <input type="text" id="firstName" required>
+                <h2>Liste des Clients et Cartes</h2>
+                
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="searchClient">Rechercher un client</label>
+                        <input type="text" id="searchClient" placeholder="Nom, prénom ou ville">
                     </div>
                     
-                    <div class="form-group">
-                        <label for="lastName">Nom</label>
-                        <input type="text" id="lastName" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="birthDate">Date de Naissance</label>
-                        <input type="date" id="birthDate" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="address">Adresse</label>
-                        <input type="text" id="address" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="city">Ville</label>
-                        <input type="text" id="city" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="cardType">Type de Carte</label>
-                        <select id="cardType" required>
-                            <option value="visa">Visa</option>
-                            <option value="mastercard">Mastercard</option>
-                            <option value="virtual">Carte Virtuelle</option>
+                    <div class="filter-group">
+                        <label for="filterStatus">Filtrer par statut</label>
+                        <select id="filterStatus">
+                            <option value="all">Tous les statuts</option>
+                            <option value="active">Valide</option>
+                            <option value="warning">Bientôt expiré</option>
+                            <option value="expired">Expiré</option>
                         </select>
                     </div>
                     
-                    <button type="submit">Générer la Carte</button>
-                </form>
-                
-                <div id="successMessage" class="success-message">
-                    Carte générée avec succès! Valide pour 2 ans à partir d'aujourd'hui.
-                </div>
-            </div>
-            
-            <div class="panel card-preview">
-                <h2>Votre Carte Bancaire</h2>
-                <div class="card hidden" id="bankCard">
-                    <div class="card-header">
-                        <div class="card-logo" id="cardLogo">VISA</div>
-                        <div class="card-type" id="cardTypeDisplay">Virtuelle</div>
-                    </div>
-                    
-                    <div class="card-chip"></div>
-                    
-                    <div class="card-number" id="cardNumberDisplay">**** **** **** ****</div>
-                    
-                    <div class="card-details">
-                        <div class="card-holder">
-                            <div class="card-label">Titulaire</div>
-                            <div class="card-value" id="cardHolderDisplay">-</div>
-                        </div>
-                        
-                        <div class="card-expiry">
-                            <div class="card-label">Expire</div>
-                            <div class="card-value" id="cardExpiryDisplay">-</div>
-                        </div>
-                        
-                        <div class="card-cvv">
-                            <div class="card-label">CVV</div>
-                            <div class="card-value" id="cardCvvDisplay">-</div>
-                        </div>
+                    <div class="filter-group">
+                        <label for="filterCardType">Filtrer par type de carte</label>
+                        <select id="filterCardType">
+                            <option value="all">Tous les types</option>
+                            <option value="visa">Visa</option>
+                            <option value="mastercard">Mastercard</option>
+                            <option value="virtual">Virtuelle</option>
+                        </select>
                     </div>
                 </div>
                 
-                <div class="credentials hidden" id="credentials">
-                    <div class="credential-item">
-                        <div class="credential-label">Identifiant de connexion:</div>
-                        <div class="credential-value" id="userIdDisplay">-</div>
-                    </div>
-                    
-                    <div class="credential-item">
-                        <div class="credential-label">Mot de passe temporaire:</div>
-                        <div class="credential-value" id="passwordDisplay">-</div>
-                    </div>
-                    
-                    <div class="credential-item">
-                        <div class="credential-label">Date d'expiration:</div>
-                        <div class="credential-value" id="expiryDateDisplay">-</div>
-                    </div>
-                </div>
+                <table class="clients-table">
+                    <thead>
+                        <tr>
+                            <th>Client</th>
+                            <th>Type de carte</th>
+                            <th>Numéro de carte</th>
+                            <th>Date d'expiration</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientsTableBody">
+                        <!-- Les lignes seront ajoutées dynamiquement -->
+                    </tbody>
+                </table>
                 
-                <div id="noCardMessage" class="empty-state">
-                    <p>Aucune carte générée. Veuillez remplir le formulaire.</p>
+                <div id="noClientsMessage" class="empty-state">
+                    <p>Aucun client enregistré pour le moment.</p>
                 </div>
-            </div>
-        </div>
-        
-        <div class="panel">
-            <h2>Liste des Clients et Cartes</h2>
-            
-            <div class="filters">
-                <div class="filter-group">
-                    <label for="searchClient">Rechercher un client</label>
-                    <input type="text" id="searchClient" placeholder="Nom, prénom ou ville">
-                </div>
-                
-                <div class="filter-group">
-                    <label for="filterStatus">Filtrer par statut</label>
-                    <select id="filterStatus">
-                        <option value="all">Tous les statuts</option>
-                        <option value="active">Valide</option>
-                        <option value="warning">Bientôt expiré</option>
-                        <option value="expired">Expiré</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label for="filterCardType">Filtrer par type de carte</label>
-                    <select id="filterCardType">
-                        <option value="all">Tous les types</option>
-                        <option value="visa">Visa</option>
-                        <option value="mastercard">Mastercard</option>
-                        <option value="virtual">Virtuelle</option>
-                    </select>
-                </div>
-            </div>
-            
-            <table class="clients-table">
-                <thead>
-                    <tr>
-                        <th>Client</th>
-                        <th>Type de carte</th>
-                        <th>Numéro de carte</th>
-                        <th>Date d'expiration</th>
-                        <th>Statut</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="clientsTableBody">
-                    <!-- Les lignes seront ajoutées dynamiquement -->
-                </tbody>
-            </table>
-            
-            <div id="noClientsMessage" class="empty-state">
-                <p>Aucun client enregistré pour le moment.</p>
             </div>
         </div>
     </div>
 
     <script>
+        // Identifiants de connexion
+        const VALID_USERNAME = 'KOLA';
+        const VALID_PASSWORD = 'KOLA1@';
+        
+        // Vérifier si l'utilisateur est déjà connecté
+        function checkAuth() {
+            return localStorage.getItem('userAuthenticated') === 'true';
+        }
+        
+        // Gestion de la connexion
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+                // Authentification réussie
+                localStorage.setItem('userAuthenticated', 'true');
+                showMainApp();
+            } else {
+                // Authentification échouée
+                document.getElementById('loginError').style.display = 'block';
+            }
+        });
+        
+        // Gestion de la déconnexion
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem('userAuthenticated');
+            showLoginScreen();
+        });
+        
+        // Afficher l'écran de connexion
+        function showLoginScreen() {
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('loginError').style.display = 'none';
+            document.getElementById('loginForm').reset();
+        }
+        
+        // Afficher l'application principale
+        function showMainApp() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+        }
+        
+        // Vérifier l'authentification au chargement
+        if (checkAuth()) {
+            showMainApp();
+        } else {
+            showLoginScreen();
+        }
+        
         // Stockage des clients (simulation d'une base de données)
         let clients = JSON.parse(localStorage.getItem('bankClients')) || [];
         
         // Initialisation de l'interface
         document.addEventListener('DOMContentLoaded', function() {
-            updateClientsTable();
-            document.getElementById('filterStatus').addEventListener('change', updateClientsTable);
-            document.getElementById('filterCardType').addEventListener('change', updateClientsTable);
-            document.getElementById('searchClient').addEventListener('input', updateClientsTable);
+            if (checkAuth()) {
+                updateClientsTable();
+                document.getElementById('filterStatus').addEventListener('change', updateClientsTable);
+                document.getElementById('filterCardType').addEventListener('change', updateClientsTable);
+                document.getElementById('searchClient').addEventListener('input', updateClientsTable);
+            }
         });
         
         // Gestion du formulaire
