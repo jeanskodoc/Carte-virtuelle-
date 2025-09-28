@@ -633,7 +633,7 @@
             window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
         });
         
-        // Gestion du bouton de paiement
+        // Gestion du bouton de paiement - Redirection vers FedaPay
         document.getElementById('paymentBtn').addEventListener('click', function() {
             // Vérifier que le formulaire est valide
             const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'birthDate', 
@@ -658,10 +658,9 @@
                 return;
             }
             
-            // Simuler le processus de paiement
-            alert('Redirection vers la page de paiement sécurisé de 5000 FCFA...');
-            // Ici, vous intégreriez votre solution de paiement réelle
-            // window.location.href = 'URL_DE_VOTRE_PLATEFORME_DE_PAIEMENT';
+            // Redirection vers la page de paiement FedaPay
+            alert('Redirection vers la page de paiement sécurisé FedaPay de 5000 FCFA...');
+            window.location.href = 'https://me.fedapay.com/ZZTZ6KSL';
         });
     </script>
 </body>
