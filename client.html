@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portefeuille Numérique - YAS Togo</title>
+    <title>Portefeuille Visa Togo</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -880,8 +880,6 @@
                     <!-- Les comptes seront ajoutés dynamiquement -->
                 </div>
             </div>
-            
-           
         </div>
     </div>
     
@@ -1106,7 +1104,7 @@
     
     <footer>
         <div class="container">
-            <p>Portefeuille Visa Togo &copy; 2025 - Solution de paiement numérique sécurisée</p>
+            <p>Portefeuille Visa Togo &copy; 2024 - Solution de paiement numérique sécurisée</p>
         </div>
     </footer>
     
@@ -1225,7 +1223,6 @@
         const achatBtn = document.getElementById('achat-btn');
         const recevoirBtn = document.getElementById('recevoir-btn');
         const retraitBtn = document.getElementById('retrait-btn');
-        const connectYasBtn = document.getElementById('connect-yas');
         const closeQrcodeBtn = document.getElementById('close-qrcode');
         const printQrcodeBtn = document.getElementById('print-qrcode');
         const navTabs = document.querySelectorAll('.nav-tab');
@@ -1319,8 +1316,6 @@
                     });
                 });
             });
-            
-           
             
             // Bouton d'impression QR Code
             printQrcodeBtn.addEventListener('click', printQRCode);
@@ -1736,8 +1731,8 @@
         function renderTransactions() {
             transactionList.innerHTML = '';
             
-            // Afficher seulement les 10 dernières transactions
-            const recentTransactions = transactions.slice(0, 10);
+            // Afficher seulement les 5 dernières transactions
+            const recentTransactions = transactions.slice(0, 5);
             
             recentTransactions.forEach(transaction => {
                 const listItem = document.createElement('li');
@@ -1816,8 +1811,6 @@
         function formatCurrency(amount) {
             return Math.abs(amount).toLocaleString('fr-FR') + ' FCFA';
         }
-        
-       
     </script>
 </body>
 </html>
