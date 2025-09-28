@@ -881,24 +881,7 @@
                 </div>
             </div>
             
-            <div class="yas-integration">
-                <div class="yas-card">
-                    <div class="yas-logo">
-                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="50" cy="50" r="45" fill="#ff6d00"/>
-                            <text x="50" y="60" text-anchor="middle" fill="white" font-size="40" font-weight="bold">YAS</text>
-                        </svg>
-                    </div>
-                    <h2>Intégration YAS Togo</h2>
-                    <p class="yas-description">
-                        Connectez votre compte YAS Togo pour synchroniser automatiquement vos transactions, 
-                        dépôts et retraits. Vos données financières seront mises à jour en temps réel.
-                    </p>
-                    <button class="connect-btn" id="connect-yas">
-                        <i class="fas fa-link"></i> Connecter YAS Togo
-                    </button>
-                </div>
-            </div>
+           
         </div>
     </div>
     
@@ -1123,7 +1106,7 @@
     
     <footer>
         <div class="container">
-            <p>Portefeuille Visa Togo &copy; 2024 - Solution de paiement numérique sécurisée</p>
+            <p>Portefeuille Visa Togo &copy; 2025 - Solution de paiement numérique sécurisée</p>
         </div>
     </footer>
     
@@ -1337,8 +1320,7 @@
                 });
             });
             
-            // Bouton de connexion YAS
-            connectYasBtn.addEventListener('click', connectYasTogo);
+           
             
             // Bouton d'impression QR Code
             printQrcodeBtn.addEventListener('click', printQRCode);
@@ -1754,8 +1736,8 @@
         function renderTransactions() {
             transactionList.innerHTML = '';
             
-            // Afficher seulement les 5 dernières transactions
-            const recentTransactions = transactions.slice(0, 5);
+            // Afficher seulement les 10 dernières transactions
+            const recentTransactions = transactions.slice(0, 10);
             
             recentTransactions.forEach(transaction => {
                 const listItem = document.createElement('li');
@@ -1835,37 +1817,7 @@
             return Math.abs(amount).toLocaleString('fr-FR') + ' FCFA';
         }
         
-        // Simuler la connexion à YAS Togo
-        function connectYasTogo() {
-            connectYasBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion en cours...';
-            connectYasBtn.disabled = true;
-            
-            // Simuler un délai de connexion
-            setTimeout(() => {
-                // Simuler des transactions provenant de YAS Togo
-                const yasTransactions = [
-                    { name: "Rechargement YAS", amount: 10000, date: new Date(), type: "income", category: "transfer" },
-                    { name: "Paiement taxi via YAS", amount: -1500, date: new Date(Date.now() - 3600000), type: "expense", category: "transport" }
-                ];
-                
-                // Ajouter les transactions YAS
-                yasTransactions.forEach(transaction => {
-                    addTransaction(
-                        transaction.name, 
-                        transaction.amount, 
-                        transaction.date, 
-                        transaction.type, 
-                        transaction.category
-                    );
-                });
-                
-                // Mettre à jour l'interface
-                connectYasBtn.innerHTML = '<i class="fas fa-check"></i> Connecté à YAS Togo';
-                connectYasBtn.style.backgroundColor = '#4caf50';
-                
-                alert('Connexion à YAS Togo réussie! Vos transactions ont été synchronisées.');
-            }, 2000);
-        }
+       
     </script>
 </body>
 </html>
