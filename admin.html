@@ -474,10 +474,30 @@
         .print-btn {
             background: #2ecc71;
             margin-top: 10px;
+            margin-right: 10px;
         }
         
         .print-btn:hover {
             background: #27ae60;
+        }
+        
+        .save-btn {
+            background: #3498db;
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+        
+        .save-btn:hover {
+            background: #2980b9;
+        }
+        
+        .import-btn {
+            background: #9b59b6;
+            margin-top: 10px;
+        }
+        
+        .import-btn:hover {
+            background: #8e44ad;
         }
         
         /* Styles pour l'impression */
@@ -515,6 +535,111 @@
             font-size: 0.8em;
             color: #777;
         }
+        
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .backup-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .backup-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .backup-info {
+            background: #e7f3ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        
+        .file-input-container {
+            position: relative;
+            margin: 15px 0;
+        }
+        
+        .file-input {
+            position: absolute;
+            left: -9999px;
+        }
+        
+        .file-input-label {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #9b59b6;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .file-input-label:hover {
+            background: #8e44ad;
+        }
+        
+        .import-options {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .import-option {
+            margin: 10px 0;
+        }
+        
+        .warning-message {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .import-preview {
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            background: white;
+        }
+        
+        .auto-save-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #2ecc71;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+        }
+        
+        .session-info {
+            background: #e7f7ef;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
@@ -543,6 +668,11 @@
     <div id="mainApp" class="hidden">
         <button id="logoutBtn" class="logout-btn">Déconnexion</button>
         <h1>Système de Gestion Bancaire - Clients et Transactions</h1>
+        
+        <!-- Indicateur de sauvegarde automatique -->
+        <div id="autoSaveStatus" class="auto-save-status">
+            Sauvegarde automatique en cours...
+        </div>
         
         <div class="container">
             <div>
@@ -740,8 +870,13 @@
                     
                     <!-- Historique des transactions -->
                     <div class="transaction-history">
-                        <h3>Historique des Transactions</h3>
-                        <button id="printTransactions" class="print-btn">Imprimer les Transactions</button>
+                        <div class="header-actions">
+                            <h3>Historique des Transactions</h3>
+                            <div>
+                                <button id="printTransactions" class="print-btn">Imprimer</button>
+                                <button id="saveTransactions" class="save-btn">Sauvegarder</button>
+                            </div>
+                        </div>
                         <div id="transactionHistory">
                             <!-- Les transactions seront ajoutées ici dynamiquement -->
                         </div>
@@ -750,7 +885,16 @@
             </div>
             
             <div class="panel">
-                <h2>Liste des Clients et Cartes</h2>
+                <div class="header-actions">
+                    <h2>Liste des Clients et Cartes</h2>
+                    <button id="saveClientsTable" class="save-btn">Sauvegarder</button>
+                </div>
+                
+                <!-- Information de session -->
+                <div class="session-info">
+                    <p><strong>Session active depuis:</strong> <span id="sessionStartTime">-</span></p>
+                    <p><strong>Dernière sauvegarde auto:</strong> <span id="lastAutoSaveTime">-</span></p>
+                </div>
                 
                 <div class="filters">
                     <div class="filter-group">
@@ -800,6 +944,58 @@
                     <p>Aucun client enregistré pour le moment.</p>
                 </div>
             </div>
+            
+            <!-- Section de sauvegarde et importation -->
+            <div class="panel backup-section">
+                <h2>Sauvegarde et Importation des Données</h2>
+                <p>Gérez vos données en les sauvegardant localement ou en important des données précédemment sauvegardées.</p>
+                
+                <div class="backup-buttons">
+                    <button id="backupAllData" class="save-btn">Sauvegarder toutes les données</button>
+                    <button id="backupClients" class="save-btn">Sauvegarder les clients</button>
+                    <button id="backupTransactions" class="save-btn">Sauvegarder les transactions</button>
+                </div>
+                
+                <div class="backup-info">
+                    <p><strong>Dernière sauvegarde manuelle:</strong> <span id="lastBackupTime">-</span></p>
+                    <p><strong>Dernière sauvegarde automatique:</strong> <span id="lastAutoBackupTime">-</span></p>
+                    <p><strong>Emplacement:</strong> Les sauvegardes sont téléchargées dans votre dossier de téléchargements</p>
+                </div>
+                
+                <hr style="margin: 20px 0;">
+                
+                <h3>Importer des Données</h3>
+                <p>Sélectionnez un fichier JSON précédemment sauvegardé pour importer les données dans le système.</p>
+                
+                <div class="file-input-container">
+                    <input type="file" id="importFile" class="file-input" accept=".json">
+                    <label for="importFile" class="file-input-label">Choisir un fichier JSON</label>
+                    <span id="fileName" style="margin-left: 10px;">Aucun fichier sélectionné</span>
+                </div>
+                
+                <div class="import-options">
+                    <div class="import-option">
+                        <input type="radio" id="importReplace" name="importMode" value="replace" checked>
+                        <label for="importReplace">Remplacer toutes les données existantes</label>
+                    </div>
+                    <div class="import-option">
+                        <input type="radio" id="importMerge" name="importMode" value="merge">
+                        <label for="importMerge">Fusionner avec les données existantes</label>
+                    </div>
+                </div>
+                
+                <div class="warning-message">
+                    <strong>Attention:</strong> Le remplacement supprimera toutes les données actuelles. La fusion peut créer des doublons.
+                </div>
+                
+                <div id="importPreview" class="import-preview hidden">
+                    <!-- Aperçu des données à importer -->
+                </div>
+                
+                <div class="backup-buttons">
+                    <button id="importData" class="import-btn" disabled>Importer les Données</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -813,9 +1009,112 @@
         const VALID_USERNAME = 'KOLA';
         const VALID_PASSWORD = 'KOLA1@';
         
+        // Variables globales
+        let clients = [];
+        let currentClientId = null;
+        let sessionStartTime = null;
+        let autoSaveInterval = null;
+        let lastAutoSaveTime = null;
+        
         // Vérifier si l'utilisateur est déjà connecté
         function checkAuth() {
             return localStorage.getItem('userAuthenticated') === 'true';
+        }
+        
+        // Initialiser l'application
+        function initializeApp() {
+            // Charger les données depuis le localStorage
+            loadDataFromStorage();
+            
+            // Démarrer la session
+            startSession();
+            
+            // Démarrer la sauvegarde automatique
+            startAutoSave();
+            
+            // Mettre à jour l'interface
+            updateClientsTable();
+            updateSessionInfo();
+        }
+        
+        // Charger les données depuis le stockage
+        function loadDataFromStorage() {
+            const savedClients = localStorage.getItem('bankClients');
+            if (savedClients) {
+                try {
+                    clients = JSON.parse(savedClients);
+                    console.log(`Données chargées: ${clients.length} clients`);
+                } catch (error) {
+                    console.error('Erreur lors du chargement des données:', error);
+                    clients = [];
+                }
+            } else {
+                clients = [];
+            }
+        }
+        
+        // Démarrer une nouvelle session
+        function startSession() {
+            sessionStartTime = new Date();
+            localStorage.setItem('sessionStartTime', sessionStartTime.toISOString());
+        }
+        
+        // Démarrer la sauvegarde automatique
+        function startAutoSave() {
+            // Sauvegarde toutes les 30 secondes
+            autoSaveInterval = setInterval(() => {
+                autoSaveData();
+            }, 30000);
+            
+            // Sauvegarde aussi quand l'utilisateur quitte la page
+            window.addEventListener('beforeunload', autoSaveData);
+        }
+        
+        // Sauvegarde automatique des données
+        function autoSaveData() {
+            try {
+                localStorage.setItem('bankClients', JSON.stringify(clients));
+                lastAutoSaveTime = new Date();
+                localStorage.setItem('lastAutoSaveTime', lastAutoSaveTime.toISOString());
+                
+                // Afficher brièvement l'indicateur de sauvegarde
+                showAutoSaveStatus();
+                
+                console.log('Sauvegarde automatique effectuée');
+            } catch (error) {
+                console.error('Erreur lors de la sauvegarde automatique:', error);
+            }
+        }
+        
+        // Afficher l'indicateur de sauvegarde
+        function showAutoSaveStatus() {
+            const statusElement = document.getElementById('autoSaveStatus');
+            statusElement.textContent = '✓ Données sauvegardées';
+            statusElement.style.display = 'block';
+            statusElement.style.background = '#2ecc71';
+            
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 2000);
+        }
+        
+        // Mettre à jour les informations de session
+        function updateSessionInfo() {
+            if (sessionStartTime) {
+                document.getElementById('sessionStartTime').textContent = formatDateTime(sessionStartTime);
+            }
+            
+            const savedLastAutoSave = localStorage.getItem('lastAutoSaveTime');
+            if (savedLastAutoSave) {
+                lastAutoSaveTime = new Date(savedLastAutoSave);
+                document.getElementById('lastAutoSaveTime').textContent = formatDateTime(lastAutoSaveTime);
+                document.getElementById('lastAutoBackupTime').textContent = formatDateTime(lastAutoSaveTime);
+            }
+            
+            const savedLastBackup = localStorage.getItem('lastBackupTime');
+            if (savedLastBackup) {
+                document.getElementById('lastBackupTime').textContent = formatDateTime(new Date(savedLastBackup));
+            }
         }
         
         // Gestion de la connexion
@@ -829,6 +1128,7 @@
                 // Authentification réussie
                 localStorage.setItem('userAuthenticated', 'true');
                 showMainApp();
+                initializeApp();
             } else {
                 // Authentification échouée
                 document.getElementById('loginError').style.display = 'block';
@@ -837,6 +1137,14 @@
         
         // Gestion de la déconnexion
         document.getElementById('logoutBtn').addEventListener('click', function() {
+            // Sauvegarder avant de quitter
+            autoSaveData();
+            
+            // Arrêter la sauvegarde automatique
+            if (autoSaveInterval) {
+                clearInterval(autoSaveInterval);
+            }
+            
             localStorage.removeItem('userAuthenticated');
             showLoginScreen();
         });
@@ -858,18 +1166,17 @@
         // Vérifier l'authentification au chargement
         if (checkAuth()) {
             showMainApp();
+            // Initialiser après un court délai pour s'assurer que le DOM est chargé
+            setTimeout(initializeApp, 100);
         } else {
             showLoginScreen();
         }
         
-        // Stockage des clients (simulation d'une base de données)
-        let clients = JSON.parse(localStorage.getItem('bankClients')) || [];
-        let currentClientId = null;
-        
         // Initialisation de l'interface
         document.addEventListener('DOMContentLoaded', function() {
             if (checkAuth()) {
-                updateClientsTable();
+                // Les écouteurs d'événements seront configurés dans initializeApp
+                // Mais nous devons en mettre quelques-uns ici pour le chargement initial
                 document.getElementById('filterStatus').addEventListener('change', updateClientsTable);
                 document.getElementById('filterCardType').addEventListener('change', updateClientsTable);
                 document.getElementById('searchClient').addEventListener('input', updateClientsTable);
@@ -890,6 +1197,17 @@
                 
                 // Gestion du bouton d'impression
                 document.getElementById('printTransactions').addEventListener('click', printTransactions);
+                
+                // Gestion des boutons de sauvegarde
+                document.getElementById('saveTransactions').addEventListener('click', saveTransactions);
+                document.getElementById('backupAllData').addEventListener('click', backupAllData);
+                document.getElementById('backupClients').addEventListener('click', backupClients);
+                document.getElementById('backupTransactions').addEventListener('click', backupTransactions);
+                document.getElementById('saveClientsTable').addEventListener('click', saveClientsTable);
+                
+                // Gestion de l'importation
+                document.getElementById('importFile').addEventListener('change', handleFileSelect);
+                document.getElementById('importData').addEventListener('click', importData);
             }
         });
         
@@ -946,8 +1264,8 @@
             // Ajout du client à la liste
             clients.push(client);
             
-            // Sauvegarde dans le localStorage
-            localStorage.setItem('bankClients', JSON.stringify(clients));
+            // Sauvegarde automatique
+            autoSaveData();
             
             // Mise à jour de la carte affichée
             document.getElementById('cardHolderDisplay').textContent = `${firstName} ${lastName}`.toUpperCase();
@@ -969,6 +1287,9 @@
             
             // Affichage du message de succès
             document.getElementById('successMessage').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 5000);
             
             // Mise à jour du tableau des clients
             updateClientsTable();
@@ -982,20 +1303,25 @@
             const tableBody = document.getElementById('clientsTableBody');
             const noClientsMessage = document.getElementById('noClientsMessage');
             
+            if (!tableBody) {
+                console.error('Élément clientsTableBody non trouvé');
+                return;
+            }
+            
             // Vider le tableau
             tableBody.innerHTML = '';
             
             // Appliquer les filtres
-            const searchTerm = document.getElementById('searchClient').value.toLowerCase();
-            const statusFilter = document.getElementById('filterStatus').value;
-            const cardTypeFilter = document.getElementById('filterCardType').value;
+            const searchTerm = document.getElementById('searchClient')?.value.toLowerCase() || '';
+            const statusFilter = document.getElementById('filterStatus')?.value || 'all';
+            const cardTypeFilter = document.getElementById('filterCardType')?.value || 'all';
             
             const filteredClients = clients.filter(client => {
                 const matchesSearch = 
                     client.firstName.toLowerCase().includes(searchTerm) ||
                     client.lastName.toLowerCase().includes(searchTerm) ||
-                    client.city.toLowerCase().includes(searchTerm) ||
-                    client.phoneNumber.includes(searchTerm);
+                    (client.city && client.city.toLowerCase().includes(searchTerm)) ||
+                    (client.phoneNumber && client.phoneNumber.includes(searchTerm));
                 
                 const matchesStatus = statusFilter === 'all' || client.status === statusFilter;
                 const matchesCardType = cardTypeFilter === 'all' || client.cardType === cardTypeFilter;
@@ -1005,11 +1331,11 @@
             
             // Afficher le message si aucun client ne correspond
             if (filteredClients.length === 0) {
-                noClientsMessage.classList.remove('hidden');
+                if (noClientsMessage) noClientsMessage.classList.remove('hidden');
                 tableBody.innerHTML = '';
                 return;
             } else {
-                noClientsMessage.classList.add('hidden');
+                if (noClientsMessage) noClientsMessage.classList.add('hidden');
             }
             
             // Ajouter chaque client au tableau
@@ -1022,8 +1348,8 @@
                 row.innerHTML = `
                     <td>
                         ${client.firstName} ${client.lastName}<br>
-                        <small>${client.city}</small><br>
-                        <small>${client.phoneNumber}</small>
+                        <small>${client.city || ''}</small><br>
+                        <small>${client.phoneNumber || ''}</small>
                     </td>
                     <td>${getCardTypeDisplay(client.cardType)}</td>
                     <td>${formatCardNumber(client.cardNumber)}</td>
@@ -1115,15 +1441,20 @@
         
         // Fonction pour mettre à jour l'affichage du solde
         function updateBalanceDisplay(client) {
-            document.getElementById('accountBalance').textContent = `Solde: ${formatCurrency(client.balance)}`;
+            const balanceElement = document.getElementById('accountBalance');
+            if (balanceElement) {
+                balanceElement.textContent = `Solde: ${formatCurrency(client.balance)}`;
+            }
         }
         
         // Fonction pour mettre à jour l'historique des transactions
         function updateTransactionHistory(client) {
             const historyContainer = document.getElementById('transactionHistory');
+            if (!historyContainer) return;
+            
             historyContainer.innerHTML = '';
             
-            if (client.transactions.length === 0) {
+            if (!client.transactions || client.transactions.length === 0) {
                 historyContainer.innerHTML = '<p>Aucune transaction enregistrée.</p>';
                 return;
             }
@@ -1175,7 +1506,7 @@
                 
                 const transactionReference = document.createElement('div');
                 transactionReference.className = 'transaction-reference';
-                transactionReference.textContent = `Réf: ${transaction.reference}`;
+                transactionReference.textContent = `Réf: ${transaction.reference || 'N/A'}`;
                 
                 transactionDetails.appendChild(transactionDate);
                 transactionDetails.appendChild(transactionReference);
@@ -1200,18 +1531,31 @@
             });
             
             // Activer l'onglet sélectionné
-            document.querySelector(`.transaction-tab[data-tab="${tabId}"]`).classList.add('active');
+            const activeTab = document.querySelector(`.transaction-tab[data-tab="${tabId}"]`);
+            if (activeTab) activeTab.classList.add('active');
             
             // Activer le panneau correspondant
-            document.getElementById(`${tabId}Panel`).classList.add('active');
+            const activePanel = document.getElementById(`${tabId}Panel`);
+            if (activePanel) activePanel.classList.add('active');
         }
         
         // Gestion de la recharge de carte
         function handleRecharge(e) {
             e.preventDefault();
-            if (!currentClientId) return;
+            if (!currentClientId) {
+                alert('Veuillez d\'abord sélectionner un client.');
+                return;
+            }
             
-            const amount = parseFloat(document.getElementById('rechargeAmount').value);
+            const amountInput = document.getElementById('rechargeAmount');
+            if (!amountInput) return;
+            
+            const amount = parseFloat(amountInput.value);
+            if (isNaN(amount) || amount < 100) {
+                alert('Veuillez entrer un montant valide (minimum 100 FCFA).');
+                return;
+            }
+            
             const fee = amount * 0.06; // Frais de 6%
             const totalAmount = amount - fee;
             
@@ -1225,6 +1569,8 @@
             const reference = generateTransactionReference();
             
             // Enregistrer la transaction
+            if (!client.transactions) client.transactions = [];
+            
             client.transactions.push({
                 type: 'recharge',
                 amount: totalAmount,
@@ -1234,8 +1580,8 @@
                 reference: reference
             });
             
-            // Mettre à jour le stockage
-            localStorage.setItem('bankClients', JSON.stringify(clients));
+            // Sauvegarde automatique
+            autoSaveData();
             
             // Mettre à jour l'affichage
             updateBalanceDisplay(client);
@@ -1250,11 +1596,24 @@
         // Gestion du transfert
         function handleTransfer(e) {
             e.preventDefault();
-            if (!currentClientId) return;
+            if (!currentClientId) {
+                alert('Veuillez d\'abord sélectionner un client.');
+                return;
+            }
             
             const amount = parseFloat(document.getElementById('transferAmount').value);
             const recipient = document.getElementById('transferRecipient').value;
             const phone = document.getElementById('transferPhone').value;
+            
+            if (isNaN(amount) || amount < 100) {
+                alert('Veuillez entrer un montant valide (minimum 100 FCFA).');
+                return;
+            }
+            
+            if (!recipient || !phone) {
+                alert('Veuillez remplir tous les champs.');
+                return;
+            }
             
             const client = clients.find(c => c.id === currentClientId);
             if (!client) return;
@@ -1272,6 +1631,8 @@
             const reference = generateTransactionReference();
             
             // Enregistrer la transaction
+            if (!client.transactions) client.transactions = [];
+            
             client.transactions.push({
                 type: 'transfer',
                 amount: -amount,
@@ -1282,8 +1643,8 @@
                 reference: reference
             });
             
-            // Mettre à jour le stockage
-            localStorage.setItem('bankClients', JSON.stringify(clients));
+            // Sauvegarde automatique
+            autoSaveData();
             
             // Mettre à jour l'affichage
             updateBalanceDisplay(client);
@@ -1298,11 +1659,24 @@
         // Gestion de la réception
         function handleReceive(e) {
             e.preventDefault();
-            if (!currentClientId) return;
+            if (!currentClientId) {
+                alert('Veuillez d\'abord sélectionner un client.');
+                return;
+            }
             
             const amount = parseFloat(document.getElementById('receiveAmount').value);
             const sender = document.getElementById('receiveSender').value;
             const phone = document.getElementById('receiveSenderPhone').value;
+            
+            if (isNaN(amount) || amount < 100) {
+                alert('Veuillez entrer un montant valide (minimum 100 FCFA).');
+                return;
+            }
+            
+            if (!sender || !phone) {
+                alert('Veuillez remplir tous les champs.');
+                return;
+            }
             
             const client = clients.find(c => c.id === currentClientId);
             if (!client) return;
@@ -1314,6 +1688,8 @@
             const reference = generateTransactionReference();
             
             // Enregistrer la transaction
+            if (!client.transactions) client.transactions = [];
+            
             client.transactions.push({
                 type: 'receive',
                 amount: amount,
@@ -1324,8 +1700,8 @@
                 reference: reference
             });
             
-            // Mettre à jour le stockage
-            localStorage.setItem('bankClients', JSON.stringify(clients));
+            // Sauvegarde automatique
+            autoSaveData();
             
             // Mettre à jour l'affichage
             updateBalanceDisplay(client);
@@ -1340,10 +1716,24 @@
         // Gestion du retrait
         function handleWithdraw(e) {
             e.preventDefault();
-            if (!currentClientId) return;
+            if (!currentClientId) {
+                alert('Veuillez d\'abord sélectionner un client.');
+                return;
+            }
             
             const amount = parseFloat(document.getElementById('withdrawAmount').value);
             const phone = document.getElementById('withdrawPhone').value;
+            
+            if (isNaN(amount) || amount < 100) {
+                alert('Veuillez entrer un montant valide (minimum 100 FCFA).');
+                return;
+            }
+            
+            if (!phone) {
+                alert('Veuillez entrer un numéro de téléphone.');
+                return;
+            }
+            
             const fee = amount * 0.15; // Frais de 15%
             const totalAmount = amount + fee;
             
@@ -1363,6 +1753,8 @@
             const reference = generateTransactionReference();
             
             // Enregistrer la transaction
+            if (!client.transactions) client.transactions = [];
+            
             client.transactions.push({
                 type: 'withdraw',
                 amount: -totalAmount,
@@ -1373,8 +1765,8 @@
                 reference: reference
             });
             
-            // Mettre à jour le stockage
-            localStorage.setItem('bankClients', JSON.stringify(clients));
+            // Sauvegarde automatique
+            autoSaveData();
             
             // Mettre à jour l'affichage
             updateBalanceDisplay(client);
@@ -1384,6 +1776,286 @@
             e.target.reset();
             
             alert(`Retrait effectué avec succès! Montant retiré: ${formatCurrency(amount)}, Frais: ${formatCurrency(fee)}, Référence: ${reference}`);
+        }
+        
+        // Fonction pour sauvegarder les transactions du client actuel
+        function saveTransactions() {
+            if (!currentClientId) {
+                alert('Veuillez d\'abord sélectionner un client pour sauvegarder ses transactions.');
+                return;
+            }
+            
+            const client = clients.find(c => c.id === currentClientId);
+            if (!client) return;
+            
+            const data = {
+                client: {
+                    id: client.id,
+                    firstName: client.firstName,
+                    lastName: client.lastName,
+                    phoneNumber: client.phoneNumber,
+                    cardNumber: formatCardNumber(client.cardNumber),
+                    balance: client.balance
+                },
+                transactions: client.transactions || [],
+                exportDate: new Date().toISOString(),
+                totalTransactions: (client.transactions || []).length
+            };
+            
+            const filename = `transactions_${client.firstName}_${client.lastName}_${formatDateForFile(new Date())}.json`;
+            downloadJSON(data, filename);
+            
+            updateLastBackupTime();
+            alert(`Transactions sauvegardées avec succès! Fichier: ${filename}`);
+        }
+        
+        // Fonction pour sauvegarder toutes les données
+        function backupAllData() {
+            const data = {
+                clients: clients,
+                exportDate: new Date().toISOString(),
+                totalClients: clients.length,
+                totalTransactions: clients.reduce((total, client) => total + (client.transactions ? client.transactions.length : 0), 0)
+            };
+            
+            const filename = `sauvegarde_complete_${formatDateForFile(new Date())}.json`;
+            downloadJSON(data, filename);
+            
+            updateLastBackupTime();
+            alert(`Sauvegarde complète effectuée avec succès! Fichier: ${filename}`);
+        }
+        
+        // Fonction pour sauvegarder uniquement les clients
+        function backupClients() {
+            const data = {
+                clients: clients.map(client => {
+                    const { transactions, ...clientData } = client;
+                    return clientData;
+                }),
+                exportDate: new Date().toISOString(),
+                totalClients: clients.length
+            };
+            
+            const filename = `clients_${formatDateForFile(new Date())}.json`;
+            downloadJSON(data, filename);
+            
+            updateLastBackupTime();
+            alert(`Clients sauvegardés avec succès! Fichier: ${filename}`);
+        }
+        
+        // Fonction pour sauvegarder uniquement les transactions
+        function backupTransactions() {
+            const allTransactions = [];
+            
+            clients.forEach(client => {
+                if (client.transactions) {
+                    client.transactions.forEach(transaction => {
+                        allTransactions.push({
+                            clientId: client.id,
+                            clientName: `${client.firstName} ${client.lastName}`,
+                            ...transaction
+                        });
+                    });
+                }
+            });
+            
+            const data = {
+                transactions: allTransactions,
+                exportDate: new Date().toISOString(),
+                totalTransactions: allTransactions.length
+            };
+            
+            const filename = `toutes_transactions_${formatDateForFile(new Date())}.json`;
+            downloadJSON(data, filename);
+            
+            updateLastBackupTime();
+            alert(`Toutes les transactions sauvegardées avec succès! Fichier: ${filename}`);
+        }
+        
+        // Fonction pour sauvegarder le tableau des clients
+        function saveClientsTable() {
+            const data = {
+                clients: clients.map(client => {
+                    const { transactions, password, cvv, ...clientData } = client;
+                    return clientData;
+                }),
+                exportDate: new Date().toISOString(),
+                totalClients: clients.length
+            };
+            
+            const filename = `liste_clients_${formatDateForFile(new Date())}.json`;
+            downloadJSON(data, filename);
+            
+            updateLastBackupTime();
+            alert(`Liste des clients sauvegardée avec succès! Fichier: ${filename}`);
+        }
+        
+        // Fonction pour télécharger un fichier JSON
+        function downloadJSON(data, filename) {
+            try {
+                const dataStr = JSON.stringify(data, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = filename;
+                link.click();
+                
+                URL.revokeObjectURL(link.href);
+                
+                // Enregistrer l'heure de la sauvegarde manuelle
+                localStorage.setItem('lastBackupTime', new Date().toISOString());
+                updateSessionInfo();
+            } catch (error) {
+                console.error('Erreur lors du téléchargement:', error);
+                alert('Erreur lors de la sauvegarde du fichier.');
+            }
+        }
+        
+        // Fonction pour mettre à jour l'heure de la dernière sauvegarde
+        function updateLastBackupTime() {
+            const now = new Date();
+            document.getElementById('lastBackupTime').textContent = formatDateTime(now);
+        }
+        
+        // Fonction pour formater la date pour les noms de fichiers
+        function formatDateForFile(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}${month}${day}_${hours}${minutes}`;
+        }
+        
+        // Gestion de la sélection de fichier
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('importData').disabled = false;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const fileContent = e.target.result;
+                    const importedData = JSON.parse(fileContent);
+                    
+                    // Afficher un aperçu des données
+                    showImportPreview(importedData);
+                } catch (error) {
+                    alert('Erreur: Le fichier sélectionné n\'est pas un fichier JSON valide.');
+                    document.getElementById('importData').disabled = true;
+                    document.getElementById('importPreview').classList.add('hidden');
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        // Fonction pour afficher l'aperçu des données à importer
+        function showImportPreview(data) {
+            const preview = document.getElementById('importPreview');
+            preview.innerHTML = '';
+            preview.classList.remove('hidden');
+            
+            let previewContent = '';
+            
+            if (data.clients && Array.isArray(data.clients)) {
+                previewContent += `<p><strong>Clients:</strong> ${data.clients.length} trouvé(s)</p>`;
+                if (data.clients.length > 0) {
+                    previewContent += '<ul>';
+                    data.clients.slice(0, 3).forEach(client => {
+                        previewContent += `<li>${client.firstName} ${client.lastName} - ${client.cardType || 'N/A'}</li>`;
+                    });
+                    if (data.clients.length > 3) {
+                        previewContent += `<li>... et ${data.clients.length - 3} autres</li>`;
+                    }
+                    previewContent += '</ul>';
+                }
+            }
+            
+            if (data.transactions && Array.isArray(data.transactions)) {
+                previewContent += `<p><strong>Transactions:</strong> ${data.transactions.length} trouvée(s)</p>`;
+            }
+            
+            if (data.exportDate) {
+                previewContent += `<p><strong>Date d'export:</strong> ${formatDateTime(new Date(data.exportDate))}</p>`;
+            }
+            
+            preview.innerHTML = previewContent;
+        }
+        
+        // Fonction pour importer les données
+        function importData() {
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
+            const importMode = document.querySelector('input[name="importMode"]:checked').value;
+            
+            if (!file) {
+                alert('Veuillez d\'abord sélectionner un fichier à importer.');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const fileContent = e.target.result;
+                    const importedData = JSON.parse(fileContent);
+                    
+                    if (importMode === 'replace') {
+                        // Remplacer toutes les données
+                        if (confirm('Êtes-vous sûr de vouloir remplacer toutes les données actuelles ? Cette action est irréversible.')) {
+                            if (importedData.clients) {
+                                clients = importedData.clients;
+                                autoSaveData();
+                                updateClientsTable();
+                                alert('Données importées avec succès! Toutes les données précédentes ont été remplacées.');
+                            } else {
+                                alert('Erreur: Le fichier ne contient pas de données clients valides.');
+                            }
+                        }
+                    } else if (importMode === 'merge') {
+                        // Fusionner avec les données existantes
+                        if (importedData.clients) {
+                            const existingIds = clients.map(c => c.id);
+                            let newClientsCount = 0;
+                            let updatedClientsCount = 0;
+                            
+                            importedData.clients.forEach(importedClient => {
+                                const existingIndex = clients.findIndex(c => c.id === importedClient.id);
+                                
+                                if (existingIndex !== -1) {
+                                    // Mettre à jour le client existant
+                                    clients[existingIndex] = { ...clients[existingIndex], ...importedClient };
+                                    updatedClientsCount++;
+                                } else {
+                                    // Ajouter un nouveau client
+                                    clients.push(importedClient);
+                                    newClientsCount++;
+                                }
+                            });
+                            
+                            autoSaveData();
+                            updateClientsTable();
+                            
+                            alert(`Données fusionnées avec succès! ${newClientsCount} nouveau(x) client(s) ajouté(s), ${updatedClientsCount} client(s) mis à jour.`);
+                        } else {
+                            alert('Erreur: Le fichier ne contient pas de données clients valides.');
+                        }
+                    }
+                    
+                    // Réinitialiser le formulaire
+                    fileInput.value = '';
+                    document.getElementById('fileName').textContent = 'Aucun fichier sélectionné';
+                    document.getElementById('importData').disabled = true;
+                    document.getElementById('importPreview').classList.add('hidden');
+                    
+                } catch (error) {
+                    alert('Erreur lors de l\'importation: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
         }
         
         // Fonction pour imprimer les transactions
@@ -1408,7 +2080,7 @@
             `;
             printableContent.appendChild(printHeader);
             
-            if (client.transactions.length === 0) {
+            if (!client.transactions || client.transactions.length === 0) {
                 const noTransactions = document.createElement('p');
                 noTransactions.textContent = 'Aucune transaction enregistrée.';
                 printableContent.appendChild(noTransactions);
@@ -1442,7 +2114,7 @@
                         <td style="border: 1px solid #000; padding: 8px; ${transaction.amount >= 0 ? 'color: green;' : 'color: red;'}">${formatCurrency(transaction.amount)}</td>
                         <td style="border: 1px solid #000; padding: 8px;">${transaction.fee ? formatCurrency(transaction.fee) : '-'}</td>
                         <td style="border: 1px solid #000; padding: 8px;">${transaction.party || transaction.phone || '-'}</td>
-                        <td style="border: 1px solid #000; padding: 8px;">${transaction.reference}</td>
+                        <td style="border: 1px solid #000; padding: 8px;">${transaction.reference || 'N/A'}</td>
                     `;
                     transactionsTable.appendChild(row);
                 });
@@ -1460,12 +2132,12 @@
         function deleteClient(clientId) {
             if (confirm('Êtes-vous sûr de vouloir supprimer ce client ?')) {
                 clients = clients.filter(c => c.id !== clientId);
-                localStorage.setItem('bankClients', JSON.stringify(clients));
+                autoSaveData();
                 updateClientsTable();
                 
                 // Si le client supprimé était affiché, masquer la carte
                 const displayedCard = document.getElementById('bankCard');
-                if (!displayedCard.classList.contains('hidden')) {
+                if (displayedCard && !displayedCard.classList.contains('hidden')) {
                     // Vérifier si la carte affichée appartient au client supprimé
                     const cardNumber = document.getElementById('cardNumberDisplay').textContent.replace(/\s/g, '');
                     const client = clients.find(c => formatCardNumber(c.cardNumber) === cardNumber);
