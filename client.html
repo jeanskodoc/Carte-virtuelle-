@@ -736,9 +736,74 @@
             font-size: 1.2rem;
             color: var(--success-color);
         }
+        
+        /* Notification de sauvegarde */
+        .save-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--success-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1001;
+            animation: fadeInOut 3s ease;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(20px); }
+        }
+        
+        /* Styles pour les frais */
+        .fees-info {
+            background-color: #fff3e0;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .fees-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .fees-label {
+            font-weight: 500;
+        }
+        
+        .fees-value {
+            font-weight: bold;
+        }
+        
+        .fees-total {
+            border-top: 1px solid #ddd;
+            padding-top: 5px;
+            margin-top: 5px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .fees-warning {
+            color: var(--danger-color);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
+    <!-- Notification de sauvegarde -->
+    <div class="save-notification" id="save-notification">
+        <i class="fas fa-check-circle"></i> Données sauvegardées avec succès
+    </div>
+    
     <!-- Écran de connexion -->
     <div class="login-container" id="login-container">
         <div class="login-box">
@@ -925,6 +990,24 @@
                         <label for="recharge-montant">Montant à recharger (FCFA)</label>
                         <input type="number" id="recharge-montant" class="form-control" placeholder="Ex: 10000" min="100" required>
                     </div>
+                    
+                    <!-- Section des frais de recharge -->
+                    <div class="fees-info" id="recharge-fees-section" style="display: none;">
+                        <h4>Détails des frais</h4>
+                        <div class="fees-row">
+                            <span class="fees-label">Montant à recharger:</span>
+                            <span class="fees-value" id="recharge-amount-display">0 FCFA</span>
+                        </div>
+                        <div class="fees-row">
+                            <span class="fees-label">Frais de recharge (6%):</span>
+                            <span class="fees-value" id="recharge-fees-display">0 FCFA</span>
+                        </div>
+                        <div class="fees-total">
+                            <span class="fees-label">Total à payer:</span>
+                            <span class="fees-value" id="recharge-total-display">0 FCFA</span>
+                        </div>
+                    </div>
+                    
                     <div class="form-group">
                         <label for="recharge-methode">Méthode de paiement</label>
                         <select id="recharge-methode" class="form-control" required>
@@ -1079,6 +1162,27 @@
                         <label for="retrait-montant">Montant à retirer (FCFA)</label>
                         <input type="number" id="retrait-montant" class="form-control" placeholder="Ex: 30000" min="100" required>
                     </div>
+                    
+                    <!-- Section des frais de retrait -->
+                    <div class="fees-info" id="retrait-fees-section" style="display: none;">
+                        <h4>Détails des frais</h4>
+                        <div class="fees-row">
+                            <span class="fees-label">Montant à retirer:</span>
+                            <span class="fees-value" id="retrait-amount-display">0 FCFA</span>
+                        </div>
+                        <div class="fees-row">
+                            <span class="fees-label">Frais de retrait (15%):</span>
+                            <span class="fees-value" id="retrait-fees-display">0 FCFA</span>
+                        </div>
+                        <div class="fees-total">
+                            <span class="fees-label">Total débité:</span>
+                            <span class="fees-value" id="retrait-total-display">0 FCFA</span>
+                        </div>
+                        <div class="fees-warning">
+                            <i class="fas fa-exclamation-triangle"></i> Ce montant sera débité de votre compte
+                        </div>
+                    </div>
+                    
                     <div class="form-row">
                         <div class="form-group">
                             <label for="retrait-nom">Votre nom</label>
@@ -1231,6 +1335,7 @@
         let currentUser = null;
         let currentBalance = 0;
         let transactions = [];
+        let saveTimer = null;
         
         // Éléments DOM
         const loginContainer = document.getElementById('login-container');
@@ -1238,6 +1343,7 @@
         const loginForm = document.getElementById('login-form');
         const loginError = document.getElementById('login-error');
         const logoutBtn = document.getElementById('logout-btn');
+        const saveNotification = document.getElementById('save-notification');
         
         const userFullname = document.getElementById('user-fullname');
         const accountFullname = document.getElementById('account-fullname');
@@ -1264,6 +1370,16 @@
         const tabContents = document.querySelectorAll('.tab-content');
         const accountsGrid = document.getElementById('accounts-grid');
         
+        // Éléments des frais
+        const rechargeFeesSection = document.getElementById('recharge-fees-section');
+        const rechargeAmountDisplay = document.getElementById('recharge-amount-display');
+        const rechargeFeesDisplay = document.getElementById('recharge-fees-display');
+        const rechargeTotalDisplay = document.getElementById('recharge-total-display');
+        const retraitFeesSection = document.getElementById('retrait-fees-section');
+        const retraitAmountDisplay = document.getElementById('retrait-amount-display');
+        const retraitFeesDisplay = document.getElementById('retrait-fees-display');
+        const retraitTotalDisplay = document.getElementById('retrait-total-display');
+        
         // Éléments des statistiques
         const monthIncomeElement = document.getElementById('month-income');
         const monthExpenseElement = document.getElementById('month-expense');
@@ -1279,6 +1395,7 @@
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             setupEventListeners();
+            loadSavedData();
         });
         
         // Configuration des écouteurs d'événements
@@ -1357,6 +1474,16 @@
             
             // Bouton d'impression QR Code
             printQrcodeBtn.addEventListener('click', printQRCode);
+            
+            // Sauvegarde automatique lors de la fermeture de la page
+            window.addEventListener('beforeunload', saveUserData);
+            
+            // Sauvegarde automatique périodique
+            setInterval(saveUserData, 30000); // Sauvegarde toutes les 30 secondes
+            
+            // Écouteurs pour les frais
+            document.getElementById('recharge-montant').addEventListener('input', updateRechargeFees);
+            document.getElementById('retrait-montant').addEventListener('input', updateRetraitFees);
         }
         
         // Mettre à jour l'affichage du solde dans les formulaires
@@ -1368,6 +1495,52 @@
             document.getElementById('solde-achat').textContent = formatCurrency(currentBalance);
             document.getElementById('solde-recevoir').textContent = formatCurrency(currentBalance);
             document.getElementById('solde-retrait').textContent = formatCurrency(currentBalance);
+        }
+        
+        // Mettre à jour l'affichage des frais de recharge
+        function updateRechargeFees() {
+            const montantInput = document.getElementById('recharge-montant');
+            const montant = parseInt(montantInput.value) || 0;
+            
+            if (montant > 0) {
+                // Calculer les frais (6%)
+                const frais = Math.round(montant * 0.06);
+                const total = montant + frais;
+                
+                // Mettre à jour l'affichage
+                rechargeAmountDisplay.textContent = formatCurrency(montant);
+                rechargeFeesDisplay.textContent = formatCurrency(frais);
+                rechargeTotalDisplay.textContent = formatCurrency(total);
+                
+                // Afficher la section des frais
+                rechargeFeesSection.style.display = 'block';
+            } else {
+                // Masquer la section des frais
+                rechargeFeesSection.style.display = 'none';
+            }
+        }
+        
+        // Mettre à jour l'affichage des frais de retrait
+        function updateRetraitFees() {
+            const montantInput = document.getElementById('retrait-montant');
+            const montant = parseInt(montantInput.value) || 0;
+            
+            if (montant > 0) {
+                // Calculer les frais (15%)
+                const frais = Math.round(montant * 0.15);
+                const total = montant + frais;
+                
+                // Mettre à jour l'affichage
+                retraitAmountDisplay.textContent = formatCurrency(montant);
+                retraitFeesDisplay.textContent = formatCurrency(frais);
+                retraitTotalDisplay.textContent = formatCurrency(total);
+                
+                // Afficher la section des frais
+                retraitFeesSection.style.display = 'block';
+            } else {
+                // Masquer la section des frais
+                retraitFeesSection.style.display = 'none';
+            }
         }
         
         // Gérer la connexion
@@ -1388,6 +1561,9 @@
                 currentBalance = user.balance;
                 transactions = [...user.transactions];
                 
+                // Charger les données sauvegardées si elles existent
+                loadUserData();
+                
                 // Mettre à jour l'interface
                 updateUserInterface();
                 
@@ -1397,6 +1573,9 @@
                 
                 // Masquer l'erreur de connexion
                 loginError.style.display = 'none';
+                
+                // Sauvegarder les données
+                saveUserData();
             } else {
                 // Afficher l'erreur de connexion
                 loginError.style.display = 'block';
@@ -1405,6 +1584,9 @@
         
         // Gérer la déconnexion
         function handleLogout() {
+            // Sauvegarder les données avant déconnexion
+            saveUserData();
+            
             currentUser = null;
             currentBalance = 0;
             transactions = [];
@@ -1523,6 +1705,13 @@
             
             // Mettre à jour l'affichage du solde
             updateSoldeDisplay();
+            
+            // Mettre à jour les frais si nécessaire
+            if (type === 'recharge') {
+                updateRechargeFees();
+            } else if (type === 'retrait') {
+                updateRetraitFees();
+            }
         }
         
         // Fermer tous les modals
@@ -1535,6 +1724,10 @@
             achatForm.reset();
             recevoirForm.reset();
             retraitForm.reset();
+            
+            // Masquer les sections de frais
+            rechargeFeesSection.style.display = 'none';
+            retraitFeesSection.style.display = 'none';
             
             // Rétablir les valeurs par défaut pour les champs personnels
             if (currentUser) {
@@ -1566,13 +1759,19 @@
             const prenom = document.getElementById('recharge-prenom').value;
             const contact = document.getElementById('recharge-contact').value;
             
-            // Générer le message WhatsApp avec le solde actuel
+            // Calculer les frais (6%)
+            const frais = Math.round(montant * 0.06);
+            const total = montant + frais;
+            
+            // Générer le message WhatsApp avec le solde actuel et les frais
             const message = `DEMANDE DE RECHARGEMENT%0A%0A` +
                            `Nom: ${nom}%0A` +
                            `Prénom: ${prenom}%0A` +
                            `Contact: ${contact}%0A` +
                            `Solde actuel: ${formatCurrency(currentBalance)}%0A` +
                            `Montant: ${formatCurrency(montant)}%0A` +
+                           `Frais (6%): ${formatCurrency(frais)}%0A` +
+                           `Total à payer: ${formatCurrency(total)}%0A` +
                            `Méthode: ${methode}%0A` +
                            `Date: ${new Date().toLocaleString('fr-FR')}`;
             
@@ -1581,9 +1780,9 @@
             
             // Simuler le traitement (en réalité, cela se ferait après confirmation du serveur)
             setTimeout(() => {
-                // Ajouter la transaction
+                // Ajouter la transaction (seul le montant net est crédité)
                 addTransaction(`Rechargement ${methode}`, montant, new Date(), "income", "recharge");
-                alert(`Votre compte a été rechargé de ${formatCurrency(montant)}.`);
+                alert(`Votre compte a été rechargé de ${formatCurrency(montant)}. Frais de ${formatCurrency(frais)} appliqués.`);
             }, 2000);
             
             // Fermer le modal
@@ -1677,20 +1876,26 @@
             const contact = document.getElementById('retrait-contact').value;
             const numeroReception = document.getElementById('retrait-numero').value;
             
+            // Calculer les frais (15%)
+            const frais = Math.round(montant * 0.15);
+            const total = montant + frais;
+            
             // Vérifier que le solde est suffisant
-            if (montant > currentBalance) {
-                alert("Solde insuffisant pour effectuer ce retrait.");
+            if (total > currentBalance) {
+                alert(`Solde insuffisant pour effectuer ce retrait. Le total débité serait de ${formatCurrency(total)} (montant + frais).`);
                 return;
             }
             
-            // Générer le message WhatsApp avec le solde actuel
+            // Générer le message WhatsApp avec le solde actuel et les frais
             const message = `DEMANDE DE RETRAIT%0A%0A` +
                            `Nom: ${nom}%0A` +
                            `Prénom: ${prenom}%0A` +
                            `Contact: ${contact}%0A` +
                            `Solde actuel: ${formatCurrency(currentBalance)}%0A` +
-                           `Numéro de réception: ${numeroReception}%0A` +
                            `Montant: ${formatCurrency(montant)}%0A` +
+                           `Frais (15%): ${formatCurrency(frais)}%0A` +
+                           `Total débité: ${formatCurrency(total)}%0A` +
+                           `Numéro de réception: ${numeroReception}%0A` +
                            `Date: ${new Date().toLocaleString('fr-FR')}`;
             
             // Envoyer par WhatsApp
@@ -1698,9 +1903,9 @@
             
             // Simuler le traitement
             setTimeout(() => {
-                // Ajouter la transaction
-                addTransaction(`Retrait vers ${numeroReception}`, -montant, new Date(), "expense", "retrait");
-                alert(`Votre demande de retrait de ${formatCurrency(montant)} a été envoyée.`);
+                // Ajouter la transaction (le total est débité)
+                addTransaction(`Retrait vers ${numeroReception}`, -total, new Date(), "expense", "retrait");
+                alert(`Votre demande de retrait de ${formatCurrency(montant)} a été envoyée. Frais de ${formatCurrency(frais)} appliqués.`);
             }, 2000);
             
             // Fermer le modal
@@ -1776,6 +1981,9 @@
             updateBalance();
             renderTransactions();
             updateStatistics();
+            
+            // Sauvegarder les données après chaque transaction
+            saveUserData();
         }
         
         // Mettre à jour l'affichage du solde
@@ -1866,6 +2074,98 @@
         // Formater une valeur monétaire
         function formatCurrency(amount) {
             return Math.abs(amount).toLocaleString('fr-FR') + ' FCFA';
+        }
+        
+        // === SYSTÈME DE SAUVEGARDE ===
+        
+        // Sauvegarder les données utilisateur
+        function saveUserData() {
+            if (!currentUser) return;
+            
+            // Préparer les données à sauvegarder
+            const userData = {
+                userId: currentUser.id,
+                balance: currentBalance,
+                transactions: transactions,
+                lastSave: new Date().toISOString()
+            };
+            
+            // Sauvegarder dans le localStorage
+            localStorage.setItem(`userData_${currentUser.id}`, JSON.stringify(userData));
+            
+            // Afficher la notification de sauvegarde
+            showSaveNotification();
+        }
+        
+        // Charger les données sauvegardées
+        function loadUserData() {
+            if (!currentUser) return;
+            
+            const savedData = localStorage.getItem(`userData_${currentUser.id}`);
+            
+            if (savedData) {
+                try {
+                    const userData = JSON.parse(savedData);
+                    
+                    // Mettre à jour les données utilisateur avec les données sauvegardées
+                    currentBalance = userData.balance;
+                    transactions = userData.transactions.map(t => {
+                        return {
+                            ...t,
+                            date: new Date(t.date)
+                        };
+                    });
+                    
+                    // Mettre à jour l'utilisateur actuel
+                    currentUser.balance = currentBalance;
+                    currentUser.transactions = transactions;
+                    
+                    console.log(`Données chargées (sauvegarde du ${new Date(userData.lastSave).toLocaleString('fr-FR')})`);
+                } catch (error) {
+                    console.error("Erreur lors du chargement des données sauvegardées:", error);
+                }
+            }
+        }
+        
+        // Charger les données globales sauvegardées
+        function loadSavedData() {
+            // Charger les données des comptes enregistrés
+            const savedAccounts = localStorage.getItem('registeredAccounts');
+            
+            if (savedAccounts) {
+                try {
+                    const accounts = JSON.parse(savedAccounts);
+                    
+                    // Mettre à jour les comptes enregistrés avec les données sauvegardées
+                    accounts.forEach(savedAccount => {
+                        const originalAccount = registeredAccounts.find(acc => acc.id === savedAccount.id);
+                        if (originalAccount) {
+                            // Mettre à jour le solde et les transactions
+                            originalAccount.balance = savedAccount.balance;
+                            originalAccount.transactions = savedAccount.transactions.map(t => {
+                                return {
+                                    ...t,
+                                    date: new Date(t.date)
+                                };
+                            });
+                        }
+                    });
+                    
+                    console.log("Données des comptes chargées avec succès");
+                } catch (error) {
+                    console.error("Erreur lors du chargement des comptes sauvegardés:", error);
+                }
+            }
+        }
+        
+        // Afficher la notification de sauvegarde
+        function showSaveNotification() {
+            saveNotification.style.display = 'block';
+            
+            // Masquer la notification après 3 secondes
+            setTimeout(() => {
+                saveNotification.style.display = 'none';
+            }, 3000);
         }
     </script>
 </body>
