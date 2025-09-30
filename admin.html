@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Générateur de Cartes Bancaires - Gestion des Clients</title>
+    <title>Système de Gestion Bancaire - Clients et Transactions</title>
     <style>
         * {
             box-sizing: border-box;
@@ -381,6 +381,140 @@
         .logout-btn:hover {
             background: rgba(255, 255, 255, 0.3);
         }
+        
+        /* Styles pour les transactions */
+        .transaction-form {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        
+        .transaction-history {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+        
+        .transaction-type {
+            font-weight: bold;
+        }
+        
+        .transaction-amount {
+            font-weight: bold;
+        }
+        
+        .transaction-positive {
+            color: #2ecc71;
+        }
+        
+        .transaction-negative {
+            color: #e74c3c;
+        }
+        
+        .transaction-fee {
+            color: #f39c12;
+            font-size: 0.9em;
+        }
+        
+        .account-balance {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+            color: #1a2a6c;
+        }
+        
+        .transaction-section {
+            margin-top: 30px;
+        }
+        
+        .transaction-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .transaction-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .transaction-tab.active {
+            border-bottom: 3px solid #1a2a6c;
+            color: #1a2a6c;
+            font-weight: bold;
+        }
+        
+        .transaction-panel {
+            display: none;
+        }
+        
+        .transaction-panel.active {
+            display: block;
+        }
+        
+        .transaction-reference {
+            font-size: 0.8em;
+            color: #777;
+            margin-top: 5px;
+        }
+        
+        .print-btn {
+            background: #2ecc71;
+            margin-top: 10px;
+        }
+        
+        .print-btn:hover {
+            background: #27ae60;
+        }
+        
+        /* Styles pour l'impression */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-transactions, #printable-transactions * {
+                visibility: visible;
+            }
+            #printable-transactions {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 20px;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+        
+        .transaction-details {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        .transaction-party {
+            font-size: 0.9em;
+            color: #555;
+        }
+        
+        .transaction-date {
+            font-size: 0.8em;
+            color: #777;
+        }
     </style>
 </head>
 <body>
@@ -408,7 +542,7 @@
     <!-- Application principale (cachée par défaut) -->
     <div id="mainApp" class="hidden">
         <button id="logoutBtn" class="logout-btn">Déconnexion</button>
-        <h1>Générateur de Cartes Bancaires - Gestion des Clients</h1>
+        <h1>Système de Gestion Bancaire - Clients et Transactions</h1>
         
         <div class="container">
             <div>
@@ -441,12 +575,22 @@
                         </div>
                         
                         <div class="form-group">
+                            <label for="phoneNumber">Numéro de Téléphone</label>
+                            <input type="tel" id="phoneNumber" placeholder="Ex: +225 07 12 34 56 78" required>
+                        </div>
+                        
+                        <div class="form-group">
                             <label for="cardType">Type de Carte</label>
                             <select id="cardType" required>
                                 <option value="visa">Visa</option>
                                 <option value="mastercard">Mastercard</option>
                                 <option value="virtual">Carte Virtuelle</option>
                             </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="initialBalance">Solde Initial (FCFA)</label>
+                            <input type="number" id="initialBalance" value="0" min="0">
                         </div>
                         
                         <button type="submit">Générer la Carte</button>
@@ -508,6 +652,101 @@
                         <p>Aucune carte générée. Veuillez remplir le formulaire.</p>
                     </div>
                 </div>
+                
+                <!-- Section des transactions -->
+                <div class="panel transaction-section hidden" id="transactionSection">
+                    <h2>Gestion des Transactions</h2>
+                    
+                    <div class="account-balance" id="accountBalance">
+                        Solde: 0 FCFA
+                    </div>
+                    
+                    <div class="transaction-tabs">
+                        <div class="transaction-tab active" data-tab="recharge">Recharger</div>
+                        <div class="transaction-tab" data-tab="transfer">Transfert</div>
+                        <div class="transaction-tab" data-tab="receive">Réception</div>
+                        <div class="transaction-tab" data-tab="withdraw">Retrait</div>
+                    </div>
+                    
+                    <!-- Formulaire de recharge -->
+                    <div class="transaction-panel active" id="rechargePanel">
+                        <form id="rechargeForm" class="transaction-form">
+                            <div class="form-group">
+                                <label for="rechargeAmount">Montant à recharger (FCFA)</label>
+                                <input type="number" id="rechargeAmount" min="100" required>
+                            </div>
+                            <div class="form-group">
+                                <p>Frais de service: 6% du montant</p>
+                            </div>
+                            <button type="submit">Recharger la carte</button>
+                        </form>
+                    </div>
+                    
+                    <!-- Formulaire de transfert -->
+                    <div class="transaction-panel" id="transferPanel">
+                        <form id="transferForm" class="transaction-form">
+                            <div class="form-group">
+                                <label for="transferAmount">Montant à transférer (FCFA)</label>
+                                <input type="number" id="transferAmount" min="100" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="transferRecipient">Nom du destinataire</label>
+                                <input type="text" id="transferRecipient" placeholder="Nom du destinataire" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="transferPhone">Numéro du destinataire</label>
+                                <input type="tel" id="transferPhone" placeholder="Ex: +225 07 12 34 56 78" required>
+                            </div>
+                            <button type="submit">Effectuer le transfert</button>
+                        </form>
+                    </div>
+                    
+                    <!-- Formulaire de réception -->
+                    <div class="transaction-panel" id="receivePanel">
+                        <form id="receiveForm" class="transaction-form">
+                            <div class="form-group">
+                                <label for="receiveAmount">Montant reçu (FCFA)</label>
+                                <input type="number" id="receiveAmount" min="100" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="receiveSender">Nom de l'expéditeur</label>
+                                <input type="text" id="receiveSender" placeholder="Nom de l'expéditeur" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="receiveSenderPhone">Numéro de l'expéditeur</label>
+                                <input type="tel" id="receiveSenderPhone" placeholder="Ex: +225 07 12 34 56 78" required>
+                            </div>
+                            <button type="submit">Enregistrer la réception</button>
+                        </form>
+                    </div>
+                    
+                    <!-- Formulaire de retrait -->
+                    <div class="transaction-panel" id="withdrawPanel">
+                        <form id="withdrawForm" class="transaction-form">
+                            <div class="form-group">
+                                <label for="withdrawAmount">Montant à retirer (FCFA)</label>
+                                <input type="number" id="withdrawAmount" min="100" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="withdrawPhone">Numéro Mobile Money</label>
+                                <input type="tel" id="withdrawPhone" placeholder="Ex: +225 07 12 34 56 78" required>
+                            </div>
+                            <div class="form-group">
+                                <p>Frais de service: 15% du montant</p>
+                            </div>
+                            <button type="submit">Effectuer le retrait</button>
+                        </form>
+                    </div>
+                    
+                    <!-- Historique des transactions -->
+                    <div class="transaction-history">
+                        <h3>Historique des Transactions</h3>
+                        <button id="printTransactions" class="print-btn">Imprimer les Transactions</button>
+                        <div id="transactionHistory">
+                            <!-- Les transactions seront ajoutées ici dynamiquement -->
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="panel">
@@ -546,6 +785,7 @@
                             <th>Client</th>
                             <th>Type de carte</th>
                             <th>Numéro de carte</th>
+                            <th>Solde (FCFA)</th>
                             <th>Date d'expiration</th>
                             <th>Statut</th>
                             <th>Actions</th>
@@ -561,6 +801,11 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Section pour l'impression (cachée par défaut) -->
+    <div id="printable-transactions" class="hidden">
+        <!-- Le contenu sera généré dynamiquement pour l'impression -->
     </div>
 
     <script>
@@ -619,6 +864,7 @@
         
         // Stockage des clients (simulation d'une base de données)
         let clients = JSON.parse(localStorage.getItem('bankClients')) || [];
+        let currentClientId = null;
         
         // Initialisation de l'interface
         document.addEventListener('DOMContentLoaded', function() {
@@ -627,10 +873,27 @@
                 document.getElementById('filterStatus').addEventListener('change', updateClientsTable);
                 document.getElementById('filterCardType').addEventListener('change', updateClientsTable);
                 document.getElementById('searchClient').addEventListener('input', updateClientsTable);
+                
+                // Gestion des onglets de transaction
+                document.querySelectorAll('.transaction-tab').forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        const tabId = this.getAttribute('data-tab');
+                        switchTransactionTab(tabId);
+                    });
+                });
+                
+                // Gestion des formulaires de transaction
+                document.getElementById('rechargeForm').addEventListener('submit', handleRecharge);
+                document.getElementById('transferForm').addEventListener('submit', handleTransfer);
+                document.getElementById('receiveForm').addEventListener('submit', handleReceive);
+                document.getElementById('withdrawForm').addEventListener('submit', handleWithdraw);
+                
+                // Gestion du bouton d'impression
+                document.getElementById('printTransactions').addEventListener('click', printTransactions);
             }
         });
         
-        // Gestion du formulaire
+        // Gestion du formulaire de création de client
         document.getElementById('clientForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -640,7 +903,9 @@
             const birthDate = document.getElementById('birthDate').value;
             const address = document.getElementById('address').value;
             const city = document.getElementById('city').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
             const cardType = document.getElementById('cardType').value;
+            const initialBalance = parseFloat(document.getElementById('initialBalance').value) || 0;
             
             // Génération des informations de la carte
             const cardNumber = generateCardNumber(cardType);
@@ -665,6 +930,7 @@
                 birthDate: birthDate,
                 address: address,
                 city: city,
+                phoneNumber: phoneNumber,
                 cardType: cardType,
                 cardNumber: cardNumber,
                 cvv: cvv,
@@ -672,7 +938,9 @@
                 expiryDate: expiryDate.toISOString(),
                 userId: userId,
                 password: password,
-                status: getCardStatus(expiryDate)
+                balance: initialBalance,
+                status: getCardStatus(expiryDate),
+                transactions: []
             };
             
             // Ajout du client à la liste
@@ -726,7 +994,8 @@
                 const matchesSearch = 
                     client.firstName.toLowerCase().includes(searchTerm) ||
                     client.lastName.toLowerCase().includes(searchTerm) ||
-                    client.city.toLowerCase().includes(searchTerm);
+                    client.city.toLowerCase().includes(searchTerm) ||
+                    client.phoneNumber.includes(searchTerm);
                 
                 const matchesStatus = statusFilter === 'all' || client.status === statusFilter;
                 const matchesCardType = cardTypeFilter === 'all' || client.cardType === cardTypeFilter;
@@ -751,13 +1020,19 @@
                 const row = document.createElement('tr');
                 
                 row.innerHTML = `
-                    <td>${client.firstName} ${client.lastName}<br><small>${client.city}</small></td>
+                    <td>
+                        ${client.firstName} ${client.lastName}<br>
+                        <small>${client.city}</small><br>
+                        <small>${client.phoneNumber}</small>
+                    </td>
                     <td>${getCardTypeDisplay(client.cardType)}</td>
                     <td>${formatCardNumber(client.cardNumber)}</td>
+                    <td>${formatCurrency(client.balance)}</td>
                     <td>${formatDate(expiryDate)}</td>
                     <td><span class="status-badge status-${client.status}">${getStatusText(client.status, daysRemaining)}</span></td>
                     <td>
                         <button class="action-btn view-client" data-id="${client.id}">Voir</button>
+                        <button class="action-btn manage-transactions" data-id="${client.id}">Transactions</button>
                         <button class="action-btn delete-client" data-id="${client.id}">Supprimer</button>
                     </td>
                 `;
@@ -770,6 +1045,13 @@
                 btn.addEventListener('click', function() {
                     const clientId = this.getAttribute('data-id');
                     viewClient(clientId);
+                });
+            });
+            
+            document.querySelectorAll('.manage-transactions').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const clientId = this.getAttribute('data-id');
+                    manageTransactions(clientId);
                 });
             });
             
@@ -812,6 +1094,368 @@
             document.getElementById('bankCard').scrollIntoView({ behavior: 'smooth' });
         }
         
+        // Fonction pour gérer les transactions d'un client
+        function manageTransactions(clientId) {
+            currentClientId = clientId;
+            const client = clients.find(c => c.id === clientId);
+            if (!client) return;
+            
+            // Afficher la section des transactions
+            document.getElementById('transactionSection').classList.remove('hidden');
+            
+            // Mettre à jour le solde affiché
+            updateBalanceDisplay(client);
+            
+            // Mettre à jour l'historique des transactions
+            updateTransactionHistory(client);
+            
+            // Défilement vers la section des transactions
+            document.getElementById('transactionSection').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Fonction pour mettre à jour l'affichage du solde
+        function updateBalanceDisplay(client) {
+            document.getElementById('accountBalance').textContent = `Solde: ${formatCurrency(client.balance)}`;
+        }
+        
+        // Fonction pour mettre à jour l'historique des transactions
+        function updateTransactionHistory(client) {
+            const historyContainer = document.getElementById('transactionHistory');
+            historyContainer.innerHTML = '';
+            
+            if (client.transactions.length === 0) {
+                historyContainer.innerHTML = '<p>Aucune transaction enregistrée.</p>';
+                return;
+            }
+            
+            // Trier les transactions par date (du plus récent au plus ancien)
+            const sortedTransactions = [...client.transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedTransactions.forEach(transaction => {
+                const transactionItem = document.createElement('div');
+                transactionItem.className = 'transaction-item';
+                
+                const transactionType = document.createElement('div');
+                transactionType.className = 'transaction-type';
+                transactionType.textContent = getTransactionTypeText(transaction.type);
+                
+                const transactionDetails = document.createElement('div');
+                transactionDetails.className = 'transaction-details';
+                
+                const transactionAmount = document.createElement('div');
+                transactionAmount.className = `transaction-amount ${transaction.amount >= 0 ? 'transaction-positive' : 'transaction-negative'}`;
+                transactionAmount.textContent = `${transaction.amount >= 0 ? '+' : ''}${formatCurrency(transaction.amount)}`;
+                
+                transactionDetails.appendChild(transactionAmount);
+                
+                if (transaction.fee && transaction.fee > 0) {
+                    const transactionFee = document.createElement('div');
+                    transactionFee.className = 'transaction-fee';
+                    transactionFee.textContent = `Frais: ${formatCurrency(transaction.fee)}`;
+                    transactionDetails.appendChild(transactionFee);
+                }
+                
+                if (transaction.party) {
+                    const transactionParty = document.createElement('div');
+                    transactionParty.className = 'transaction-party';
+                    transactionParty.textContent = transaction.party;
+                    transactionDetails.appendChild(transactionParty);
+                }
+                
+                if (transaction.phone) {
+                    const transactionPhone = document.createElement('div');
+                    transactionPhone.className = 'transaction-party';
+                    transactionPhone.textContent = transaction.phone;
+                    transactionDetails.appendChild(transactionPhone);
+                }
+                
+                const transactionDate = document.createElement('div');
+                transactionDate.className = 'transaction-date';
+                transactionDate.textContent = formatDateTime(new Date(transaction.date));
+                
+                const transactionReference = document.createElement('div');
+                transactionReference.className = 'transaction-reference';
+                transactionReference.textContent = `Réf: ${transaction.reference}`;
+                
+                transactionDetails.appendChild(transactionDate);
+                transactionDetails.appendChild(transactionReference);
+                
+                transactionItem.appendChild(transactionType);
+                transactionItem.appendChild(transactionDetails);
+                
+                historyContainer.appendChild(transactionItem);
+            });
+        }
+        
+        // Fonction pour basculer entre les onglets de transaction
+        function switchTransactionTab(tabId) {
+            // Désactiver tous les onglets
+            document.querySelectorAll('.transaction-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Désactiver tous les panneaux
+            document.querySelectorAll('.transaction-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            // Activer l'onglet sélectionné
+            document.querySelector(`.transaction-tab[data-tab="${tabId}"]`).classList.add('active');
+            
+            // Activer le panneau correspondant
+            document.getElementById(`${tabId}Panel`).classList.add('active');
+        }
+        
+        // Gestion de la recharge de carte
+        function handleRecharge(e) {
+            e.preventDefault();
+            if (!currentClientId) return;
+            
+            const amount = parseFloat(document.getElementById('rechargeAmount').value);
+            const fee = amount * 0.06; // Frais de 6%
+            const totalAmount = amount - fee;
+            
+            const client = clients.find(c => c.id === currentClientId);
+            if (!client) return;
+            
+            // Mettre à jour le solde
+            client.balance += totalAmount;
+            
+            // Générer une référence unique
+            const reference = generateTransactionReference();
+            
+            // Enregistrer la transaction
+            client.transactions.push({
+                type: 'recharge',
+                amount: totalAmount,
+                fee: fee,
+                date: new Date().toISOString(),
+                description: `Recharge de carte - Montant: ${formatCurrency(amount)}`,
+                reference: reference
+            });
+            
+            // Mettre à jour le stockage
+            localStorage.setItem('bankClients', JSON.stringify(clients));
+            
+            // Mettre à jour l'affichage
+            updateBalanceDisplay(client);
+            updateTransactionHistory(client);
+            
+            // Réinitialiser le formulaire
+            e.target.reset();
+            
+            alert(`Recharge effectuée avec succès! Montant crédité: ${formatCurrency(totalAmount)}, Frais: ${formatCurrency(fee)}, Référence: ${reference}`);
+        }
+        
+        // Gestion du transfert
+        function handleTransfer(e) {
+            e.preventDefault();
+            if (!currentClientId) return;
+            
+            const amount = parseFloat(document.getElementById('transferAmount').value);
+            const recipient = document.getElementById('transferRecipient').value;
+            const phone = document.getElementById('transferPhone').value;
+            
+            const client = clients.find(c => c.id === currentClientId);
+            if (!client) return;
+            
+            // Vérifier si le solde est suffisant
+            if (client.balance < amount) {
+                alert('Solde insuffisant pour effectuer ce transfert.');
+                return;
+            }
+            
+            // Mettre à jour le solde
+            client.balance -= amount;
+            
+            // Générer une référence unique
+            const reference = generateTransactionReference();
+            
+            // Enregistrer la transaction
+            client.transactions.push({
+                type: 'transfer',
+                amount: -amount,
+                date: new Date().toISOString(),
+                party: recipient,
+                phone: phone,
+                description: `Transfert à ${recipient}`,
+                reference: reference
+            });
+            
+            // Mettre à jour le stockage
+            localStorage.setItem('bankClients', JSON.stringify(clients));
+            
+            // Mettre à jour l'affichage
+            updateBalanceDisplay(client);
+            updateTransactionHistory(client);
+            
+            // Réinitialiser le formulaire
+            e.target.reset();
+            
+            alert(`Transfert de ${formatCurrency(amount)} à ${recipient} (${phone}) effectué avec succès! Référence: ${reference}`);
+        }
+        
+        // Gestion de la réception
+        function handleReceive(e) {
+            e.preventDefault();
+            if (!currentClientId) return;
+            
+            const amount = parseFloat(document.getElementById('receiveAmount').value);
+            const sender = document.getElementById('receiveSender').value;
+            const phone = document.getElementById('receiveSenderPhone').value;
+            
+            const client = clients.find(c => c.id === currentClientId);
+            if (!client) return;
+            
+            // Mettre à jour le solde
+            client.balance += amount;
+            
+            // Générer une référence unique
+            const reference = generateTransactionReference();
+            
+            // Enregistrer la transaction
+            client.transactions.push({
+                type: 'receive',
+                amount: amount,
+                date: new Date().toISOString(),
+                party: sender,
+                phone: phone,
+                description: `Réception de ${sender}`,
+                reference: reference
+            });
+            
+            // Mettre à jour le stockage
+            localStorage.setItem('bankClients', JSON.stringify(clients));
+            
+            // Mettre à jour l'affichage
+            updateBalanceDisplay(client);
+            updateTransactionHistory(client);
+            
+            // Réinitialiser le formulaire
+            e.target.reset();
+            
+            alert(`Réception de ${formatCurrency(amount)} de ${sender} (${phone}) enregistrée avec succès! Référence: ${reference}`);
+        }
+        
+        // Gestion du retrait
+        function handleWithdraw(e) {
+            e.preventDefault();
+            if (!currentClientId) return;
+            
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            const phone = document.getElementById('withdrawPhone').value;
+            const fee = amount * 0.15; // Frais de 15%
+            const totalAmount = amount + fee;
+            
+            const client = clients.find(c => c.id === currentClientId);
+            if (!client) return;
+            
+            // Vérifier si le solde est suffisant
+            if (client.balance < totalAmount) {
+                alert('Solde insuffisant pour effectuer ce retrait (incluant les frais).');
+                return;
+            }
+            
+            // Mettre à jour le solde
+            client.balance -= totalAmount;
+            
+            // Générer une référence unique
+            const reference = generateTransactionReference();
+            
+            // Enregistrer la transaction
+            client.transactions.push({
+                type: 'withdraw',
+                amount: -totalAmount,
+                fee: fee,
+                date: new Date().toISOString(),
+                phone: phone,
+                description: `Retrait Mobile Money - Montant: ${formatCurrency(amount)}`,
+                reference: reference
+            });
+            
+            // Mettre à jour le stockage
+            localStorage.setItem('bankClients', JSON.stringify(clients));
+            
+            // Mettre à jour l'affichage
+            updateBalanceDisplay(client);
+            updateTransactionHistory(client);
+            
+            // Réinitialiser le formulaire
+            e.target.reset();
+            
+            alert(`Retrait effectué avec succès! Montant retiré: ${formatCurrency(amount)}, Frais: ${formatCurrency(fee)}, Référence: ${reference}`);
+        }
+        
+        // Fonction pour imprimer les transactions
+        function printTransactions() {
+            if (!currentClientId) return;
+            
+            const client = clients.find(c => c.id === currentClientId);
+            if (!client) return;
+            
+            const printableContent = document.getElementById('printable-transactions');
+            printableContent.innerHTML = '';
+            
+            // Créer le contenu imprimable
+            const printHeader = document.createElement('div');
+            printHeader.innerHTML = `
+                <h1>Relevé de Transactions</h1>
+                <h2>${client.firstName} ${client.lastName}</h2>
+                <p>Numéro de carte: ${formatCardNumber(client.cardNumber)}</p>
+                <p>Solde actuel: ${formatCurrency(client.balance)}</p>
+                <p>Date d'impression: ${formatDateTime(new Date())}</p>
+                <hr>
+            `;
+            printableContent.appendChild(printHeader);
+            
+            if (client.transactions.length === 0) {
+                const noTransactions = document.createElement('p');
+                noTransactions.textContent = 'Aucune transaction enregistrée.';
+                printableContent.appendChild(noTransactions);
+            } else {
+                // Trier les transactions par date (du plus récent au plus ancien)
+                const sortedTransactions = [...client.transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                const transactionsTable = document.createElement('table');
+                transactionsTable.style.width = '100%';
+                transactionsTable.style.borderCollapse = 'collapse';
+                transactionsTable.style.marginTop = '20px';
+                
+                // En-tête du tableau
+                const tableHeader = document.createElement('tr');
+                tableHeader.innerHTML = `
+                    <th style="border: 1px solid #000; padding: 8px; text-align: left;">Date/Heure</th>
+                    <th style="border: 1px solid #000; padding: 8px; text-align: left;">Type</th>
+                    <th style="border: 1px solid #000; padding: 8px; text-align: left;">Montant</th>
+                    <th style="border: 1px solid #000; padding: 8px; text-align: left;">Frais</th>
+                    <th style="border: 1px solid #000; padding: 8px; text-align: left;">Partie</th>
+                    <th style="border: 1px solid #000; padding: 8px; text-align: left;">Référence</th>
+                `;
+                transactionsTable.appendChild(tableHeader);
+                
+                // Lignes du tableau
+                sortedTransactions.forEach(transaction => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td style="border: 1px solid #000; padding: 8px;">${formatDateTime(new Date(transaction.date))}</td>
+                        <td style="border: 1px solid #000; padding: 8px;">${getTransactionTypeText(transaction.type)}</td>
+                        <td style="border: 1px solid #000; padding: 8px; ${transaction.amount >= 0 ? 'color: green;' : 'color: red;'}">${formatCurrency(transaction.amount)}</td>
+                        <td style="border: 1px solid #000; padding: 8px;">${transaction.fee ? formatCurrency(transaction.fee) : '-'}</td>
+                        <td style="border: 1px solid #000; padding: 8px;">${transaction.party || transaction.phone || '-'}</td>
+                        <td style="border: 1px solid #000; padding: 8px;">${transaction.reference}</td>
+                    `;
+                    transactionsTable.appendChild(row);
+                });
+                
+                printableContent.appendChild(transactionsTable);
+            }
+            
+            // Afficher la section d'impression et imprimer
+            printableContent.classList.remove('hidden');
+            window.print();
+            printableContent.classList.add('hidden');
+        }
+        
         // Fonction pour supprimer un client
         function deleteClient(clientId) {
             if (confirm('Êtes-vous sûr de vouloir supprimer ce client ?')) {
@@ -832,12 +1476,23 @@
                         document.getElementById('noCardMessage').classList.remove('hidden');
                     }
                 }
+                
+                // Si le client supprimé était en cours de gestion des transactions
+                if (currentClientId === clientId) {
+                    document.getElementById('transactionSection').classList.add('hidden');
+                    currentClientId = null;
+                }
             }
         }
         
         // Fonction pour générer un ID client unique
         function generateClientId() {
             return 'CLI' + Date.now() + Math.floor(Math.random() * 1000);
+        }
+        
+        // Fonction pour générer une référence de transaction unique
+        function generateTransactionReference() {
+            return 'REF' + Date.now() + Math.floor(Math.random() * 1000);
         }
         
         // Fonction pour déterminer le statut de la carte
@@ -858,6 +1513,17 @@
                 case 'warning': return `Expire dans ${daysRemaining} jours`;
                 case 'expired': return 'Expirée';
                 default: return 'Inconnu';
+            }
+        }
+        
+        // Fonction pour obtenir le texte du type de transaction
+        function getTransactionTypeText(type) {
+            switch(type) {
+                case 'recharge': return 'Recharge';
+                case 'transfer': return 'Transfert';
+                case 'receive': return 'Réception';
+                case 'withdraw': return 'Retrait';
+                default: return 'Transaction';
             }
         }
         
@@ -942,6 +1608,24 @@
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const year = date.getFullYear();
             return `${day}/${month}/${year}`;
+        }
+        
+        // Fonction pour formater une date et heure
+        function formatDateTime(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${day}/${month}/${year} ${hours}:${minutes}`;
+        }
+        
+        // Fonction pour formater une monnaie
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('fr-FR', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount) + ' FCFA';
         }
         
         // Fonction pour obtenir l'affichage du type de carte
