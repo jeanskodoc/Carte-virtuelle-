@@ -796,6 +796,198 @@
             font-size: 0.9rem;
             margin-top: 5px;
         }
+        
+        /* Améliorations ajoutées */
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            color: var(--success-color);
+            margin-top: 5px;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .card-action-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .virtual-card.gold .card-action-btn {
+            color: #333;
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-action-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .virtual-card.gold .card-action-btn:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .transaction-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .filter-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #777;
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .password-container input {
+            padding-right: 40px;
+        }
+        
+        .transaction-chart {
+            height: 200px;
+            margin-top: 20px;
+        }
+        
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .notifications-panel {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            width: 300px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 100;
+            display: none;
+        }
+        
+        .notification-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        
+        .notification-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .notification-time {
+            font-size: 0.8rem;
+            color: #777;
+        }
+        
+        .dark-mode-toggle {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        body.dark-mode {
+            --text-color: #f0f0f0;
+            --light-color: #2d3748;
+            background-color: #1a202c;
+        }
+        
+        body.dark-mode .card {
+            background-color: #2d3748;
+            color: #f0f0f0;
+        }
+        
+        body.dark-mode .account-info {
+            background-color: #4a5568;
+        }
+        
+        body.dark-mode .form-control {
+            background-color: #2d3748;
+            border-color: #4a5568;
+            color: #f0f0f0;
+        }
+        
+        body.dark-mode .filter-btn {
+            background-color: #2d3748;
+            color: #f0f0f0;
+            border-color: #4a5568;
+        }
+        
+        body.dark-mode .filter-btn.active {
+            background-color: var(--primary-color);
+        }
     </style>
 </head>
 <body>
@@ -818,9 +1010,17 @@
                 </div>
                 <div class="form-group">
                     <label for="password">Mot de passe</label>
-                    <input type="password" id="password" placeholder="Votre mot de passe" required>
+                    <div class="password-container">
+                        <input type="password" id="password" placeholder="Votre mot de passe" required>
+                        <button type="button" class="password-toggle" id="password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
-                <button type="submit" class="login-btn">Se connecter</button>
+                <button type="submit" class="login-btn" id="login-submit-btn">
+                    <span id="login-btn-text">Se connecter</span>
+                    <div class="loading-spinner" id="login-spinner" style="display: none;"></div>
+                </button>
                 <div class="login-error" id="login-error">
                     Identifiant ou mot de passe incorrect
                 </div>
@@ -834,12 +1034,36 @@
             <div class="container">
                 <div class="header-content">
                     <div class="logo">
-                        <div class="avatar">VT</div>
+                        <div class="avatar">KM</div>
                         <h1>Portefeuille Visa Togo</h1>
                     </div>
                     <div class="user-info">
-                        <span id="user-fullname">Koffi Amétépé</span>
-                        <div class="avatar">KA</div>
+                        <button class="dark-mode-toggle" id="dark-mode-toggle">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        <div class="notification-bell" id="notification-bell">
+                            <i class="fas fa-bell"></i>
+                            <div class="notification-badge" id="notification-badge">3</div>
+                            <div class="notifications-panel" id="notifications-panel">
+                                <div class="notification-item">
+                                    <div class="notification-title">Bienvenue sur votre compte</div>
+                                    <div>Votre portefeuille Visa Togo est maintenant actif</div>
+                                    <div class="notification-time">Maintenant</div>
+                                </div>
+                                <div class="notification-item">
+                                    <div class="notification-title">Nouvelle fonctionnalité</div>
+                                    <div>Le paiement par QR Code est maintenant disponible</div>
+                                    <div class="notification-time">Il y a 1 jour</div>
+                                </div>
+                                <div class="notification-item">
+                                    <div class="notification-title">Sécurité</div>
+                                    <div>Vos transactions sont sécurisées et cryptées</div>
+                                    <div class="notification-time">Il y a 3 jours</div>
+                                </div>
+                            </div>
+                        </div>
+                        <span id="user-fullname">KOLA Maniwah Essohouna</span>
+                        <div class="avatar">KM</div>
                         <button class="logout-btn" id="logout-btn">Déconnexion</button>
                     </div>
                 </div>
@@ -851,19 +1075,19 @@
                 <h3>Informations du compte</h3>
                 <div class="info-row">
                     <div class="info-label">Nom complet:</div>
-                    <div id="account-fullname">Koffi Amétépé</div>
+                    <div id="account-fullname">KOLA Maniwah Essohouna</div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">Numéro de compte:</div>
-                    <div id="account-number">TG-2024-7531</div>
+                    <div id="account-number">TG-2024-KM01</div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">Téléphone:</div>
-                    <div id="account-phone">+228 90 12 34 56</div>
+                    <div id="account-phone">+228 90 00 00 00</div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">Date d'ouverture:</div>
-                    <div id="account-date">15 Janvier 2024</div>
+                    <div id="account-date">15 Mars 2024</div>
                 </div>
             </div>
             
@@ -874,39 +1098,75 @@
                         <span class="visa-logo">VISA</span>
                     </div>
                     <div class="card-chip">CHIP</div>
-                    <div class="card-number">4532 7654 3210 7531</div>
+                    <div class="card-number">4532 1987 6543 2109</div>
                     <div class="card-details">
-                        <div class="card-holder" id="card-holder">Koffi Amétépé</div>
+                        <div class="card-holder" id="card-holder">KOLA M ES</div>
                         <div class="card-expiry" id="card-expiry">12/26</div>
                     </div>
                     <div class="card-flag">Made in Togo</div>
+                    <div class="security-badge">
+                        <i class="fas fa-shield-alt"></i> Carte sécurisée
+                    </div>
+                    <div class="card-actions">
+                        <button class="card-action-btn" id="freeze-card">
+                            <i class="fas fa-snowflake"></i> Bloquer
+                        </button>
+                        <button class="card-action-btn" id="card-details">
+                            <i class="fas fa-info-circle"></i> Détails
+                        </button>
+                    </div>
                 </div>
                 <div class="virtual-card gold">
                     <div class="card-logo">
                         <span class="visa-logo">VISA</span>
                     </div>
                     <div class="card-chip">GOLD</div>
-                    <div class="card-number">5123 4567 8901 8642</div>
+                    <div class="card-number">5123 4567 8901 2345</div>
                     <div class="card-details">
-                        <div class="card-holder" id="card-holder-gold">Koffi Amétépé</div>
+                        <div class="card-holder" id="card-holder-gold">KOLA M ES</div>
                         <div class="card-expiry" id="card-expiry-gold">10/27</div>
                     </div>
                     <div class="card-flag">Made in Togo</div>
+                    <div class="security-badge">
+                        <i class="fas fa-shield-alt"></i> Carte sécurisée
+                    </div>
+                    <div class="card-actions">
+                        <button class="card-action-btn" id="freeze-card-gold">
+                            <i class="fas fa-snowflake"></i> Bloquer
+                        </button>
+                        <button class="card-action-btn" id="card-details-gold">
+                            <i class="fas fa-info-circle"></i> Détails
+                        </button>
+                    </div>
                 </div>
             </div>
             
             <div class="dashboard">
                 <div class="card balance-card">
                     <div class="balance-label">Solde actuel</div>
-                    <div class="balance-amount">125,750 FCFA</div>
-                    <div>Mis à jour il y a 2 minutes</div>
+                    <div class="balance-amount">0 FCFA</div>
+                    <div>Compte nouvellement créé</div>
                 </div>
                 
                 <div class="card">
                     <h2>Dernières transactions</h2>
+                    <div class="transaction-filters">
+                        <button class="filter-btn active" data-filter="all">Toutes</button>
+                        <button class="filter-btn" data-filter="income">Revenus</button>
+                        <button class="filter-btn" data-filter="expense">Dépenses</button>
+                    </div>
                     <div class="transactions">
                         <ul class="transaction-list" id="transaction-list">
                             <!-- Les transactions seront ajoutées dynamiquement -->
+                            <li class="transaction-item">
+                                <div class="transaction-info">
+                                    <div class="transaction-name">Ouverture de compte</div>
+                                    <div class="transaction-date">15 Mars 2024</div>
+                                </div>
+                                <div class="transaction-amount amount-positive">
+                                    +0 FCFA
+                                </div>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -933,6 +1193,15 @@
                             <div class="stat-icon">📊</div>
                             <div>Transactions</div>
                             <div class="stat-value" id="month-transactions">0</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Graphique simple des transactions -->
+                    <div class="transaction-chart" id="transaction-chart">
+                        <!-- Le graphique sera généré dynamiquement -->
+                        <div style="text-align: center; padding: 40px 0; color: #777;">
+                            <i class="fas fa-chart-bar" style="font-size: 3rem; margin-bottom: 10px;"></i>
+                            <p>Aucune transaction pour le moment</p>
                         </div>
                     </div>
                     
@@ -1020,16 +1289,16 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="recharge-nom">Votre nom</label>
-                            <input type="text" id="recharge-nom" class="form-control" value="Koffi" required>
+                            <input type="text" id="recharge-nom" class="form-control" value="KOLA" required>
                         </div>
                         <div class="form-group">
                             <label for="recharge-prenom">Votre prénom</label>
-                            <input type="text" id="recharge-prenom" class="form-control" value="Amétépé" required>
+                            <input type="text" id="recharge-prenom" class="form-control" value="Maniwah" required>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="recharge-contact">Votre contact</label>
-                        <input type="tel" id="recharge-contact" class="form-control" value="+228 90 12 34 56" required>
+                        <input type="tel" id="recharge-contact" class="form-control" value="+228 90 00 00 00" required>
                     </div>
                     
                     <div class="fedapay-section">
@@ -1045,7 +1314,10 @@
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn" id="cancel-recharge">Annuler</button>
-                        <button type="submit" class="btn btn-primary">Confirmer la recharge</button>
+                        <button type="submit" class="btn btn-primary" id="submit-recharge">
+                            <span id="recharge-btn-text">Confirmer la recharge</span>
+                            <div class="loading-spinner" id="recharge-spinner" style="display: none;"></div>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -1069,16 +1341,16 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="achat-nom">Votre nom</label>
-                            <input type="text" id="achat-nom" class="form-control" value="Koffi" required>
+                            <input type="text" id="achat-nom" class="form-control" value="KOLA" required>
                         </div>
                         <div class="form-group">
                             <label for="achat-prenom">Votre prénom</label>
-                            <input type="text" id="achat-prenom" class="form-control" value="Amétépé" required>
+                            <input type="text" id="achat-prenom" class="form-control" value="Maniwah" required>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="achat-contact">Votre contact</label>
-                        <input type="tel" id="achat-contact" class="form-control" value="+228 90 12 34 56" required>
+                        <input type="tel" id="achat-contact" class="form-control" value="+228 90 00 00 00" required>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -1095,7 +1367,10 @@
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn" id="cancel-achat">Annuler</button>
-                        <button type="submit" class="btn btn-danger">Effectuer l'achat</button>
+                        <button type="submit" class="btn btn-danger" id="submit-achat">
+                            <span id="achat-btn-text">Effectuer l'achat</span>
+                            <div class="loading-spinner" id="achat-spinner" style="display: none;"></div>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -1129,23 +1404,26 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="recevoir-client-nom">Votre nom</label>
-                            <input type="text" id="recevoir-client-nom" class="form-control" value="Koffi" required>
+                            <input type="text" id="recevoir-client-nom" class="form-control" value="KOLA" required>
                         </div>
                         <div class="form-group">
                             <label for="recevoir-client-prenom">Votre prénom</label>
-                            <input type="text" id="recevoir-client-prenom" class="form-control" value="Amétépé" required>
+                            <input type="text" id="recevoir-client-prenom" class="form-control" value="Maniwah" required>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="recevoir-client-contact">Votre contact</label>
-                        <input type="tel" id="recevoir-client-contact" class="form-control" value="+228 90 12 34 56" required>
+                        <input type="tel" id="recevoir-client-contact" class="form-control" value="+228 90 00 00 00" required>
                     </div>
                     <div class="whatsapp-info">
                         <i class="fab fa-whatsapp"></i> Un lien de confirmation sera envoyé par WhatsApp au 92871605
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn" id="cancel-recevoir">Annuler</button>
-                        <button type="submit" class="btn btn-warning">Confirmer la réception</button>
+                        <button type="submit" class="btn btn-warning" id="submit-recevoir">
+                            <span id="recevoir-btn-text">Confirmer la réception</span>
+                            <div class="loading-spinner" id="recevoir-spinner" style="display: none;"></div>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -1186,16 +1464,16 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="retrait-nom">Votre nom</label>
-                            <input type="text" id="retrait-nom" class="form-control" value="Koffi" required>
+                            <input type="text" id="retrait-nom" class="form-control" value="KOLA" required>
                         </div>
                         <div class="form-group">
                             <label for="retrait-prenom">Votre prénom</label>
-                            <input type="text" id="retrait-prenom" class="form-control" value="Amétépé" required>
+                            <input type="text" id="retrait-prenom" class="form-control" value="Maniwah" required>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="retrait-contact">Votre contact</label>
-                        <input type="tel" id="retrait-contact" class="form-control" value="+228 90 12 34 56" required>
+                        <input type="tel" id="retrait-contact" class="form-control" value="+228 90 00 00 00" required>
                     </div>
                     <div class="form-group">
                         <label for="retrait-numero">Numéro de réception</label>
@@ -1206,7 +1484,10 @@
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn" id="cancel-retrait">Annuler</button>
-                        <button type="submit" class="btn btn-info">Demander le retrait</button>
+                        <button type="submit" class="btn btn-info" id="submit-retrait">
+                            <span id="retrait-btn-text">Demander le retrait</span>
+                            <div class="loading-spinner" id="retrait-spinner" style="display: none;"></div>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -1252,52 +1533,43 @@
         const registeredAccounts = [
             {
                 id: 1,
-                username: "koffi",
-                password: "password123",
-                fullname: "Koffi Amétépé",
-                accountNumber: "TG-2024-7531",
-                phone: "+228 90 12 34 56",
-                accountDate: "15 Janvier 2024",
-                balance: 125750,
+                username: "KOLA",
+                password: "KOLA1@",
+                fullname: "KOLA Maniwah Essohouna",
+                accountNumber: "TG-2024-KM01",
+                phone: "+228 90 00 00 00",
+                accountDate: "15 Mars 2024",
+                balance: 0,
                 cards: [
                     {
                         type: "Visa Classique",
-                        number: "4532 7654 3210 7531",
-                        expiry: "12/26"
+                        number: "4532 1987 6543 2109",
+                        expiry: "12/26",
+                        frozen: false
                     },
                     {
                         type: "Visa Gold",
-                        number: "5123 4567 8901 8642",
-                        expiry: "10/27"
+                        number: "5123 4567 8901 2345",
+                        expiry: "10/27",
+                        frozen: false
                     }
                 ],
                 accounts: [
                     {
                         type: "Compte Principal",
-                        balance: 125750,
-                        number: "TG-2024-7531",
-                        phone: "+228 90 12 34 56"
+                        balance: 0,
+                        number: "TG-2024-KM01",
+                        phone: "+228 90 00 00 00"
                     },
                     {
                         type: "Compte Épargne",
-                        balance: 450000,
-                        number: "TG-2024-8642",
-                        phone: "+228 90 12 34 56"
-                    },
-                    {
-                        type: "Compte Business",
-                        balance: 1250000,
-                        number: "TG-2024-9753",
-                        phone: "+228 91 23 45 67",
-                        name: "Amétépé Services"
+                        balance: 0,
+                        number: "TG-2024-KM02",
+                        phone: "+228 90 00 00 00"
                     }
                 ],
                 transactions: [
-                    { id: 1, name: "Achat supermarché", amount: -25500, date: new Date(), type: "expense", category: "food" },
-                    { id: 2, name: "Dépôt YAS Togo", amount: 50000, date: new Date(Date.now() - 86400000), type: "income", category: "transfer" },
-                    { id: 3, name: "Paiement facture électricité", amount: -15250, date: new Date(Date.now() - 2*86400000), type: "expense", category: "bills" },
-                    { id: 4, name: "Retrait YAS Togo", amount: -20000, date: new Date(Date.now() - 4*86400000), type: "expense", category: "transfer" },
-                    { id: 5, name: "Salaire", amount: 200000, date: new Date(Date.now() - 7*86400000), type: "income", category: "salary" }
+                    { id: 1, name: "Ouverture de compte", amount: 0, date: new Date(), type: "income", category: "account" }
                 ]
             },
             {
@@ -1313,7 +1585,8 @@
                     {
                         type: "Visa Classique",
                         number: "4111 1111 1111 1111",
-                        expiry: "08/25"
+                        expiry: "08/25",
+                        frozen: false
                     }
                 ],
                 accounts: [
@@ -1336,6 +1609,7 @@
         let currentBalance = 0;
         let transactions = [];
         let saveTimer = null;
+        let darkMode = localStorage.getItem('darkMode') === 'true';
         
         // Éléments DOM
         const loginContainer = document.getElementById('login-container');
@@ -1344,6 +1618,10 @@
         const loginError = document.getElementById('login-error');
         const logoutBtn = document.getElementById('logout-btn');
         const saveNotification = document.getElementById('save-notification');
+        const passwordToggle = document.getElementById('password-toggle');
+        const loginSubmitBtn = document.getElementById('login-submit-btn');
+        const loginSpinner = document.getElementById('login-spinner');
+        const loginBtnText = document.getElementById('login-btn-text');
         
         const userFullname = document.getElementById('user-fullname');
         const accountFullname = document.getElementById('account-fullname');
@@ -1369,6 +1647,12 @@
         const navTabs = document.querySelectorAll('.nav-tab');
         const tabContents = document.querySelectorAll('.tab-content');
         const accountsGrid = document.getElementById('accounts-grid');
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const notificationBell = document.getElementById('notification-bell');
+        const notificationsPanel = document.getElementById('notifications-panel');
+        const notificationBadge = document.getElementById('notification-badge');
+        const freezeCardBtn = document.getElementById('freeze-card');
+        const freezeCardGoldBtn = document.getElementById('freeze-card-gold');
         
         // Éléments des frais
         const rechargeFeesSection = document.getElementById('recharge-fees-section');
@@ -1392,8 +1676,31 @@
         const recevoirForm = document.getElementById('recevoir-form');
         const retraitForm = document.getElementById('retrait-form');
         
+        // Boutons de soumission avec spinners
+        const submitRechargeBtn = document.getElementById('submit-recharge');
+        const rechargeSpinner = document.getElementById('recharge-spinner');
+        const rechargeBtnText = document.getElementById('recharge-btn-text');
+        
+        const submitAchatBtn = document.getElementById('submit-achat');
+        const achatSpinner = document.getElementById('achat-spinner');
+        const achatBtnText = document.getElementById('achat-btn-text');
+        
+        const submitRecevoirBtn = document.getElementById('submit-recevoir');
+        const recevoirSpinner = document.getElementById('recevoir-spinner');
+        const recevoirBtnText = document.getElementById('recevoir-btn-text');
+        
+        const submitRetraitBtn = document.getElementById('submit-retrait');
+        const retraitSpinner = document.getElementById('retrait-spinner');
+        const retraitBtnText = document.getElementById('retrait-btn-text');
+        
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
+            // Appliquer le mode sombre si activé
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+            
             setupEventListeners();
             loadSavedData();
         });
@@ -1402,6 +1709,9 @@
         function setupEventListeners() {
             // Formulaire de connexion
             loginForm.addEventListener('submit', handleLogin);
+            
+            // Toggle de visibilité du mot de passe
+            passwordToggle.addEventListener('click', togglePasswordVisibility);
             
             // Bouton de déconnexion
             logoutBtn.addEventListener('click', handleLogout);
@@ -1484,6 +1794,139 @@
             // Écouteurs pour les frais
             document.getElementById('recharge-montant').addEventListener('input', updateRechargeFees);
             document.getElementById('retrait-montant').addEventListener('input', updateRetraitFees);
+            
+            // Filtres de transactions
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // Activer le filtre sélectionné
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Filtrer les transactions
+                    filterTransactions(filter);
+                });
+            });
+            
+            // Mode sombre
+            darkModeToggle.addEventListener('click', toggleDarkMode);
+            
+            // Notifications
+            notificationBell.addEventListener('click', toggleNotifications);
+            
+            // Actions sur les cartes
+            freezeCardBtn.addEventListener('click', function() {
+                toggleCardFreeze('classic');
+            });
+            
+            freezeCardGoldBtn.addEventListener('click', function() {
+                toggleCardFreeze('gold');
+            });
+        }
+        
+        // Basculer la visibilité du mot de passe
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const icon = passwordToggle.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
+        // Basculer le mode sombre
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            document.body.classList.toggle('dark-mode');
+            
+            if (darkMode) {
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+            
+            // Sauvegarder la préférence
+            localStorage.setItem('darkMode', darkMode);
+        }
+        
+        // Basculer l'affichage des notifications
+        function toggleNotifications() {
+            const isVisible = notificationsPanel.style.display === 'block';
+            notificationsPanel.style.display = isVisible ? 'none' : 'block';
+            
+            // Masquer le badge si on ouvre les notifications
+            if (!isVisible) {
+                notificationBadge.style.display = 'none';
+            }
+        }
+        
+        // Bloquer/débloquer une carte
+        function toggleCardFreeze(cardType) {
+            if (!currentUser) return;
+            
+            const cardIndex = cardType === 'classic' ? 0 : 1;
+            const card = currentUser.cards[cardIndex];
+            const button = cardType === 'classic' ? freezeCardBtn : freezeCardGoldBtn;
+            const icon = button.querySelector('i');
+            
+            card.frozen = !card.frozen;
+            
+            if (card.frozen) {
+                button.innerHTML = '<i class="fas fa-sun"></i> Débloquer';
+                showNotification(`Carte ${card.type} bloquée`, 'success');
+            } else {
+                button.innerHTML = '<i class="fas fa-snowflake"></i> Bloquer';
+                showNotification(`Carte ${card.type} débloquée`, 'success');
+            }
+            
+            // Sauvegarder les modifications
+            saveUserData();
+        }
+        
+        // Filtrer les transactions
+        function filterTransactions(filter) {
+            const transactionItems = document.querySelectorAll('.transaction-item');
+            
+            transactionItems.forEach(item => {
+                const amount = item.querySelector('.transaction-amount');
+                const isIncome = amount.classList.contains('amount-positive');
+                
+                if (filter === 'all') {
+                    item.style.display = 'flex';
+                } else if (filter === 'income' && isIncome) {
+                    item.style.display = 'flex';
+                } else if (filter === 'expense' && !isIncome) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // Afficher une notification
+        function showNotification(message, type = 'info') {
+            // Créer l'élément de notification
+            const notification = document.createElement('div');
+            notification.className = `save-notification ${type}`;
+            notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i> ${message}`;
+            
+            // Ajouter au body
+            document.body.appendChild(notification);
+            
+            // Afficher la notification
+            notification.style.display = 'block';
+            
+            // Supprimer après 3 secondes
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
         }
         
         // Mettre à jour l'affichage du solde dans les formulaires
@@ -1550,36 +1993,52 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             
-            // Vérifier les identifiants
-            const user = registeredAccounts.find(account => 
-                account.username === username && account.password === password
-            );
+            // Afficher le spinner de chargement
+            loginBtnText.style.display = 'none';
+            loginSpinner.style.display = 'inline-block';
+            loginSubmitBtn.disabled = true;
             
-            if (user) {
-                // Connexion réussie
-                currentUser = user;
-                currentBalance = user.balance;
-                transactions = [...user.transactions];
+            // Simuler un délai de connexion
+            setTimeout(() => {
+                // Vérifier les identifiants
+                const user = registeredAccounts.find(account => 
+                    account.username === username && account.password === password
+                );
                 
-                // Charger les données sauvegardées si elles existent
-                loadUserData();
+                if (user) {
+                    // Connexion réussie
+                    currentUser = user;
+                    currentBalance = user.balance;
+                    transactions = [...user.transactions];
+                    
+                    // Charger les données sauvegardées si elles existent
+                    loadUserData();
+                    
+                    // Mettre à jour l'interface
+                    updateUserInterface();
+                    
+                    // Afficher l'application et masquer l'écran de connexion
+                    loginContainer.style.display = 'none';
+                    appContainer.style.display = 'block';
+                    
+                    // Masquer l'erreur de connexion
+                    loginError.style.display = 'none';
+                    
+                    // Sauvegarder les données
+                    saveUserData();
+                    
+                    // Afficher une notification de bienvenue
+                    showNotification(`Bienvenue, ${user.fullname} !`, 'success');
+                } else {
+                    // Afficher l'erreur de connexion
+                    loginError.style.display = 'block';
+                }
                 
-                // Mettre à jour l'interface
-                updateUserInterface();
-                
-                // Afficher l'application et masquer l'écran de connexion
-                loginContainer.style.display = 'none';
-                appContainer.style.display = 'block';
-                
-                // Masquer l'erreur de connexion
-                loginError.style.display = 'none';
-                
-                // Sauvegarder les données
-                saveUserData();
-            } else {
-                // Afficher l'erreur de connexion
-                loginError.style.display = 'block';
-            }
+                // Réinitialiser le bouton de connexion
+                loginBtnText.style.display = 'inline-block';
+                loginSpinner.style.display = 'none';
+                loginSubmitBtn.disabled = false;
+            }, 1500);
         }
         
         // Gérer la déconnexion
@@ -1597,6 +2056,9 @@
             // Afficher l'écran de connexion et masquer l'application
             loginContainer.style.display = 'flex';
             appContainer.style.display = 'none';
+            
+            // Afficher une notification de déconnexion
+            showNotification('Vous avez été déconnecté avec succès', 'info');
         }
         
         // Mettre à jour l'interface utilisateur
@@ -1612,12 +2074,25 @@
             
             // Mettre à jour les cartes
             if (currentUser.cards.length > 0) {
-                document.getElementById('card-holder').textContent = currentUser.fullname;
+                document.getElementById('card-holder').textContent = "KOLA M ES";
                 document.getElementById('card-expiry').textContent = currentUser.cards[0].expiry;
                 
+                // Mettre à jour l'état de blocage des cartes
+                if (currentUser.cards[0].frozen) {
+                    freezeCardBtn.innerHTML = '<i class="fas fa-sun"></i> Débloquer';
+                } else {
+                    freezeCardBtn.innerHTML = '<i class="fas fa-snowflake"></i> Bloquer';
+                }
+                
                 if (currentUser.cards.length > 1) {
-                    document.getElementById('card-holder-gold').textContent = currentUser.fullname;
+                    document.getElementById('card-holder-gold').textContent = "KOLA M ES";
                     document.getElementById('card-expiry-gold').textContent = currentUser.cards[1].expiry;
+                    
+                    if (currentUser.cards[1].frozen) {
+                        freezeCardGoldBtn.innerHTML = '<i class="fas fa-sun"></i> Débloquer';
+                    } else {
+                        freezeCardGoldBtn.innerHTML = '<i class="fas fa-snowflake"></i> Bloquer';
+                    }
                 }
             }
             
@@ -1634,20 +2109,20 @@
             renderAccounts();
             
             // Remplir les formulaires avec les informations utilisateur
-            document.getElementById('recharge-nom').value = currentUser.fullname.split(' ')[0];
-            document.getElementById('recharge-prenom').value = currentUser.fullname.split(' ')[1] || '';
+            document.getElementById('recharge-nom').value = "KOLA";
+            document.getElementById('recharge-prenom').value = "Maniwah";
             document.getElementById('recharge-contact').value = currentUser.phone;
             
-            document.getElementById('achat-nom').value = currentUser.fullname.split(' ')[0];
-            document.getElementById('achat-prenom').value = currentUser.fullname.split(' ')[1] || '';
+            document.getElementById('achat-nom').value = "KOLA";
+            document.getElementById('achat-prenom').value = "Maniwah";
             document.getElementById('achat-contact').value = currentUser.phone;
             
-            document.getElementById('recevoir-client-nom').value = currentUser.fullname.split(' ')[0];
-            document.getElementById('recevoir-client-prenom').value = currentUser.fullname.split(' ')[1] || '';
+            document.getElementById('recevoir-client-nom').value = "KOLA";
+            document.getElementById('recevoir-client-prenom').value = "Maniwah";
             document.getElementById('recevoir-client-contact').value = currentUser.phone;
             
-            document.getElementById('retrait-nom').value = currentUser.fullname.split(' ')[0];
-            document.getElementById('retrait-prenom').value = currentUser.fullname.split(' ')[1] || '';
+            document.getElementById('retrait-nom').value = "KOLA";
+            document.getElementById('retrait-prenom').value = "Maniwah";
             document.getElementById('retrait-contact').value = currentUser.phone;
         }
         
@@ -1670,7 +2145,7 @@
                     </div>
                     <div class="account-balance">${formatCurrency(account.balance)}</div>
                     <div class="account-details">
-                        <div>${account.name || currentUser.fullname}</div>
+                        <div>${currentUser.fullname}</div>
                         <div>${account.number}</div>
                         <div>${account.phone}</div>
                     </div>
@@ -1731,20 +2206,20 @@
             
             // Rétablir les valeurs par défaut pour les champs personnels
             if (currentUser) {
-                document.getElementById('recharge-nom').value = currentUser.fullname.split(' ')[0];
-                document.getElementById('recharge-prenom').value = currentUser.fullname.split(' ')[1] || '';
+                document.getElementById('recharge-nom').value = "KOLA";
+                document.getElementById('recharge-prenom').value = "Maniwah";
                 document.getElementById('recharge-contact').value = currentUser.phone;
                 
-                document.getElementById('achat-nom').value = currentUser.fullname.split(' ')[0];
-                document.getElementById('achat-prenom').value = currentUser.fullname.split(' ')[1] || '';
+                document.getElementById('achat-nom').value = "KOLA";
+                document.getElementById('achat-prenom').value = "Maniwah";
                 document.getElementById('achat-contact').value = currentUser.phone;
                 
-                document.getElementById('recevoir-client-nom').value = currentUser.fullname.split(' ')[0];
-                document.getElementById('recevoir-client-prenom').value = currentUser.fullname.split(' ')[1] || '';
+                document.getElementById('recevoir-client-nom').value = "KOLA";
+                document.getElementById('recevoir-client-prenom').value = "Maniwah";
                 document.getElementById('recevoir-client-contact').value = currentUser.phone;
                 
-                document.getElementById('retrait-nom').value = currentUser.fullname.split(' ')[0];
-                document.getElementById('retrait-prenom').value = currentUser.fullname.split(' ')[1] || '';
+                document.getElementById('retrait-nom').value = "KOLA";
+                document.getElementById('retrait-prenom').value = "Maniwah";
                 document.getElementById('retrait-contact').value = currentUser.phone;
             }
         }
@@ -1758,6 +2233,11 @@
             const nom = document.getElementById('recharge-nom').value;
             const prenom = document.getElementById('recharge-prenom').value;
             const contact = document.getElementById('recharge-contact').value;
+            
+            // Afficher le spinner de chargement
+            rechargeBtnText.style.display = 'none';
+            rechargeSpinner.style.display = 'inline-block';
+            submitRechargeBtn.disabled = true;
             
             // Calculer les frais (6%)
             const frais = Math.round(montant * 0.06);
@@ -1782,11 +2262,18 @@
             setTimeout(() => {
                 // Ajouter la transaction (seul le montant net est crédité)
                 addTransaction(`Rechargement ${methode}`, montant, new Date(), "income", "recharge");
-                alert(`Votre compte a été rechargé de ${formatCurrency(montant)}. Frais de ${formatCurrency(frais)} appliqués.`);
+                
+                // Réinitialiser le bouton
+                rechargeBtnText.style.display = 'inline-block';
+                rechargeSpinner.style.display = 'none';
+                submitRechargeBtn.disabled = false;
+                
+                // Afficher une notification
+                showNotification(`Votre compte a été rechargé de ${formatCurrency(montant)}. Frais de ${formatCurrency(frais)} appliqués.`, 'success');
+                
+                // Fermer le modal
+                closeAllModals();
             }, 2000);
-            
-            // Fermer le modal
-            closeAllModals();
         }
         
         // Gérer la soumission du formulaire d'achat
@@ -1801,9 +2288,19 @@
             const commercantNom = document.getElementById('achat-commercant-nom').value;
             const commercantContact = document.getElementById('achat-commercant-contact').value;
             
+            // Afficher le spinner de chargement
+            achatBtnText.style.display = 'none';
+            achatSpinner.style.display = 'inline-block';
+            submitAchatBtn.disabled = true;
+            
             // Vérifier que le solde est suffisant
             if (montant > currentBalance) {
                 alert("Solde insuffisant pour effectuer cet achat.");
+                
+                // Réinitialiser le bouton
+                achatBtnText.style.display = 'inline-block';
+                achatSpinner.style.display = 'none';
+                submitAchatBtn.disabled = false;
                 return;
             }
             
@@ -1830,6 +2327,11 @@
             
             // Ajouter la transaction (en attente)
             addTransaction(`Achat: ${description}`, -montant, new Date(), "expense", "achat");
+            
+            // Réinitialiser le bouton
+            achatBtnText.style.display = 'inline-block';
+            achatSpinner.style.display = 'none';
+            submitAchatBtn.disabled = false;
         }
         
         // Gérer la soumission du formulaire de réception
@@ -1843,6 +2345,11 @@
             const clientNom = document.getElementById('recevoir-client-nom').value;
             const clientPrenom = document.getElementById('recevoir-client-prenom').value;
             const clientContact = document.getElementById('recevoir-client-contact').value;
+            
+            // Afficher le spinner de chargement
+            recevoirBtnText.style.display = 'none';
+            recevoirSpinner.style.display = 'inline-block';
+            submitRecevoirBtn.disabled = true;
             
             // Générer le message WhatsApp avec le solde actuel
             const message = `CONFIRMATION DE RÉCEPTION%0A%0A` +
@@ -1860,7 +2367,13 @@
             // Ajouter la transaction
             addTransaction(`Réception de ${expediteurNom} ${expediteurPrenom}`, montant, new Date(), "income", "reception");
             
-            alert(`Réception de ${formatCurrency(montant)} confirmée. Le virement a été effectué sur votre compte.`);
+            // Réinitialiser le bouton
+            recevoirBtnText.style.display = 'inline-block';
+            recevoirSpinner.style.display = 'none';
+            submitRecevoirBtn.disabled = false;
+            
+            // Afficher une notification
+            showNotification(`Réception de ${formatCurrency(montant)} confirmée. Le virement a été effectué sur votre compte.`, 'success');
             
             // Fermer le modal
             closeAllModals();
@@ -1876,6 +2389,11 @@
             const contact = document.getElementById('retrait-contact').value;
             const numeroReception = document.getElementById('retrait-numero').value;
             
+            // Afficher le spinner de chargement
+            retraitBtnText.style.display = 'none';
+            retraitSpinner.style.display = 'inline-block';
+            submitRetraitBtn.disabled = true;
+            
             // Calculer les frais (15%)
             const frais = Math.round(montant * 0.15);
             const total = montant + frais;
@@ -1883,6 +2401,11 @@
             // Vérifier que le solde est suffisant
             if (total > currentBalance) {
                 alert(`Solde insuffisant pour effectuer ce retrait. Le total débité serait de ${formatCurrency(total)} (montant + frais).`);
+                
+                // Réinitialiser le bouton
+                retraitBtnText.style.display = 'inline-block';
+                retraitSpinner.style.display = 'none';
+                submitRetraitBtn.disabled = false;
                 return;
             }
             
@@ -1905,11 +2428,18 @@
             setTimeout(() => {
                 // Ajouter la transaction (le total est débité)
                 addTransaction(`Retrait vers ${numeroReception}`, -total, new Date(), "expense", "retrait");
-                alert(`Votre demande de retrait de ${formatCurrency(montant)} a été envoyée. Frais de ${formatCurrency(frais)} appliqués.`);
+                
+                // Réinitialiser le bouton
+                retraitBtnText.style.display = 'inline-block';
+                retraitSpinner.style.display = 'none';
+                submitRetraitBtn.disabled = false;
+                
+                // Afficher une notification
+                showNotification(`Votre demande de retrait de ${formatCurrency(montant)} a été envoyée. Frais de ${formatCurrency(frais)} appliqués.`, 'success');
+                
+                // Fermer le modal
+                closeAllModals();
             }, 2000);
-            
-            // Fermer le modal
-            closeAllModals();
         }
         
         // Afficher le QR Code
@@ -1998,24 +2528,36 @@
             // Afficher seulement les 5 dernières transactions
             const recentTransactions = transactions.slice(0, 5);
             
-            recentTransactions.forEach(transaction => {
+            if (recentTransactions.length === 0) {
                 const listItem = document.createElement('li');
                 listItem.className = 'transaction-item';
-                
-                const dateStr = formatDate(transaction.date);
-                
                 listItem.innerHTML = `
                     <div class="transaction-info">
-                        <div class="transaction-name">${transaction.name}</div>
-                        <div class="transaction-date">${dateStr}</div>
-                    </div>
-                    <div class="transaction-amount ${transaction.amount > 0 ? 'amount-positive' : 'amount-negative'}">
-                        ${transaction.amount > 0 ? '+' : ''}${formatCurrency(transaction.amount)}
+                        <div class="transaction-name">Aucune transaction</div>
+                        <div class="transaction-date">Effectuez votre première transaction</div>
                     </div>
                 `;
-                
                 transactionList.appendChild(listItem);
-            });
+            } else {
+                recentTransactions.forEach(transaction => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'transaction-item';
+                    
+                    const dateStr = formatDate(transaction.date);
+                    
+                    listItem.innerHTML = `
+                        <div class="transaction-info">
+                            <div class="transaction-name">${transaction.name}</div>
+                            <div class="transaction-date">${dateStr}</div>
+                        </div>
+                        <div class="transaction-amount ${transaction.amount > 0 ? 'amount-positive' : 'amount-negative'}">
+                            ${transaction.amount > 0 ? '+' : ''}${formatCurrency(transaction.amount)}
+                        </div>
+                    `;
+                    
+                    transactionList.appendChild(listItem);
+                });
+            }
         }
         
         // Mettre à jour les statistiques du mois
