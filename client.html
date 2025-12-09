@@ -1221,7 +1221,7 @@
                 </div>
                 <div class="info-row">
                     <div class="info-label">Téléphone:</div>
-                    <div id="account-phone">+228 90 00 00 00</div>
+                    <div id="account-phone">+228 93 38 75 95</div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">Date d'ouverture:</div>
@@ -1406,7 +1406,7 @@
                             <span class="fees-value" id="recharge-amount-display">0 FCFA</span>
                         </div>
                         <div class="fees-row">
-                            <span class="fees-label">Frais de recharge (6%):</span>
+                            <span class="fees-label">Frais de recharge (5%):</span>
                             <span class="fees-value" id="recharge-fees-display">0 FCFA</span>
                         </div>
                         <div class="fees-total">
@@ -1436,7 +1436,7 @@
                     </div>
                     <div class="form-group">
                         <label for="recharge-contact">Votre contact</label>
-                        <input type="tel" id="recharge-contact" class="form-control" value="+228 90 00 00 00" required>
+                        <input type="tel" id="recharge-contact" class="form-control" value="+228 93 38 75 95" required>
                     </div>
                     
                     <div class="fedapay-section">
@@ -1587,7 +1587,7 @@
                             <span class="fees-value" id="retrait-amount-display">0 FCFA</span>
                         </div>
                         <div class="fees-row">
-                            <span class="fees-label">Frais de retrait (15%):</span>
+                            <span class="fees-label">Frais de retrait (9%):</span>
                             <span class="fees-value" id="retrait-fees-display">0 FCFA</span>
                         </div>
                         <div class="fees-total">
@@ -2094,8 +2094,8 @@
             const montant = parseInt(montantInput.value) || 0;
             
             if (montant > 0) {
-                // Calculer les frais (4%)
-                const frais = Math.round(montant * 0.04);
+                // Calculer les frais (5%)
+                const frais = Math.round(montant * 0.05);
                 const total = montant + frais;
                 
                 // Mettre à jour l'affichage
@@ -2387,8 +2387,8 @@
             rechargeSpinner.style.display = 'inline-block';
             submitRechargeBtn.disabled = true;
             
-            // Calculer les frais (4%)
-            const frais = Math.round(montant * 0.04);
+            // Calculer les frais (5%)
+            const frais = Math.round(montant * 0.05);
             const total = montant + frais;
             
             // Générer le message WhatsApp avec le solde actuel et les frais
