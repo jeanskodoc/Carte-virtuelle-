@@ -2094,8 +2094,8 @@
             const montant = parseInt(montantInput.value) || 0;
             
             if (montant > 0) {
-                // Calculer les frais (6%)
-                const frais = Math.round(montant * 0.06);
+                // Calculer les frais (4%)
+                const frais = Math.round(montant * 0.04);
                 const total = montant + frais;
                 
                 // Mettre à jour l'affichage
@@ -2117,8 +2117,8 @@
             const montant = parseInt(montantInput.value) || 0;
             
             if (montant > 0) {
-                // Calculer les frais (15%)
-                const frais = Math.round(montant * 0.15);
+                // Calculer les frais (9%)
+                const frais = Math.round(montant * 0.09);
                 const total = montant + frais;
                 
                 // Mettre à jour l'affichage
@@ -2387,8 +2387,8 @@
             rechargeSpinner.style.display = 'inline-block';
             submitRechargeBtn.disabled = true;
             
-            // Calculer les frais (6%)
-            const frais = Math.round(montant * 0.06);
+            // Calculer les frais (4%)
+            const frais = Math.round(montant * 0.04);
             const total = montant + frais;
             
             // Générer le message WhatsApp avec le solde actuel et les frais
@@ -2542,8 +2542,8 @@
             retraitSpinner.style.display = 'inline-block';
             submitRetraitBtn.disabled = true;
             
-            // Calculer les frais (15%)
-            const frais = Math.round(montant * 0.15);
+            // Calculer les frais (9%)
+            const frais = Math.round(montant * 0.09);
             const total = montant + frais;
             
             // Vérifier que le solde est suffisant
