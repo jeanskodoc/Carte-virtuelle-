@@ -806,7 +806,7 @@
                                 <input type="number" id="rechargeAmount" min="100" required>
                             </div>
                             <div class="form-group">
-                                <p>Frais de service: 6% du montant</p>
+                                <p>Frais de service: 5% du montant</p>
                             </div>
                             <button type="submit">Recharger la carte</button>
                         </form>
@@ -862,7 +862,7 @@
                                 <input type="tel" id="withdrawPhone" placeholder="Ex: +225 07 12 34 56 78" required>
                             </div>
                             <div class="form-group">
-                                <p>Frais de service: 15% du montant</p>
+                                <p>Frais de service: 9% du montant</p>
                             </div>
                             <button type="submit">Effectuer le retrait</button>
                         </form>
@@ -1556,7 +1556,7 @@
                 return;
             }
             
-            const fee = amount * 0.06; // Frais de 6%
+            const fee = amount * 0.05; // Frais de 5%
             const totalAmount = amount - fee;
             
             const client = clients.find(c => c.id === currentClientId);
@@ -1734,7 +1734,7 @@
                 return;
             }
             
-            const fee = amount * 0.15; // Frais de 15%
+            const fee = amount * 0.09; // Frais de 9%
             const totalAmount = amount + fee;
             
             const client = clients.find(c => c.id === currentClientId);
