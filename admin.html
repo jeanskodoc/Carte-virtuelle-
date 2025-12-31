@@ -1551,8 +1551,8 @@
             if (!amountInput) return;
             
             const amount = parseFloat(amountInput.value);
-            if (isNaN(amount) || amount < 100) {
-                alert('Veuillez entrer un montant valide (minimum 100 FCFA).');
+            if (isNaN(amount) || amount < 1000) {
+                alert('Veuillez entrer un montant valide (minimum 1000 FCFA).');
                 return;
             }
             
@@ -1605,7 +1605,7 @@
             const recipient = document.getElementById('transferRecipient').value;
             const phone = document.getElementById('transferPhone').value;
             
-            if (isNaN(amount) || amount < 100) {
+            if (isNaN(amount) || amount < 1) {
                 alert('Veuillez entrer un montant valide (minimum 1 FCFA).');
                 return;
             }
@@ -1724,8 +1724,8 @@
             const amount = parseFloat(document.getElementById('withdrawAmount').value);
             const phone = document.getElementById('withdrawPhone').value;
             
-            if (isNaN(amount) || amount < 100) {
-                alert('Veuillez entrer un montant valide (minimum 100 FCFA).');
+            if (isNaN(amount) || amount < 10000) {
+                alert('Veuillez entrer un montant valide (minimum 10000 FCFA).');
                 return;
             }
             
