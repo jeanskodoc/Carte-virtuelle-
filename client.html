@@ -7,7 +7,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Tous les styles CSS précédents restent inchangés */
         :root {
             --primary-color: #1a237e;
             --secondary-color: #283593;
@@ -44,7 +43,6 @@
             font-size: 14px;
         }
         
-        /* Écran de connexion */
         .login-container {
             display: flex;
             justify-content: center;
@@ -118,7 +116,6 @@
             font-size: 0.9rem;
         }
         
-        /* Application principale */
         .app-container {
             display: none;
         }
@@ -218,7 +215,6 @@
             font-size: 0.9rem;
         }
         
-        /* Style des cartes Visa virtuelles */
         .virtual-cards {
             display: flex;
             flex-direction: column;
@@ -370,7 +366,6 @@
             color: var(--danger-color);
         }
         
-        /* Boutons principaux - PLUS COMPACTS */
         .actions {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -433,7 +428,6 @@
             transform: translateY(0);
         }
         
-        /* Boutons de navigation par flèches */
         .tab-navigation {
             display: flex;
             justify-content: space-between;
@@ -692,7 +686,6 @@
             font-size: 0.8rem;
         }
         
-        /* Onglets pour les transactions */
         .transactions-tabs {
             display: flex;
             flex-direction: column;
@@ -753,7 +746,6 @@
             display: block;
         }
         
-        /* Onglets dans le modal */
         .nav-tabs-container {
             position: relative;
             margin-bottom: 15px;
@@ -911,7 +903,6 @@
             color: var(--success-color);
         }
         
-        /* Notification de sauvegarde */
         .save-notification {
             position: fixed;
             bottom: 15px;
@@ -950,7 +941,6 @@
             100% { opacity: 0; transform: translateY(20px); }
         }
         
-        /* Styles pour les frais */
         .fees-info {
             background-color: #fff3e0;
             padding: 10px;
@@ -989,7 +979,6 @@
             margin-top: 5px;
         }
         
-        /* Améliorations ajoutées */
         .security-badge {
             display: flex;
             align-items: center;
@@ -1182,7 +1171,6 @@
             background-color: var(--primary-color);
         }
         
-        /* Améliorations pour mobile */
         .mobile-menu {
             display: none;
             background: none;
@@ -1227,7 +1215,6 @@
             }
         }
         
-        /* Améliorations pour très petits écrans */
         @media (max-width: 360px) {
             .container {
                 padding: 10px;
@@ -1263,7 +1250,6 @@
             }
         }
         
-        /* Optimisations pour le tactile */
         @media (hover: none) {
             .btn:hover {
                 transform: none;
@@ -1286,7 +1272,6 @@
             }
         }
         
-        /* Amélioration de la lisibilité sur petits écrans */
         h2 {
             font-size: 1.3rem;
             margin-bottom: 10px;
@@ -1300,20 +1285,17 @@
             font-size: 0.9rem;
         }
         
-        /* Style pour les icônes dans les onglets */
         .tab-icon {
             margin-right: 5px;
             font-size: 0.9rem;
         }
         
-        /* Conteneur pour les statistiques et les transactions */
         .dashboard-content {
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
         
-        /* Style pour les notifications de frais */
         .fee-notification {
             background-color: #ffecb3;
             padding: 8px 12px;
@@ -1327,7 +1309,6 @@
             color: #d32f2f;
         }
         
-        /* Style pour l'historique des frais */
         .fee-history {
             margin-top: 15px;
             padding: 10px;
@@ -1353,7 +1334,6 @@
             border-bottom: none;
         }
         
-        /* Indicateur de frais appliqués */
         .maintenance-indicator {
             display: inline-flex;
             align-items: center;
@@ -1397,7 +1377,6 @@
             gap: 5px;
         }
         
-        /* Style pour indicateur de frais automatiques */
         .auto-fee-notice {
             background-color: rgba(255, 193, 7, 0.1);
             border: 1px solid #ffc107;
@@ -1412,15 +1391,24 @@
             color: #ffc107;
             margin-right: 5px;
         }
+        
+        .balance-loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
-    <!-- Notification de sauvegarde -->
     <div class="save-notification" id="save-notification">
         <i class="fas fa-check-circle"></i> Données sauvegardées
     </div>
     
-    <!-- Écran de connexion -->
     <div class="login-container" id="login-container">
         <div class="login-box">
             <div class="login-logo">
@@ -1452,7 +1440,6 @@
         </div>
     </div>
     
-    <!-- Application principale -->
     <div class="app-container" id="app-container">
         <header>
             <div class="container">
@@ -1518,7 +1505,6 @@
                 </div>
             </div>
             
-            <!-- Cartes Visa virtuelles -->
             <div class="virtual-cards">
                 <div class="virtual-card">
                     <div class="card-logo">
@@ -1571,16 +1557,18 @@
             <div class="dashboard">
                 <div class="card balance-card">
                     <div class="balance-label">Solde actuel</div>
-                    <div class="balance-amount">0 FCFA</div>
+                    <div class="balance-amount" id="balance-amount">
+                        <span class="balance-loading" id="balance-loading" style="display: inline-block;"></span>
+                        <span id="balance-text">Vérification des frais...</span>
+                    </div>
                     <div class="balance-info">
-                        <div>Compte nouvellement créé</div>
+                        <div>Compte Visa Togo</div>
                         <div class="fee-check" id="fee-status-check">
                             <i class="fas fa-info-circle"></i> Frais d'entretien: Vérification...
                         </div>
                     </div>
                 </div>
                 
-                <!-- Onglets pour les transactions -->
                 <div class="card transactions-tabs">
                     <div class="transactions-header">
                         <h2>Transactions</h2>
@@ -1606,11 +1594,9 @@
                         </div>
                     </div>
                     
-                    <!-- Contenu de l'onglet Recharger -->
                     <div class="transaction-tab-content active" id="transaction-recharge">
                         <div class="transactions">
                             <ul class="transaction-list" id="transaction-list">
-                                <!-- Les transactions seront ajoutées dynamiquement -->
                                 <li class="transaction-item">
                                     <div class="transaction-info">
                                         <div class="transaction-name">Ouverture de compte</div>
@@ -1630,7 +1616,6 @@
                         </div>
                     </div>
                     
-                    <!-- Contenu de l'onglet Acheter -->
                     <div class="transaction-tab-content" id="transaction-achat">
                         <div class="stats">
                             <div class="stat-card">
@@ -1662,10 +1647,8 @@
                         </div>
                     </div>
                     
-                    <!-- Contenu de l'onglet Recevoir -->
                     <div class="transaction-tab-content" id="transaction-recevoir">
                         <div class="transaction-chart" id="transaction-chart">
-                            <!-- Le graphique sera généré dynamiquement -->
                             <div style="text-align: center; padding: 30px 0; color: #777;">
                                 <i class="fas fa-chart-bar" style="font-size: 2.5rem; margin-bottom: 8px;"></i>
                                 <p>Aucune transaction pour le moment</p>
@@ -1679,7 +1662,6 @@
                         </div>
                     </div>
                     
-                    <!-- Contenu de l'onglet Retrait -->
                     <div class="transaction-tab-content" id="transaction-retrait">
                         <div class="account-info">
                             <h3>Instructions pour les retraits</h3>
@@ -1697,7 +1679,6 @@
                     </div>
                 </div>
                 
-                <!-- Section des frais appliqués -->
                 <div class="card" id="fees-section">
                     <h3>Frais appliqués 
                         <span class="maintenance-indicator" id="maintenance-indicator">
@@ -1712,7 +1693,6 @@
                     </div>
                     <div class="fee-history" id="fee-history">
                         <h4>Historique des frais récents</h4>
-                        <!-- Les frais seront ajoutés dynamiquement -->
                         <div class="fee-item" id="no-fees-message">
                             <span>Aucun frais appliqué récemment</span>
                         </div>
@@ -1720,17 +1700,14 @@
                 </div>
             </div>
             
-            <!-- Section des comptes enregistrés -->
             <div class="accounts-section">
                 <h2 class="section-title">Comptes enregistrés</h2>
                 <div class="accounts-grid" id="accounts-grid">
-                    <!-- Les comptes seront ajoutés dynamiquement -->
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- Modal pour les transactions -->
     <div class="modal" id="transaction-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1755,12 +1732,11 @@
                 </div>
             </div>
             
-            <!-- Formulaire de recharge -->
             <div class="tab-content active" id="recharge-tab">
                 <form id="recharge-form">
                     <div class="solde-actuel">
-                        <div>Solde actuel</div>
-                        <div class="solde-montant" id="solde-recharge">0 FCFA</div>
+                        <div>Solde actuel (après vérification frais)</div>
+                        <div class="solde-montant" id="solde-recharge">Vérification...</div>
                         <div class="fee-check">
                             <i class="fas fa-info-circle"></i> Frais d'entretien mensuel: 100 FCFA (si solde > 200 FCFA)
                         </div>
@@ -1771,7 +1747,6 @@
                         <input type="number" id="recharge-montant" class="form-control" placeholder="Ex: 10000" min="1000" required>
                     </div>
                     
-                    <!-- Section des frais de recharge -->
                     <div class="fees-info" id="recharge-fees-section" style="display: none;">
                         <h4>Détails des frais (application automatique)</h4>
                         <div class="fees-row">
@@ -1831,7 +1806,6 @@
                         <i class="fab fa-whatsapp"></i> Cette demande sera envoyée par WhatsApp au 92871605 pour traitement
                     </div>
                     
-                    <!-- Navigation par flèches -->
                     <div class="tab-navigation">
                         <button type="button" class="nav-arrow" id="prev-recharge" disabled>
                             <i class="fas fa-arrow-left"></i>
@@ -1850,12 +1824,11 @@
                 </form>
             </div>
             
-            <!-- Formulaire d'achat -->
             <div class="tab-content" id="achat-tab">
                 <form id="achat-form">
                     <div class="solde-actuel">
-                        <div>Solde actuel</div>
-                        <div class="solde-montant" id="solde-achat">0 FCFA</div>
+                        <div>Solde actuel (après vérification frais)</div>
+                        <div class="solde-montant" id="solde-achat">Vérification...</div>
                         <div class="fee-check">
                             <i class="fas fa-exclamation-triangle"></i> Frais d'entretien mensuel appliqués si solde > 200 FCFA
                         </div>
@@ -1897,7 +1870,6 @@
                         <i class="fab fa-whatsapp"></i> Cette demande sera envoyée par WhatsApp au 92871605 pour traitement
                     </div>
                     
-                    <!-- Navigation par flèches -->
                     <div class="tab-navigation">
                         <button type="button" class="nav-arrow" id="prev-achat">
                             <i class="fas fa-arrow-left"></i>
@@ -1916,12 +1888,11 @@
                 </form>
             </div>
             
-            <!-- Formulaire de réception -->
             <div class="tab-content" id="recevoir-tab">
                 <form id="recevoir-form">
                     <div class="solde-actuel">
-                        <div>Solde actuel</div>
-                        <div class="solde-montant" id="solde-recevoir">0 FCFA</div>
+                        <div>Solde actuel (après vérification frais)</div>
+                        <div class="solde-montant" id="solde-recevoir">Vérification...</div>
                         <div class="fee-check">
                             <i class="fas fa-check-circle"></i> Les frais d'entretien sont vérifiés mensuellement
                         </div>
@@ -1963,7 +1934,6 @@
                         <i class="fab fa-whatsapp"></i> Un lien de confirmation sera envoyé par WhatsApp au 92871605
                     </div>
                     
-                    <!-- Navigation par flèches -->
                     <div class="tab-navigation">
                         <button type="button" class="nav-arrow" id="prev-recevoir">
                             <i class="fas fa-arrow-left"></i>
@@ -1982,12 +1952,11 @@
                 </form>
             </div>
             
-            <!-- Formulaire de retrait -->
             <div class="tab-content" id="retrait-tab">
                 <form id="retrait-form">
                     <div class="solde-actuel">
-                        <div>Solde actuel</div>
-                        <div class="solde-montant" id="solde-retrait">0 FCFA</div>
+                        <div>Solde actuel (après vérification frais)</div>
+                        <div class="solde-montant" id="solde-retrait">Vérification...</div>
                         <div class="fee-check">
                             <i class="fas fa-calculator"></i> Frais d'entretien: 100 FCFA/mois (si solde > 200 FCFA)
                         </div>
@@ -1998,7 +1967,6 @@
                         <input type="number" id="retrait-montant" class="form-control" placeholder="Ex: 30000" min="10000" required>
                     </div>
                     
-                    <!-- Section des frais de retrait -->
                     <div class="fees-info" id="retrait-fees-section" style="display: none;">
                         <h4>Détails des frais</h4>
                         <div class="fees-row">
@@ -2040,7 +2008,6 @@
                         <i class="fab fa-whatsapp"></i> Cette demande sera envoyée par WhatsApp au 92871605 pour traitement
                     </div>
                     
-                    <!-- Navigation par flèches -->
                     <div class="tab-navigation">
                         <button type="button" class="nav-arrow" id="prev-retrait">
                             <i class="fas fa-arrow-left"></i>
@@ -2061,7 +2028,6 @@
         </div>
     </div>
     
-    <!-- Modal pour afficher le QR Code -->
     <div class="modal" id="qrcode-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2096,7 +2062,6 @@
     </footer>
     
     <script>
-        // Données des comptes enregistrés
         const registeredAccounts = [
             {
                 id: 1,
@@ -2139,7 +2104,8 @@
                     { id: 1, name: "Ouverture de compte", amount: 0, date: new Date(), type: "income", category: "account" }
                 ],
                 feesHistory: [],
-                lastMaintenanceFeeDate: null
+                lastMaintenanceFeeDate: null,
+                lastMaintenanceCheckDate: null
             },
             {
                 id: 2,
@@ -2171,11 +2137,11 @@
                     { id: 2, name: "Transfert reçu", amount: 30000, date: new Date(Date.now() - 86400000), type: "income", category: "transfer" }
                 ],
                 feesHistory: [],
-                lastMaintenanceFeeDate: null
+                lastMaintenanceFeeDate: null,
+                lastMaintenanceCheckDate: null
             }
         ];
 
-        // Variables globales
         let currentUser = null;
         let currentBalance = 0;
         let transactions = [];
@@ -2183,13 +2149,11 @@
         let currentTabIndex = 0;
         const tabOrder = ['recharge', 'achat', 'recevoir', 'retrait'];
         
-        // Constantes pour les frais
         const MAINTENANCE_FEE = 100;
         const MINIMUM_BALANCE_FOR_FEE = 200;
-        const RECHARGE_FEE_PERCENTAGE = 0.05; // 5% pour les rechargements
-        const WITHDRAWAL_FEE_PERCENTAGE = 0.09; // 9% pour les retraits
+        const RECHARGE_FEE_PERCENTAGE = 0.05;
+        const WITHDRAWAL_FEE_PERCENTAGE = 0.09;
         
-        // Éléments DOM
         const loginContainer = document.getElementById('login-container');
         const appContainer = document.getElementById('app-container');
         const loginForm = document.getElementById('login-form');
@@ -2207,7 +2171,9 @@
         const accountPhone = document.getElementById('account-phone');
         const accountDate = document.getElementById('account-date');
         
-        const balanceAmount = document.querySelector('.balance-amount');
+        const balanceAmount = document.getElementById('balance-amount');
+        const balanceText = document.getElementById('balance-text');
+        const balanceLoading = document.getElementById('balance-loading');
         const transactionList = document.querySelector('.transaction-list');
         const transactionModal = document.getElementById('transaction-modal');
         const qrcodeModal = document.getElementById('qrcode-modal');
@@ -2233,7 +2199,6 @@
         const freezeCardGoldBtn = document.getElementById('freeze-card-gold');
         const mobileMenu = document.getElementById('mobile-menu');
         
-        // Éléments des frais
         const rechargeFeesSection = document.getElementById('recharge-fees-section');
         const rechargeAmountDisplay = document.getElementById('recharge-amount-display');
         const rechargeFeesDisplay = document.getElementById('recharge-fees-display');
@@ -2244,19 +2209,16 @@
         const retraitFeesDisplay = document.getElementById('retrait-fees-display');
         const retraitTotalDisplay = document.getElementById('retrait-total-display');
         
-        // Éléments des statistiques
         const monthIncomeElement = document.getElementById('month-income');
         const monthExpenseElement = document.getElementById('month-expense');
         const monthSavingsElement = document.getElementById('month-savings');
         const monthTransactionsElement = document.getElementById('month-transactions');
         
-        // Formulaires
         const rechargeForm = document.getElementById('recharge-form');
         const achatForm = document.getElementById('achat-form');
         const recevoirForm = document.getElementById('recevoir-form');
         const retraitForm = document.getElementById('retrait-form');
         
-        // Boutons de soumission
         const submitRechargeBtn = document.getElementById('submit-recharge');
         const rechargeSpinner = document.getElementById('recharge-spinner');
         const rechargeBtnText = document.getElementById('recharge-btn-text');
@@ -2273,7 +2235,6 @@
         const retraitSpinner = document.getElementById('retrait-spinner');
         const retraitBtnText = document.getElementById('retrait-btn-text');
         
-        // Boutons de navigation
         const prevRechargeBtn = document.getElementById('prev-recharge');
         const nextRechargeBtn = document.getElementById('next-recharge');
         const prevAchatBtn = document.getElementById('prev-achat');
@@ -2283,18 +2244,15 @@
         const prevRetraitBtn = document.getElementById('prev-retrait');
         const nextRetraitBtn = document.getElementById('next-retrait');
         
-        // Onglets de transaction
         const transactionTabs = document.querySelectorAll('.transaction-tab');
         const transactionTabContents = document.querySelectorAll('.transaction-tab-content');
         
-        // Éléments pour les frais
         const maintenanceFeeNotification = document.getElementById('maintenance-fee-notification');
         const feeHistoryElement = document.getElementById('fee-history');
         const noFeesMessage = document.getElementById('no-fees-message');
         const maintenanceIndicator = document.getElementById('maintenance-indicator');
         const feeStatusCheck = document.getElementById('fee-status-check');
         
-        // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             if (darkMode) {
                 document.body.classList.add('dark-mode');
@@ -2305,18 +2263,11 @@
             loadSavedData();
         });
         
-        // Configuration des écouteurs d'événements
         function setupEventListeners() {
-            // Formulaire de connexion
             loginForm.addEventListener('submit', handleLogin);
-            
-            // Toggle de visibilité du mot de passe
             passwordToggle.addEventListener('click', togglePasswordVisibility);
-            
-            // Bouton de déconnexion
             logoutBtn.addEventListener('click', handleLogout);
             
-            // Boutons pour ouvrir le modal
             rechargeBtn.addEventListener('click', function() {
                 openTransactionModal('recharge');
             });
@@ -2333,7 +2284,6 @@
                 openTransactionModal('retrait');
             });
             
-            // Boutons de fermeture du modal
             closeBtns.forEach(btn => {
                 btn.addEventListener('click', closeAllModals);
             });
@@ -2344,7 +2294,6 @@
             cancelRetraitBtn.addEventListener('click', closeAllModals);
             closeQrcodeBtn.addEventListener('click', closeAllModals);
             
-            // Clic en dehors du modal
             window.addEventListener('click', function(event) {
                 if (event.target === transactionModal) {
                     closeAllModals();
@@ -2354,13 +2303,11 @@
                 }
             });
             
-            // Soumission des formulaires
             rechargeForm.addEventListener('submit', handleRechargeSubmit);
             achatForm.addEventListener('submit', handleAchatSubmit);
             recevoirForm.addEventListener('submit', handleRecevoirSubmit);
             retraitForm.addEventListener('submit', handleRetraitSubmit);
             
-            // Navigation par onglets dans le modal
             navTabs.forEach(tab => {
                 tab.addEventListener('click', function() {
                     const tabId = this.getAttribute('data-tab');
@@ -2368,7 +2315,6 @@
                 });
             });
             
-            // Navigation par onglets dans la page principale
             transactionTabs.forEach(tab => {
                 tab.addEventListener('click', function() {
                     const tabId = this.getAttribute('data-transaction-tab');
@@ -2376,21 +2322,16 @@
                 });
             });
             
-            // Boutons de navigation flèches
             setupTabNavigationButtons();
             
-            // Bouton d'impression QR Code
             printQrcodeBtn.addEventListener('click', printQRCode);
             
-            // Sauvegarde automatique
             window.addEventListener('beforeunload', saveUserData);
             setInterval(saveUserData, 30000);
             
-            // Écouteurs pour les frais
             document.getElementById('recharge-montant').addEventListener('input', updateRechargeFees);
             document.getElementById('retrait-montant').addEventListener('input', updateRetraitFees);
             
-            // Filtres de transactions
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const filter = this.getAttribute('data-filter');
@@ -2402,13 +2343,8 @@
                 });
             });
             
-            // Mode sombre
             darkModeToggle.addEventListener('click', toggleDarkMode);
-            
-            // Notifications
             notificationBell.addEventListener('click', toggleNotifications);
-            
-            // Actions sur les cartes
             freezeCardBtn.addEventListener('click', function() {
                 toggleCardFreeze('classic');
             });
@@ -2417,13 +2353,12 @@
                 toggleCardFreeze('gold');
             });
             
-            // Menu mobile
             mobileMenu.addEventListener('click', toggleMobileMenu);
+            
+            setInterval(checkAndApplyMaintenanceFeeAutomatically, 60000);
         }
         
-        // Configurer les boutons de navigation par onglets
         function setupTabNavigationButtons() {
-            // Rechargement
             prevRechargeBtn.addEventListener('click', function() {
                 navigateTabs('prev');
             });
@@ -2431,7 +2366,6 @@
                 navigateTabs('next');
             });
             
-            // Achat
             prevAchatBtn.addEventListener('click', function() {
                 navigateTabs('prev');
             });
@@ -2439,7 +2373,6 @@
                 navigateTabs('next');
             });
             
-            // Recevoir
             prevRecevoirBtn.addEventListener('click', function() {
                 navigateTabs('prev');
             });
@@ -2447,7 +2380,6 @@
                 navigateTabs('next');
             });
             
-            // Retrait
             prevRetraitBtn.addEventListener('click', function() {
                 navigateTabs('prev');
             });
@@ -2456,7 +2388,6 @@
             });
         }
         
-        // Naviguer entre les onglets
         function navigateTabs(direction) {
             if (direction === 'next') {
                 if (currentTabIndex < tabOrder.length - 1) {
@@ -2472,7 +2403,6 @@
             switchTab(nextTabId);
         }
         
-        // Changer d'onglet dans le modal
         function switchTab(tabId) {
             currentTabIndex = tabOrder.indexOf(tabId);
             
@@ -2495,7 +2425,6 @@
             }
         }
         
-        // Changer d'onglet de transaction dans la page principale
         function switchTransactionTab(tabId) {
             transactionTabs.forEach(t => t.classList.remove('active'));
             document.querySelector(`.transaction-tab[data-transaction-tab="${tabId}"]`).classList.add('active');
@@ -2508,13 +2437,11 @@
             });
         }
         
-        // Basculer le menu mobile
         function toggleMobileMenu() {
             const userInfo = document.querySelector('.user-info');
             userInfo.style.display = userInfo.style.display === 'flex' ? 'none' : 'flex';
         }
         
-        // Basculer la visibilité du mot de passe
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('password');
             const icon = passwordToggle.querySelector('i');
@@ -2530,7 +2457,6 @@
             }
         }
         
-        // Basculer le mode sombre
         function toggleDarkMode() {
             darkMode = !darkMode;
             document.body.classList.toggle('dark-mode');
@@ -2544,7 +2470,6 @@
             localStorage.setItem('darkMode', darkMode);
         }
         
-        // Basculer l'affichage des notifications
         function toggleNotifications() {
             const isVisible = notificationsPanel.style.display === 'block';
             notificationsPanel.style.display = isVisible ? 'none' : 'block';
@@ -2554,7 +2479,6 @@
             }
         }
         
-        // Bloquer/débloquer une carte
         function toggleCardFreeze(cardType) {
             if (!currentUser) return;
             
@@ -2575,7 +2499,6 @@
             saveUserData();
         }
         
-        // Filtrer les transactions
         function filterTransactions(filter) {
             const transactionItems = document.querySelectorAll('.transaction-item');
             
@@ -2595,7 +2518,6 @@
             });
         }
         
-        // Afficher une notification
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
             notification.className = `save-notification notification-${type}`;
@@ -2610,7 +2532,6 @@
             }, 3000);
         }
         
-        // Mettre à jour l'affichage du solde dans les formulaires
         function updateSoldeDisplay() {
             if (!currentUser) return;
             
@@ -2620,19 +2541,18 @@
             document.getElementById('solde-retrait').textContent = formatCurrency(currentBalance);
         }
         
-        // Mettre à jour l'affichage des frais de recharge
         function updateRechargeFees() {
             const montantInput = document.getElementById('recharge-montant');
             const montant = parseInt(montantInput.value) || 0;
             
             if (montant > 0) {
                 const frais = Math.round(montant * RECHARGE_FEE_PERCENTAGE);
-                const netAmount = montant - frais; // IMPORTANT: Le montant net est après déduction des frais
+                const netAmount = montant - frais;
                 
                 rechargeAmountDisplay.textContent = formatCurrency(montant);
                 rechargeFeesDisplay.textContent = formatCurrency(frais);
-                rechargeTotalDisplay.textContent = formatCurrency(montant); // Montant total saisi
-                rechargeNetDisplay.textContent = formatCurrency(netAmount); // Montant net après frais
+                rechargeTotalDisplay.textContent = formatCurrency(montant);
+                rechargeNetDisplay.textContent = formatCurrency(netAmount);
                 
                 rechargeFeesSection.style.display = 'block';
             } else {
@@ -2640,7 +2560,6 @@
             }
         }
         
-        // Mettre à jour l'affichage des frais de retrait
         function updateRetraitFees() {
             const montantInput = document.getElementById('retrait-montant');
             const montant = parseInt(montantInput.value) || 0;
@@ -2659,7 +2578,6 @@
             }
         }
         
-        // Vérifier et appliquer les frais d'entretien mensuel
         function checkAndApplyMaintenanceFee() {
             if (!currentUser) return false;
             
@@ -2669,33 +2587,54 @@
             
             updateMaintenanceIndicator();
             
-            // Vérifier si le solde est supérieur à 200 FCFA
             if (currentBalance <= MINIMUM_BALANCE_FOR_FEE) {
                 return false;
             }
             
-            // Si c'est la première fois qu'on vérifie pour cet utilisateur
             if (!currentUser.lastMaintenanceFeeDate) {
                 currentUser.lastMaintenanceFeeDate = now;
-                applyMaintenanceFee();
-                return true;
+                const applied = applyMaintenanceFee();
+                updateBalanceDisplay();
+                return applied;
             }
             
             const lastFeeDate = new Date(currentUser.lastMaintenanceFeeDate);
             const lastFeeMonth = lastFeeDate.getMonth();
             const lastFeeYear = lastFeeDate.getFullYear();
             
-            // Vérifier si un frais d'entretien a déjà été appliqué ce mois-ci
             if (currentMonth === lastFeeMonth && currentYear === lastFeeYear) {
                 return false;
             }
             
-            // Appliquer le frais d'entretien
-            applyMaintenanceFee();
-            return true;
+            const applied = applyMaintenanceFee();
+            updateBalanceDisplay();
+            return applied;
         }
         
-        // Mettre à jour l'indicateur de frais d'entretien
+        function checkAndApplyMaintenanceFeeAutomatically() {
+            if (currentUser && appContainer.style.display !== 'none') {
+                const now = new Date();
+                const day = now.getDate();
+                const hour = now.getHours();
+                
+                if (day === 1 && hour === 0) {
+                    checkAndApplyMaintenanceFee();
+                }
+                
+                if (currentUser.lastMaintenanceCheckDate) {
+                    const lastCheckDate = new Date(currentUser.lastMaintenanceCheckDate);
+                    const daysSinceLastCheck = Math.floor((now - lastCheckDate) / (1000 * 60 * 60 * 24));
+                    
+                    if (daysSinceLastCheck >= 30) {
+                        checkAndApplyMaintenanceFee();
+                        currentUser.lastMaintenanceCheckDate = now;
+                    }
+                } else {
+                    currentUser.lastMaintenanceCheckDate = now;
+                }
+            }
+        }
+        
         function updateMaintenanceIndicator() {
             if (!currentUser) return;
             
@@ -2728,7 +2667,6 @@
                 }
             }
             
-            // Mettre à jour le statut dans la carte de solde
             if (feeStatusCheck) {
                 if (currentUser.lastMaintenanceFeeDate) {
                     const lastFeeDate = new Date(currentUser.lastMaintenanceFeeDate);
@@ -2752,19 +2690,15 @@
             }
         }
         
-        // Appliquer les frais d'entretien mensuel
         function applyMaintenanceFee() {
-            if (!currentUser || currentBalance <= MINIMUM_BALANCE_FOR_FEE) return;
+            if (!currentUser || currentBalance <= MINIMUM_BALANCE_FOR_FEE) return false;
             
             const now = new Date();
             
-            // Ajouter la transaction de frais
             addTransaction(`Frais d'entretien mensuel`, -MAINTENANCE_FEE, now, "expense", "maintenance");
             
-            // Mettre à jour la date du dernier frais
             currentUser.lastMaintenanceFeeDate = now;
             
-            // Ajouter à l'historique des frais
             const feeRecord = {
                 type: "Entretien mensuel",
                 amount: MAINTENANCE_FEE,
@@ -2774,7 +2708,6 @@
             
             currentUser.feesHistory.unshift(feeRecord);
             
-            // Afficher la notification
             maintenanceFeeNotification.style.display = 'block';
             maintenanceFeeNotification.innerHTML = `
                 <i class="fas fa-info-circle"></i> <strong>Frais d'entretien mensuel</strong> de ${formatCurrency(MAINTENANCE_FEE)} appliqués ce mois-ci.
@@ -2785,9 +2718,10 @@
             updateMaintenanceIndicator();
             
             showNotification(`Frais d'entretien mensuel de ${formatCurrency(MAINTENANCE_FEE)} appliqués. Nouveau solde: ${formatCurrency(currentBalance)}`, 'warning');
+            
+            return true;
         }
         
-        // Mettre à jour l'affichage de l'historique des frais
         function updateFeesHistoryDisplay() {
             if (!currentUser) return;
             
@@ -2795,11 +2729,9 @@
                 noFeesMessage.style.display = 'none';
             }
             
-            // Supprimer les anciens éléments de frais
             const existingFeeItems = feeHistoryElement.querySelectorAll('.fee-item:not(#no-fees-message)');
             existingFeeItems.forEach(item => item.remove());
             
-            // Afficher les 5 derniers frais
             const recentFees = currentUser.feesHistory.slice(0, 5);
             
             if (recentFees.length === 0) {
@@ -2825,7 +2757,6 @@
             });
         }
         
-        // Gérer la connexion
         function handleLogin(event) {
             event.preventDefault();
             
@@ -2848,10 +2779,23 @@
                     
                     loadUserData();
                     
-                    // Vérifier et appliquer les frais d'entretien
-                    checkAndApplyMaintenanceFee();
+                    balanceLoading.style.display = 'inline-block';
+                    balanceText.textContent = 'Vérification des frais mensuels...';
                     
-                    updateUserInterface();
+                    setTimeout(() => {
+                        const feeApplied = checkAndApplyMaintenanceFee();
+                        
+                        if (feeApplied) {
+                            balanceText.textContent = 'Frais appliqués - Affichage du solde...';
+                            setTimeout(() => {
+                                updateBalanceDisplay();
+                                updateUserInterface();
+                            }, 1000);
+                        } else {
+                            updateBalanceDisplay();
+                            updateUserInterface();
+                        }
+                    }, 1500);
                     
                     loginContainer.style.display = 'none';
                     appContainer.style.display = 'block';
@@ -2860,18 +2804,27 @@
                     
                     saveUserData();
                     
-                    showNotification(`Bienvenue, ${user.fullname} !`, 'success');
+                    setTimeout(() => {
+                        showNotification(`Bienvenue, ${user.fullname} !`, 'success');
+                    }, 2000);
                 } else {
                     loginError.style.display = 'block';
+                    loginBtnText.style.display = 'inline-block';
+                    loginSpinner.style.display = 'none';
+                    loginSubmitBtn.disabled = false;
                 }
-                
-                loginBtnText.style.display = 'inline-block';
-                loginSpinner.style.display = 'none';
-                loginSubmitBtn.disabled = false;
             }, 1500);
         }
         
-        // Gérer la déconnexion
+        function updateBalanceDisplay() {
+            if (!currentUser) return;
+            
+            balanceLoading.style.display = 'none';
+            balanceText.textContent = formatCurrency(currentBalance);
+            
+            updateSoldeDisplay();
+        }
+        
         function handleLogout() {
             saveUserData();
             
@@ -2887,7 +2840,6 @@
             showNotification('Vous avez été déconnecté avec succès', 'info');
         }
         
-        // Mettre à jour l'interface utilisateur
         function updateUserInterface() {
             if (!currentUser) return;
             
@@ -2897,7 +2849,6 @@
             accountPhone.textContent = currentUser.phone;
             accountDate.textContent = currentUser.accountDate;
             
-            // Mettre à jour les cartes
             if (currentUser.cards.length > 0) {
                 document.getElementById('card-holder').textContent = "KOLA M ES";
                 document.getElementById('card-expiry').textContent = currentUser.cards[0].expiry;
@@ -2920,14 +2871,12 @@
                 }
             }
             
-            updateBalance();
             renderTransactions();
             updateStatistics();
             renderAccounts();
             updateFeesHistoryDisplay();
             updateMaintenanceIndicator();
             
-            // Remplir les formulaires avec les informations utilisateur
             document.getElementById('recharge-nom').value = "KOLA";
             document.getElementById('recharge-prenom').value = "Maniwah";
             document.getElementById('recharge-contact').value = currentUser.phone;
@@ -2945,7 +2894,6 @@
             document.getElementById('retrait-contact').value = currentUser.phone;
         }
         
-        // Afficher les comptes
         function renderAccounts() {
             if (!currentUser) return;
             
@@ -2974,7 +2922,6 @@
             });
         }
         
-        // Ouvrir le modal de transaction
         function openTransactionModal(type) {
             closeAllModals();
             transactionModal.style.display = 'flex';
@@ -2982,11 +2929,9 @@
             currentTabIndex = tabOrder.indexOf(type);
             switchTab(type);
             
-            // Vérifier les frais avant d'ouvrir le modal
             checkAndApplyMaintenanceFee();
         }
         
-        // Fermer tous les modals
         function closeAllModals() {
             transactionModal.style.display = 'none';
             qrcodeModal.style.display = 'none';
@@ -3020,7 +2965,6 @@
             currentTabIndex = 0;
         }
         
-        // Gérer la soumission du formulaire de recharge
         function handleRechargeSubmit(event) {
             event.preventDefault();
             
@@ -3034,13 +2978,9 @@
             rechargeSpinner.style.display = 'inline-block';
             submitRechargeBtn.disabled = true;
             
-            // Vérifier les frais d'entretien avant de recharger
             checkAndApplyMaintenanceFee();
             
-            // Calculer les frais de recharge (5%)
             const frais = Math.round(montant * RECHARGE_FEE_PERCENTAGE);
-            
-            // IMPORTANT: Le montant net est après déduction automatique des frais
             const netAmount = montant - frais;
             
             const message = `DEMANDE DE RECHARGEMENT%0A%0A` +
@@ -3058,10 +2998,8 @@
             sendWhatsAppMessage(message);
             
             setTimeout(() => {
-                // IMPORTANT: Ajouter le montant NET (après frais automatiques)
                 addTransaction(`Rechargement ${methode}`, netAmount, new Date(), "income", "recharge");
                 
-                // Ajouter les frais de recharge à l'historique
                 const feeRecord = {
                     type: "Frais de recharge",
                     amount: frais,
@@ -3084,7 +3022,6 @@
             }, 2000);
         }
         
-        // Gérer la soumission du formulaire d'achat
         function handleAchatSubmit(event) {
             event.preventDefault();
             
@@ -3100,7 +3037,6 @@
             achatSpinner.style.display = 'inline-block';
             submitAchatBtn.disabled = true;
             
-            // Vérifier les frais d'entretien avant l'achat
             checkAndApplyMaintenanceFee();
             
             if (montant > currentBalance) {
@@ -3136,7 +3072,6 @@
             submitAchatBtn.disabled = false;
         }
         
-        // Gérer la soumission du formulaire de réception
         function handleRecevoirSubmit(event) {
             event.preventDefault();
             
@@ -3152,7 +3087,6 @@
             recevoirSpinner.style.display = 'inline-block';
             submitRecevoirBtn.disabled = true;
             
-            // Vérifier les frais d'entretien avant la réception
             checkAndApplyMaintenanceFee();
             
             const message = `CONFIRMATION DE RÉCEPTION%0A%0A` +
@@ -3177,7 +3111,6 @@
             closeAllModals();
         }
         
-        // Gérer la soumission du formulaire de retrait
         function handleRetraitSubmit(event) {
             event.preventDefault();
             
@@ -3194,7 +3127,6 @@
             const frais = Math.round(montant * WITHDRAWAL_FEE_PERCENTAGE);
             const total = montant + frais;
             
-            // Vérifier les frais d'entretien avant le retrait
             checkAndApplyMaintenanceFee();
             
             if (total > currentBalance) {
@@ -3244,7 +3176,6 @@
             }, 2000);
         }
         
-        // Afficher le QR Code
         function showQRCode(link, montant, code) {
             closeAllModals();
             
@@ -3265,7 +3196,6 @@
             qrcodeModal.style.display = 'flex';
         }
         
-        // Imprimer le QR Code
         function printQRCode() {
             const printContent = document.getElementById('qrcode-modal').innerHTML;
             const originalContent = document.body.innerHTML;
@@ -3277,7 +3207,6 @@
             qrcodeModal.style.display = 'flex';
         }
         
-        // Envoyer un message via WhatsApp
         function sendWhatsAppMessage(message) {
             const phoneNumber = "22892871605";
             const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
@@ -3285,7 +3214,6 @@
             window.open(whatsappUrl, '_blank');
         }
         
-        // Ajouter une nouvelle transaction
         function addTransaction(name, amount, date, type, category) {
             const newTransaction = {
                 id: transactions.length + 1,
@@ -3310,19 +3238,13 @@
                 });
             }
             
-            updateBalance();
+            updateBalanceDisplay();
             renderTransactions();
             updateStatistics();
             
             saveUserData();
         }
         
-        // Mettre à jour l'affichage du solde
-        function updateBalance() {
-            balanceAmount.textContent = formatCurrency(currentBalance);
-        }
-        
-        // Afficher les transactions
         function renderTransactions() {
             transactionList.innerHTML = '';
             
@@ -3360,7 +3282,6 @@
             }
         }
         
-        // Mettre à jour les statistiques du mois
         function updateStatistics() {
             const currentDate = new Date();
             const currentMonth = currentDate.getMonth();
@@ -3388,12 +3309,10 @@
             monthTransactionsElement.textContent = monthTransactions.length;
         }
         
-        // Générer un code de transaction unique
         function generateTransactionCode() {
             return 'TRX-' + Math.random().toString(36).substr(2, 9).toUpperCase();
         }
         
-        // Formater une date
         function formatDate(date) {
             const today = new Date();
             const yesterday = new Date(today);
@@ -3408,12 +3327,10 @@
             }
         }
         
-        // Formater une valeur monétaire
         function formatCurrency(amount) {
             return Math.abs(amount).toLocaleString('fr-FR') + ' FCFA';
         }
         
-        // Sauvegarder les données utilisateur
         function saveUserData() {
             if (!currentUser) return;
             
@@ -3423,6 +3340,7 @@
                 transactions: transactions,
                 feesHistory: currentUser.feesHistory,
                 lastMaintenanceFeeDate: currentUser.lastMaintenanceFeeDate,
+                lastMaintenanceCheckDate: currentUser.lastMaintenanceCheckDate,
                 lastSave: new Date().toISOString()
             };
             
@@ -3431,7 +3349,6 @@
             showSaveNotification();
         }
         
-        // Charger les données sauvegardées
         function loadUserData() {
             if (!currentUser) return;
             
@@ -3463,6 +3380,10 @@
                         currentUser.lastMaintenanceFeeDate = new Date(userData.lastMaintenanceFeeDate);
                     }
                     
+                    if (userData.lastMaintenanceCheckDate) {
+                        currentUser.lastMaintenanceCheckDate = new Date(userData.lastMaintenanceCheckDate);
+                    }
+                    
                     currentUser.balance = currentBalance;
                     currentUser.transactions = transactions;
                     
@@ -3472,7 +3393,6 @@
             }
         }
         
-        // Charger les données globales sauvegardées
         function loadSavedData() {
             const savedAccounts = localStorage.getItem('registeredAccounts');
             
@@ -3503,6 +3423,10 @@
                             if (savedAccount.lastMaintenanceFeeDate) {
                                 originalAccount.lastMaintenanceFeeDate = new Date(savedAccount.lastMaintenanceFeeDate);
                             }
+                            
+                            if (savedAccount.lastMaintenanceCheckDate) {
+                                originalAccount.lastMaintenanceCheckDate = new Date(savedAccount.lastMaintenanceCheckDate);
+                            }
                         }
                     });
                     
@@ -3512,7 +3436,6 @@
             }
         }
         
-        // Afficher la notification de sauvegarde
         function showSaveNotification() {
             saveNotification.style.display = 'block';
             
