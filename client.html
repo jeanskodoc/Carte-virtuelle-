@@ -369,6 +369,7 @@
             color: var(--danger-color);
         }
         
+        /* Boutons principaux - PLUS COMPACTS */
         .actions {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -377,17 +378,19 @@
         }
         
         .btn {
-            padding: 12px 15px;
+            padding: 10px 12px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
             transition: all 0.3s ease;
             font-size: 0.85rem;
+            min-height: 42px;
+            min-width: 100px;
         }
         
         .btn-primary {
@@ -423,6 +426,54 @@
         .btn:hover {
             opacity: 0.9;
             transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Boutons de navigation par flèches */
+        .tab-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 0 10px;
+        }
+        
+        .nav-arrow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+            background-color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .nav-arrow:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: scale(1.1);
+        }
+        
+        .nav-arrow:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .nav-arrow:disabled:hover {
+            background-color: white;
+            color: var(--primary-color);
+            border-color: #ddd;
         }
         
         .stats {
@@ -640,7 +691,26 @@
             font-size: 0.8rem;
         }
         
-        .nav-tabs {
+        /* Onglets pour les transactions */
+        .transactions-tabs {
+            display: flex;
+            flex-direction: column;
+            margin-top: 15px;
+        }
+        
+        .transactions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .transactions-header h2 {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+        }
+        
+        .transactions-tabs-nav {
             display: flex;
             border-bottom: 1px solid #ddd;
             margin-bottom: 15px;
@@ -648,17 +718,77 @@
             overflow-x: auto;
         }
         
-        .nav-tab {
-            padding: 10px 15px;
+        .transaction-tab {
+            padding: 12px 16px;
             cursor: pointer;
             border-bottom: 3px solid transparent;
             white-space: nowrap;
             font-size: 0.9rem;
+            font-weight: 500;
+            text-align: center;
+            flex: 1;
+            min-width: 90px;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+        
+        .transaction-tab:hover {
+            background-color: rgba(26, 35, 126, 0.05);
+        }
+        
+        .transaction-tab.active {
+            border-bottom-color: var(--primary-color);
+            font-weight: bold;
+            color: var(--primary-color);
+            background-color: rgba(26, 35, 126, 0.08);
+        }
+        
+        .transaction-tab-content {
+            display: none;
+            padding: 15px 0;
+        }
+        
+        .transaction-tab-content.active {
+            display: block;
+        }
+        
+        /* Onglets dans le modal */
+        .nav-tabs-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            overflow-x: auto;
+            position: relative;
+        }
+        
+        .nav-tab {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            font-size: 0.9rem;
+            flex: 1;
+            text-align: center;
+            color: #666;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-tab:hover {
+            background-color: rgba(26, 35, 126, 0.05);
         }
         
         .nav-tab.active {
             border-bottom-color: var(--primary-color);
             font-weight: bold;
+            color: var(--primary-color);
+            background-color: rgba(26, 35, 126, 0.08);
         }
         
         .tab-content {
@@ -808,7 +938,7 @@
             background-color: #fff3e0;
             padding: 10px;
             border-radius: 5px;
-            margin: 8px 0;
+            margin: 12px 0;
             border-left: 4px solid var(--warning-color);
         }
         
@@ -1061,6 +1191,23 @@
             .header-content {
                 gap: 10px;
             }
+            
+            .actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .transaction-tab {
+                padding: 10px 12px;
+                font-size: 0.8rem;
+                min-width: 80px;
+            }
+            
+            .btn {
+                padding: 8px 10px;
+                font-size: 0.8rem;
+                min-height: 38px;
+                min-width: 90px;
+            }
         }
         
         /* Améliorations pour très petits écrans */
@@ -1082,16 +1229,20 @@
                 font-size: 1rem;
             }
             
-            .actions {
-                grid-template-columns: 1fr;
-            }
-            
-            .btn {
-                padding: 10px 12px;
-            }
-            
             .stats {
                 grid-template-columns: 1fr;
+            }
+            
+            .transaction-tab {
+                padding: 8px 10px;
+                font-size: 0.75rem;
+                min-width: 70px;
+            }
+            
+            .nav-arrow {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
             }
         }
         
@@ -1108,6 +1259,14 @@
             .account-card:hover {
                 transform: none;
             }
+            
+            .transaction-tab:hover {
+                background-color: transparent;
+            }
+            
+            .nav-tab:hover {
+                background-color: transparent;
+            }
         }
         
         /* Amélioration de la lisibilité sur petits écrans */
@@ -1122,6 +1281,59 @@
         
         p {
             font-size: 0.9rem;
+        }
+        
+        /* Style pour les icônes dans les onglets */
+        .tab-icon {
+            margin-right: 5px;
+            font-size: 0.9rem;
+        }
+        
+        /* Conteneur pour les statistiques et les transactions */
+        .dashboard-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        /* Style pour les notifications de frais */
+        .fee-notification {
+            background-color: #ffecb3;
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin: 8px 0;
+            border-left: 4px solid #ff9800;
+            font-size: 0.85rem;
+        }
+        
+        .fee-notification strong {
+            color: #d32f2f;
+        }
+        
+        /* Style pour l'historique des frais */
+        .fee-history {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        
+        .fee-history h4 {
+            margin-bottom: 8px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .fee-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px dashed #ddd;
+            font-size: 0.8rem;
+        }
+        
+        .fee-item:last-child {
+            border-bottom: none;
         }
     </style>
 </head>
@@ -1286,76 +1498,135 @@
                     <div>Compte nouvellement créé</div>
                 </div>
                 
-                <div class="card">
-                    <h2>Dernières transactions</h2>
-                    <div class="transaction-filters">
-                        <button class="filter-btn active" data-filter="all">Toutes</button>
-                        <button class="filter-btn" data-filter="income">Revenus</button>
-                        <button class="filter-btn" data-filter="expense">Dépenses</button>
+                <!-- Onglets pour les transactions -->
+                <div class="card transactions-tabs">
+                    <div class="transactions-header">
+                        <h2>Transactions</h2>
+                        <div class="transaction-filters">
+                            <button class="filter-btn active" data-filter="all">Toutes</button>
+                            <button class="filter-btn" data-filter="income">Revenus</button>
+                            <button class="filter-btn" data-filter="expense">Dépenses</button>
+                        </div>
                     </div>
-                    <div class="transactions">
-                        <ul class="transaction-list" id="transaction-list">
-                            <!-- Les transactions seront ajoutées dynamiquement -->
-                            <li class="transaction-item">
-                                <div class="transaction-info">
-                                    <div class="transaction-name">Ouverture de compte</div>
-                                    <div class="transaction-date">15 Mars 2024</div>
-                                </div>
-                                <div class="transaction-amount amount-positive">
-                                    +0 FCFA
-                                </div>
-                            </li>
-                        </ul>
+                    
+                    <div class="transactions-tabs-nav">
+                        <div class="transaction-tab active" data-transaction-tab="recharge">
+                            <i class="fas fa-money-bill-wave tab-icon"></i> Recharger
+                        </div>
+                        <div class="transaction-tab" data-transaction-tab="achat">
+                            <i class="fas fa-shopping-cart tab-icon"></i> Acheter
+                        </div>
+                        <div class="transaction-tab" data-transaction-tab="recevoir">
+                            <i class="fas fa-download tab-icon"></i> Recevoir
+                        </div>
+                        <div class="transaction-tab" data-transaction-tab="retrait">
+                            <i class="fas fa-money-check tab-icon"></i> Retrait
+                        </div>
+                    </div>
+                    
+                    <!-- Contenu de l'onglet Recharger -->
+                    <div class="transaction-tab-content active" id="transaction-recharge">
+                        <div class="transactions">
+                            <ul class="transaction-list" id="transaction-list">
+                                <!-- Les transactions seront ajoutées dynamiquement -->
+                                <li class="transaction-item">
+                                    <div class="transaction-info">
+                                        <div class="transaction-name">Ouverture de compte</div>
+                                        <div class="transaction-date">15 Mars 2024</div>
+                                    </div>
+                                    <div class="transaction-amount amount-positive">
+                                        +0 FCFA
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="actions">
+                            <button class="btn btn-primary" id="recharge-btn">
+                                <i class="fas fa-money-bill-wave"></i> Recharger maintenant
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Contenu de l'onglet Acheter -->
+                    <div class="transaction-tab-content" id="transaction-achat">
+                        <div class="stats">
+                            <div class="stat-card">
+                                <div class="stat-icon">📈</div>
+                                <div>Revenus</div>
+                                <div class="stat-value stat-income" id="month-income">0 FCFA</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">📉</div>
+                                <div>Dépenses</div>
+                                <div class="stat-value stat-expense" id="month-expense">0 FCFA</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">💰</div>
+                                <div>Économies</div>
+                                <div class="stat-value" id="month-savings">0 FCFA</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">📊</div>
+                                <div>Transactions</div>
+                                <div class="stat-value" id="month-transactions">0</div>
+                            </div>
+                        </div>
+                        
+                        <div class="actions">
+                            <button class="btn btn-danger" id="achat-btn">
+                                <i class="fas fa-shopping-cart"></i> Effectuer un achat
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Contenu de l'onglet Recevoir -->
+                    <div class="transaction-tab-content" id="transaction-recevoir">
+                        <div class="transaction-chart" id="transaction-chart">
+                            <!-- Le graphique sera généré dynamiquement -->
+                            <div style="text-align: center; padding: 30px 0; color: #777;">
+                                <i class="fas fa-chart-bar" style="font-size: 2.5rem; margin-bottom: 8px;"></i>
+                                <p>Aucune transaction pour le moment</p>
+                            </div>
+                        </div>
+                        
+                        <div class="actions">
+                            <button class="btn btn-warning" id="recevoir-btn">
+                                <i class="fas fa-download"></i> Recevoir de l'argent
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Contenu de l'onglet Retrait -->
+                    <div class="transaction-tab-content" id="transaction-retrait">
+                        <div class="account-info">
+                            <h3>Instructions pour les retraits</h3>
+                            <p>1. Assurez-vous d'avoir suffisamment de solde</p>
+                            <p>2. Les frais de retrait sont de 9%</p>
+                            <p>3. Le traitement prend généralement 24 heures</p>
+                            <p>4. Vous recevrez une confirmation par WhatsApp</p>
+                        </div>
+                        
+                        <div class="actions">
+                            <button class="btn btn-info" id="retrait-btn">
+                                <i class="fas fa-money-check"></i> Effectuer un retrait
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="card">
-                    <h2>Statistiques du mois</h2>
-                    <div class="stats">
-                        <div class="stat-card">
-                            <div class="stat-icon">📈</div>
-                            <div>Revenus</div>
-                            <div class="stat-value stat-income" id="month-income">0 FCFA</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">📉</div>
-                            <div>Dépenses</div>
-                            <div class="stat-value stat-expense" id="month-expense">0 FCFA</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">💰</div>
-                            <div>Économies</div>
-                            <div class="stat-value" id="month-savings">0 FCFA</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">📊</div>
-                            <div>Transactions</div>
-                            <div class="stat-value" id="month-transactions">0</div>
-                        </div>
+                <!-- Section des frais appliqués -->
+                <div class="card" id="fees-section">
+                    <h3>Frais appliqués</h3>
+                    <div class="fee-notification" id="maintenance-fee-notification" style="display: none;">
+                        <i class="fas fa-info-circle"></i> <strong>Frais d'entretien mensuel</strong> de 100 FCFA appliqués ce mois-ci.
                     </div>
-                    
-                    <!-- Graphique simple des transactions -->
-                    <div class="transaction-chart" id="transaction-chart">
-                        <!-- Le graphique sera généré dynamiquement -->
-                        <div style="text-align: center; padding: 30px 0; color: #777;">
-                            <i class="fas fa-chart-bar" style="font-size: 2.5rem; margin-bottom: 8px;"></i>
-                            <p>Aucune transaction pour le moment</p>
+                    <div class="fee-history" id="fee-history">
+                        <h4>Historique des frais récents</h4>
+                        <!-- Les frais seront ajoutés dynamiquement -->
+                        <div class="fee-item" id="no-fees-message">
+                            <span>Aucun frais appliqué récemment</span>
                         </div>
-                    </div>
-                    
-                    <div class="actions">
-                        <button class="btn btn-primary" id="recharge-btn">
-                            <i class="fas fa-money-bill-wave"></i> Recharger
-                        </button>
-                        <button class="btn btn-danger" id="achat-btn">
-                            <i class="fas fa-shopping-cart"></i> Acheter
-                        </button>
-                        <button class="btn btn-warning" id="recevoir-btn">
-                            <i class="fas fa-download"></i> Recevoir
-                        </button>
-                        <button class="btn btn-info" id="retrait-btn">
-                            <i class="fas fa-money-check"></i> Retrait
-                        </button>
                     </div>
                 </div>
             </div>
@@ -1378,11 +1649,21 @@
                 <button class="close-btn">&times;</button>
             </div>
             
-            <div class="nav-tabs">
-                <div class="nav-tab active" data-tab="recharge">Recharger</div>
-                <div class="nav-tab" data-tab="achat">Acheter</div>
-                <div class="nav-tab" data-tab="recevoir">Recevoir</div>
-                <div class="nav-tab" data-tab="retrait">Retrait</div>
+            <div class="nav-tabs-container">
+                <div class="nav-tabs">
+                    <div class="nav-tab active" data-tab="recharge">
+                        <i class="fas fa-money-bill-wave tab-icon"></i> Recharger
+                    </div>
+                    <div class="nav-tab" data-tab="achat">
+                        <i class="fas fa-shopping-cart tab-icon"></i> Acheter
+                    </div>
+                    <div class="nav-tab" data-tab="recevoir">
+                        <i class="fas fa-download tab-icon"></i> Recevoir
+                    </div>
+                    <div class="nav-tab" data-tab="retrait">
+                        <i class="fas fa-money-check tab-icon"></i> Retrait
+                    </div>
+                </div>
             </div>
             
             <!-- Formulaire de recharge -->
@@ -1412,6 +1693,9 @@
                         <div class="fees-total">
                             <span class="fees-label">Total à payer:</span>
                             <span class="fees-value" id="recharge-total-display">0 FCFA</span>
+                        </div>
+                        <div class="fees-warning">
+                            <i class="fas fa-exclamation-triangle"></i> Le montant net crédité sera de <strong id="recharge-net-display">0 FCFA</strong> (après déduction des frais)
                         </div>
                     </div>
                     
@@ -1450,11 +1734,21 @@
                     <div class="whatsapp-info">
                         <i class="fab fa-whatsapp"></i> Cette demande sera envoyée par WhatsApp au 92871605 pour traitement
                     </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn" id="cancel-recharge">Annuler</button>
-                        <button type="submit" class="btn btn-primary" id="submit-recharge">
-                            <span id="recharge-btn-text">Confirmer</span>
-                            <div class="loading-spinner" id="recharge-spinner" style="display: none;"></div>
+                    
+                    <!-- Navigation par flèches -->
+                    <div class="tab-navigation">
+                        <button type="button" class="nav-arrow" id="prev-recharge" disabled>
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <div class="form-actions">
+                            <button type="button" class="btn" id="cancel-recharge">Annuler</button>
+                            <button type="submit" class="btn btn-primary" id="submit-recharge">
+                                <span id="recharge-btn-text">Confirmer</span>
+                                <div class="loading-spinner" id="recharge-spinner" style="display: none;"></div>
+                            </button>
+                        </div>
+                        <button type="button" class="nav-arrow" id="next-recharge">
+                            <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
                 </form>
@@ -1503,11 +1797,21 @@
                     <div class="whatsapp-info">
                         <i class="fab fa-whatsapp"></i> Cette demande sera envoyée par WhatsApp au 92871605 pour traitement
                     </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn" id="cancel-achat">Annuler</button>
-                        <button type="submit" class="btn btn-danger" id="submit-achat">
-                            <span id="achat-btn-text">Effectuer</span>
-                            <div class="loading-spinner" id="achat-spinner" style="display: none;"></div>
+                    
+                    <!-- Navigation par flèches -->
+                    <div class="tab-navigation">
+                        <button type="button" class="nav-arrow" id="prev-achat">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <div class="form-actions">
+                            <button type="button" class="btn" id="cancel-achat">Annuler</button>
+                            <button type="submit" class="btn btn-danger" id="submit-achat">
+                                <span id="achat-btn-text">Effectuer</span>
+                                <div class="loading-spinner" id="achat-spinner" style="display: none;"></div>
+                            </button>
+                        </div>
+                        <button type="button" class="nav-arrow" id="next-achat">
+                            <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
                 </form>
@@ -1556,11 +1860,21 @@
                     <div class="whatsapp-info">
                         <i class="fab fa-whatsapp"></i> Un lien de confirmation sera envoyé par WhatsApp au 92871605
                     </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn" id="cancel-recevoir">Annuler</button>
-                        <button type="submit" class="btn btn-warning" id="submit-recevoir">
-                            <span id="recevoir-btn-text">Confirmer</span>
-                            <div class="loading-spinner" id="recevoir-spinner" style="display: none;"></div>
+                    
+                    <!-- Navigation par flèches -->
+                    <div class="tab-navigation">
+                        <button type="button" class="nav-arrow" id="prev-recevoir">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <div class="form-actions">
+                            <button type="button" class="btn" id="cancel-recevoir">Annuler</button>
+                            <button type="submit" class="btn btn-warning" id="submit-recevoir">
+                                <span id="recevoir-btn-text">Confirmer</span>
+                                <div class="loading-spinner" id="recevoir-spinner" style="display: none;"></div>
+                            </button>
+                        </div>
+                        <button type="button" class="nav-arrow" id="next-recevoir">
+                            <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
                 </form>
@@ -1620,11 +1934,21 @@
                     <div class="whatsapp-info">
                         <i class="fab fa-whatsapp"></i> Cette demande sera envoyée par WhatsApp au 92871605 pour traitement
                     </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn" id="cancel-retrait">Annuler</button>
-                        <button type="submit" class="btn btn-info" id="submit-retrait">
-                            <span id="retrait-btn-text">Demander</span>
-                            <div class="loading-spinner" id="retrait-spinner" style="display: none;"></div>
+                    
+                    <!-- Navigation par flèches -->
+                    <div class="tab-navigation">
+                        <button type="button" class="nav-arrow" id="prev-retrait">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <div class="form-actions">
+                            <button type="button" class="btn" id="cancel-retrait">Annuler</button>
+                            <button type="submit" class="btn btn-info" id="submit-retrait">
+                                <span id="retrait-btn-text">Demander</span>
+                                <div class="loading-spinner" id="retrait-spinner" style="display: none;"></div>
+                            </button>
+                        </div>
+                        <button type="button" class="nav-arrow" id="next-retrait" disabled>
+                            <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
                 </form>
@@ -1708,7 +2032,9 @@
                 ],
                 transactions: [
                     { id: 1, name: "Ouverture de compte", amount: 0, date: new Date(), type: "income", category: "account" }
-                ]
+                ],
+                feesHistory: [], // Historique des frais appliqués
+                lastMaintenanceFeeDate: null // Date du dernier frais d'entretien appliqué
             },
             {
                 id: 2,
@@ -1738,7 +2064,9 @@
                 transactions: [
                     { id: 1, name: "Achat en ligne", amount: -15000, date: new Date(), type: "expense", category: "shopping" },
                     { id: 2, name: "Transfert reçu", amount: 30000, date: new Date(Date.now() - 86400000), type: "income", category: "transfer" }
-                ]
+                ],
+                feesHistory: [],
+                lastMaintenanceFeeDate: null
             }
         ];
 
@@ -1748,6 +2076,13 @@
         let transactions = [];
         let saveTimer = null;
         let darkMode = localStorage.getItem('darkMode') === 'true';
+        let currentTabIndex = 0;
+        const tabOrder = ['recharge', 'achat', 'recevoir', 'retrait'];
+        
+        // Constantes pour les frais
+        const MAINTENANCE_FEE = 100; // Frais d'entretien mensuel
+        const RECHARGE_FEE_PERCENTAGE = 0.05; // 5% pour les rechargements
+        const WITHDRAWAL_FEE_PERCENTAGE = 0.09; // 9% pour les retraits
         
         // Éléments DOM
         const loginContainer = document.getElementById('login-container');
@@ -1798,6 +2133,7 @@
         const rechargeAmountDisplay = document.getElementById('recharge-amount-display');
         const rechargeFeesDisplay = document.getElementById('recharge-fees-display');
         const rechargeTotalDisplay = document.getElementById('recharge-total-display');
+        const rechargeNetDisplay = document.getElementById('recharge-net-display');
         const retraitFeesSection = document.getElementById('retrait-fees-section');
         const retraitAmountDisplay = document.getElementById('retrait-amount-display');
         const retraitFeesDisplay = document.getElementById('retrait-fees-display');
@@ -1831,6 +2167,25 @@
         const submitRetraitBtn = document.getElementById('submit-retrait');
         const retraitSpinner = document.getElementById('retrait-spinner');
         const retraitBtnText = document.getElementById('retrait-btn-text');
+        
+        // Boutons de navigation par flèches
+        const prevRechargeBtn = document.getElementById('prev-recharge');
+        const nextRechargeBtn = document.getElementById('next-recharge');
+        const prevAchatBtn = document.getElementById('prev-achat');
+        const nextAchatBtn = document.getElementById('next-achat');
+        const prevRecevoirBtn = document.getElementById('prev-recevoir');
+        const nextRecevoirBtn = document.getElementById('next-recevoir');
+        const prevRetraitBtn = document.getElementById('prev-retrait');
+        const nextRetraitBtn = document.getElementById('next-retrait');
+        
+        // Onglets de transaction
+        const transactionTabs = document.querySelectorAll('.transaction-tab');
+        const transactionTabContents = document.querySelectorAll('.transaction-tab-content');
+        
+        // Éléments pour les frais
+        const maintenanceFeeNotification = document.getElementById('maintenance-fee-notification');
+        const feeHistoryElement = document.getElementById('fee-history');
+        const noFeesMessage = document.getElementById('no-fees-message');
         
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
@@ -1899,27 +2254,24 @@
             recevoirForm.addEventListener('submit', handleRecevoirSubmit);
             retraitForm.addEventListener('submit', handleRetraitSubmit);
             
-            // Navigation par onglets
+            // Navigation par onglets dans le modal
             navTabs.forEach(tab => {
                 tab.addEventListener('click', function() {
                     const tabId = this.getAttribute('data-tab');
-                    
-                    // Activer l'onglet sélectionné
-                    navTabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Afficher le contenu correspondant
-                    tabContents.forEach(content => {
-                        content.classList.remove('active');
-                        if (content.id === `${tabId}-tab`) {
-                            content.classList.add('active');
-                        }
-                    });
-                    
-                    // Mettre à jour l'affichage du solde pour l'onglet actif
-                    updateSoldeDisplay();
+                    switchTab(tabId);
                 });
             });
+            
+            // Navigation par onglets dans la page principale
+            transactionTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-transaction-tab');
+                    switchTransactionTab(tabId);
+                });
+            });
+            
+            // Boutons de navigation flèches
+            setupTabNavigationButtons();
             
             // Bouton d'impression QR Code
             printQrcodeBtn.addEventListener('click', printQRCode);
@@ -1965,6 +2317,100 @@
             
             // Menu mobile
             mobileMenu.addEventListener('click', toggleMobileMenu);
+        }
+        
+        // Configurer les boutons de navigation par onglets
+        function setupTabNavigationButtons() {
+            // Rechargement
+            prevRechargeBtn.addEventListener('click', function() {
+                navigateTabs('prev');
+            });
+            nextRechargeBtn.addEventListener('click', function() {
+                navigateTabs('next');
+            });
+            
+            // Achat
+            prevAchatBtn.addEventListener('click', function() {
+                navigateTabs('prev');
+            });
+            nextAchatBtn.addEventListener('click', function() {
+                navigateTabs('next');
+            });
+            
+            // Recevoir
+            prevRecevoirBtn.addEventListener('click', function() {
+                navigateTabs('prev');
+            });
+            nextRecevoirBtn.addEventListener('click', function() {
+                navigateTabs('next');
+            });
+            
+            // Retrait
+            prevRetraitBtn.addEventListener('click', function() {
+                navigateTabs('prev');
+            });
+            nextRetraitBtn.addEventListener('click', function() {
+                navigateTabs('next');
+            });
+        }
+        
+        // Naviguer entre les onglets
+        function navigateTabs(direction) {
+            if (direction === 'next') {
+                if (currentTabIndex < tabOrder.length - 1) {
+                    currentTabIndex++;
+                }
+            } else if (direction === 'prev') {
+                if (currentTabIndex > 0) {
+                    currentTabIndex--;
+                }
+            }
+            
+            const nextTabId = tabOrder[currentTabIndex];
+            switchTab(nextTabId);
+        }
+        
+        // Changer d'onglet dans le modal
+        function switchTab(tabId) {
+            // Mettre à jour l'index de l'onglet actuel
+            currentTabIndex = tabOrder.indexOf(tabId);
+            
+            // Activer l'onglet sélectionné
+            navTabs.forEach(t => t.classList.remove('active'));
+            document.querySelector(`.nav-tab[data-tab="${tabId}"]`).classList.add('active');
+            
+            // Afficher le contenu correspondant
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === `${tabId}-tab`) {
+                    content.classList.add('active');
+                }
+            });
+            
+            // Mettre à jour l'affichage du solde pour l'onglet actif
+            updateSoldeDisplay();
+            
+            // Mettre à jour les frais si nécessaire
+            if (tabId === 'recharge') {
+                updateRechargeFees();
+            } else if (tabId === 'retrait') {
+                updateRetraitFees();
+            }
+        }
+        
+        // Changer d'onglet de transaction dans la page principale
+        function switchTransactionTab(tabId) {
+            // Activer l'onglet sélectionné
+            transactionTabs.forEach(t => t.classList.remove('active'));
+            document.querySelector(`.transaction-tab[data-transaction-tab="${tabId}"]`).classList.add('active');
+            
+            // Afficher le contenu correspondant
+            transactionTabContents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === `transaction-${tabId}`) {
+                    content.classList.add('active');
+                }
+            });
         }
         
         // Basculer le menu mobile
@@ -2095,13 +2541,15 @@
             
             if (montant > 0) {
                 // Calculer les frais (5%)
-                const frais = Math.round(montant * 0.05);
+                const frais = Math.round(montant * RECHARGE_FEE_PERCENTAGE);
                 const total = montant + frais;
+                const netAmount = montant; // Le montant net crédité est le montant de base (les frais sont payés séparément)
                 
                 // Mettre à jour l'affichage
                 rechargeAmountDisplay.textContent = formatCurrency(montant);
                 rechargeFeesDisplay.textContent = formatCurrency(frais);
                 rechargeTotalDisplay.textContent = formatCurrency(total);
+                rechargeNetDisplay.textContent = formatCurrency(netAmount);
                 
                 // Afficher la section des frais
                 rechargeFeesSection.style.display = 'block';
@@ -2118,7 +2566,7 @@
             
             if (montant > 0) {
                 // Calculer les frais (9%)
-                const frais = Math.round(montant * 0.09);
+                const frais = Math.round(montant * WITHDRAWAL_FEE_PERCENTAGE);
                 const total = montant + frais;
                 
                 // Mettre à jour l'affichage
@@ -2132,6 +2580,105 @@
                 // Masquer la section des frais
                 retraitFeesSection.style.display = 'none';
             }
+        }
+        
+        // Vérifier et appliquer les frais d'entretien mensuel
+        function checkAndApplyMaintenanceFee() {
+            if (!currentUser) return false;
+            
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            
+            // Si c'est la première fois qu'on vérifie pour cet utilisateur
+            if (!currentUser.lastMaintenanceFeeDate) {
+                currentUser.lastMaintenanceFeeDate = now;
+                return false;
+            }
+            
+            const lastFeeDate = new Date(currentUser.lastMaintenanceFeeDate);
+            const lastFeeMonth = lastFeeDate.getMonth();
+            const lastFeeYear = lastFeeDate.getFullYear();
+            
+            // Vérifier si un frais d'entretien a déjà été appliqué ce mois-ci
+            if (currentMonth === lastFeeMonth && currentYear === lastFeeYear) {
+                return false;
+            }
+            
+            // Appliquer le frais d'entretien
+            applyMaintenanceFee();
+            return true;
+        }
+        
+        // Appliquer les frais d'entretien mensuel
+        function applyMaintenanceFee() {
+            if (!currentUser) return;
+            
+            const now = new Date();
+            
+            // Ajouter la transaction de frais
+            addTransaction(`Frais d'entretien mensuel`, -MAINTENANCE_FEE, now, "expense", "maintenance");
+            
+            // Mettre à jour la date du dernier frais
+            currentUser.lastMaintenanceFeeDate = now;
+            
+            // Ajouter à l'historique des frais
+            const feeRecord = {
+                type: "Entretien mensuel",
+                amount: MAINTENANCE_FEE,
+                date: now,
+                description: "Frais d'entretien mensuel du compte"
+            };
+            
+            currentUser.feesHistory.unshift(feeRecord);
+            
+            // Afficher la notification
+            maintenanceFeeNotification.style.display = 'block';
+            
+            // Mettre à jour l'affichage de l'historique des frais
+            updateFeesHistoryDisplay();
+            
+            // Afficher une notification
+            showNotification(`Frais d'entretien mensuel de ${formatCurrency(MAINTENANCE_FEE)} appliqués.`, 'warning');
+        }
+        
+        // Mettre à jour l'affichage de l'historique des frais
+        function updateFeesHistoryDisplay() {
+            if (!currentUser) return;
+            
+            // Supprimer le message "Aucun frais"
+            if (noFeesMessage) {
+                noFeesMessage.style.display = 'none';
+            }
+            
+            // Vider l'historique
+            const feeItems = feeHistoryElement.querySelectorAll('.fee-item:not(#no-fees-message)');
+            feeItems.forEach(item => item.remove());
+            
+            // Afficher les 5 derniers frais
+            const recentFees = currentUser.feesHistory.slice(0, 5);
+            
+            if (recentFees.length === 0) {
+                if (noFeesMessage) {
+                    noFeesMessage.style.display = 'block';
+                }
+                return;
+            }
+            
+            recentFees.forEach(fee => {
+                const feeItem = document.createElement('div');
+                feeItem.className = 'fee-item';
+                
+                const feeDate = formatDate(fee.date);
+                const feeAmount = formatCurrency(fee.amount);
+                
+                feeItem.innerHTML = `
+                    <span>${fee.type} - ${feeDate}</span>
+                    <span style="color: var(--danger-color);">-${feeAmount}</span>
+                `;
+                
+                feeHistoryElement.appendChild(feeItem);
+            });
         }
         
         // Gérer la connexion
@@ -2161,6 +2708,9 @@
                     
                     // Charger les données sauvegardées si elles existent
                     loadUserData();
+                    
+                    // Vérifier et appliquer les frais d'entretien mensuel si nécessaire
+                    checkAndApplyMaintenanceFee();
                     
                     // Mettre à jour l'interface
                     updateUserInterface();
@@ -2256,6 +2806,18 @@
             // Mettre à jour les comptes
             renderAccounts();
             
+            // Mettre à jour l'historique des frais
+            updateFeesHistoryDisplay();
+            
+            // Vérifier si un frais d'entretien a été appliqué ce mois-ci
+            if (currentUser.lastMaintenanceFeeDate) {
+                const now = new Date();
+                const lastFeeDate = new Date(currentUser.lastMaintenanceFeeDate);
+                if (now.getMonth() === lastFeeDate.getMonth() && now.getFullYear() === lastFeeDate.getFullYear()) {
+                    maintenanceFeeNotification.style.display = 'block';
+                }
+            }
+            
             // Remplir les formulaires avec les informations utilisateur
             document.getElementById('recharge-nom').value = "KOLA";
             document.getElementById('recharge-prenom').value = "Maniwah";
@@ -2308,33 +2870,11 @@
             closeAllModals();
             transactionModal.style.display = 'flex';
             
+            // Définir l'onglet actif
+            currentTabIndex = tabOrder.indexOf(type);
+            
             // Activer l'onglet correspondant
-            navTabs.forEach(tab => {
-                if (tab.getAttribute('data-tab') === type) {
-                    tab.classList.add('active');
-                } else {
-                    tab.classList.remove('active');
-                }
-            });
-            
-            // Afficher le contenu correspondant
-            tabContents.forEach(content => {
-                if (content.id === `${type}-tab`) {
-                    content.classList.add('active');
-                } else {
-                    content.classList.remove('active');
-                }
-            });
-            
-            // Mettre à jour l'affichage du solde
-            updateSoldeDisplay();
-            
-            // Mettre à jour les frais si nécessaire
-            if (type === 'recharge') {
-                updateRechargeFees();
-            } else if (type === 'retrait') {
-                updateRetraitFees();
-            }
+            switchTab(type);
         }
         
         // Fermer tous les modals
@@ -2370,6 +2910,9 @@
                 document.getElementById('retrait-prenom').value = "Maniwah";
                 document.getElementById('retrait-contact').value = currentUser.phone;
             }
+            
+            // Réinitialiser l'index de l'onglet
+            currentTabIndex = 0;
         }
         
         // Gérer la soumission du formulaire de recharge
@@ -2388,8 +2931,13 @@
             submitRechargeBtn.disabled = true;
             
             // Calculer les frais (5%)
-            const frais = Math.round(montant * 0.05);
+            const frais = Math.round(montant * RECHARGE_FEE_PERCENTAGE);
             const total = montant + frais;
+            const netAmount = montant; // Le montant net crédité est le montant de base
+            
+            // Vérifier si l'utilisateur a suffisamment de fonds (pour le paiement)
+            // Dans un système réel, cela vérifierait le solde du compte de paiement
+            // Pour cette simulation, nous supposons que l'utilisateur a suffisamment de fonds
             
             // Générer le message WhatsApp avec le solde actuel et les frais
             const message = `DEMANDE DE RECHARGEMENT%0A%0A` +
@@ -2398,8 +2946,9 @@
                            `Contact: ${contact}%0A` +
                            `Solde actuel: ${formatCurrency(currentBalance)}%0A` +
                            `Montant: ${formatCurrency(montant)}%0A` +
-                           `Frais (6%): ${formatCurrency(frais)}%0A` +
+                           `Frais de recharge (5%): ${formatCurrency(frais)}%0A` +
                            `Total à payer: ${formatCurrency(total)}%0A` +
+                           `Montant net crédité: ${formatCurrency(netAmount)}%0A` +
                            `Méthode: ${methode}%0A` +
                            `Date: ${new Date().toLocaleString('fr-FR')}`;
             
@@ -2408,8 +2957,11 @@
             
             // Simuler le traitement (en réalité, cela se ferait après confirmation du serveur)
             setTimeout(() => {
-                // Ajouter la transaction (seul le montant net est crédité)
-                addTransaction(`Rechargement ${methode}`, montant, new Date(), "income", "recharge");
+                // 1. Ajouter la transaction de recharge (montant net)
+                addTransaction(`Rechargement ${methode}`, netAmount, new Date(), "income", "recharge");
+                
+                // 2. Appliquer les frais de recharge sur le solde
+                applyRechargeFee(frais, montant, methode);
                 
                 // Réinitialiser le bouton
                 rechargeBtnText.style.display = 'inline-block';
@@ -2417,11 +2969,34 @@
                 submitRechargeBtn.disabled = false;
                 
                 // Afficher une notification
-                showNotification(`Votre compte a été rechargé de ${formatCurrency(montant)}. Frais de ${formatCurrency(frais)} appliqués.`, 'success');
+                showNotification(`Votre compte a été rechargé de ${formatCurrency(netAmount)}. Frais de ${formatCurrency(frais)} appliqués sur le solde.`, 'success');
                 
                 // Fermer le modal
                 closeAllModals();
             }, 2000);
+        }
+        
+        // Appliquer les frais de recharge sur le solde
+        function applyRechargeFee(feeAmount, rechargeAmount, method) {
+            if (!currentUser) return;
+            
+            const now = new Date();
+            
+            // Ajouter la transaction de frais
+            addTransaction(`Frais de recharge (5%)`, -feeAmount, now, "expense", "recharge_fee");
+            
+            // Ajouter à l'historique des frais
+            const feeRecord = {
+                type: "Frais de recharge",
+                amount: feeAmount,
+                date: now,
+                description: `Frais de 5% sur rechargement de ${formatCurrency(rechargeAmount)} (${method})`
+            };
+            
+            currentUser.feesHistory.unshift(feeRecord);
+            
+            // Mettre à jour l'affichage de l'historique des frais
+            updateFeesHistoryDisplay();
         }
         
         // Gérer la soumission du formulaire d'achat
@@ -2543,7 +3118,7 @@
             submitRetraitBtn.disabled = true;
             
             // Calculer les frais (9%)
-            const frais = Math.round(montant * 0.09);
+            const frais = Math.round(montant * WITHDRAWAL_FEE_PERCENTAGE);
             const total = montant + frais;
             
             // Vérifier que le solde est suffisant
@@ -2564,7 +3139,7 @@
                            `Contact: ${contact}%0A` +
                            `Solde actuel: ${formatCurrency(currentBalance)}%0A` +
                            `Montant: ${formatCurrency(montant)}%0A` +
-                           `Frais (15%): ${formatCurrency(frais)}%0A` +
+                           `Frais de retrait (9%): ${formatCurrency(frais)}%0A` +
                            `Total débité: ${formatCurrency(total)}%0A` +
                            `Numéro de réception: ${numeroReception}%0A` +
                            `Date: ${new Date().toLocaleString('fr-FR')}`;
@@ -2576,6 +3151,17 @@
             setTimeout(() => {
                 // Ajouter la transaction (le total est débité)
                 addTransaction(`Retrait vers ${numeroReception}`, -total, new Date(), "expense", "retrait");
+                
+                // Ajouter les frais à l'historique
+                const feeRecord = {
+                    type: "Frais de retrait",
+                    amount: frais,
+                    date: new Date(),
+                    description: `Frais de 9% sur retrait de ${formatCurrency(montant)}`
+                };
+                
+                currentUser.feesHistory.unshift(feeRecord);
+                updateFeesHistoryDisplay();
                 
                 // Réinitialiser le bouton
                 retraitBtnText.style.display = 'inline-block';
@@ -2777,6 +3363,8 @@
                 userId: currentUser.id,
                 balance: currentBalance,
                 transactions: transactions,
+                feesHistory: currentUser.feesHistory,
+                lastMaintenanceFeeDate: currentUser.lastMaintenanceFeeDate,
                 lastSave: new Date().toISOString()
             };
             
@@ -2805,6 +3393,22 @@
                             date: new Date(t.date)
                         };
                     });
+                    
+                    // Mettre à jour l'historique des frais
+                    currentUser.feesHistory = userData.feesHistory || [];
+                    if (userData.feesHistory) {
+                        currentUser.feesHistory = userData.feesHistory.map(f => {
+                            return {
+                                ...f,
+                                date: new Date(f.date)
+                            };
+                        });
+                    }
+                    
+                    // Mettre à jour la date du dernier frais d'entretien
+                    if (userData.lastMaintenanceFeeDate) {
+                        currentUser.lastMaintenanceFeeDate = new Date(userData.lastMaintenanceFeeDate);
+                    }
                     
                     // Mettre à jour l'utilisateur actuel
                     currentUser.balance = currentBalance;
@@ -2838,6 +3442,21 @@
                                     date: new Date(t.date)
                                 };
                             });
+                            
+                            // Mettre à jour l'historique des frais
+                            if (savedAccount.feesHistory) {
+                                originalAccount.feesHistory = savedAccount.feesHistory.map(f => {
+                                    return {
+                                        ...f,
+                                        date: new Date(f.date)
+                                    };
+                                });
+                            }
+                            
+                            // Mettre à jour la date du dernier frais d'entretien
+                            if (savedAccount.lastMaintenanceFeeDate) {
+                                originalAccount.lastMaintenanceFeeDate = new Date(savedAccount.lastMaintenanceFeeDate);
+                            }
                         }
                     });
                     
