@@ -7,7 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Styles CSS précédents - inchangés */
+        /* Tous les styles CSS précédents restent inchangés */
         :root {
             --primary-color: #1a237e;
             --secondary-color: #283593;
@@ -1396,6 +1396,22 @@
             align-items: center;
             gap: 5px;
         }
+        
+        /* Style pour indicateur de frais automatiques */
+        .auto-fee-notice {
+            background-color: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffc107;
+            border-radius: 5px;
+            padding: 8px 12px;
+            margin: 10px 0;
+            font-size: 0.85rem;
+            color: #856404;
+        }
+        
+        .auto-fee-notice i {
+            color: #ffc107;
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
@@ -1691,6 +1707,9 @@
                     <div class="fee-notification" id="maintenance-fee-notification" style="display: none;">
                         <i class="fas fa-info-circle"></i> <strong>Frais d'entretien mensuel</strong> de 100 FCFA appliqués ce mois-ci.
                     </div>
+                    <div class="auto-fee-notice">
+                        <i class="fas fa-exclamation-triangle"></i> <strong>Note importante:</strong> Les frais de recharge de 5% sont automatiquement déduits avant crédit du solde.
+                    </div>
                     <div class="fee-history" id="fee-history">
                         <h4>Historique des frais récents</h4>
                         <!-- Les frais seront ajoutés dynamiquement -->
@@ -1754,9 +1773,9 @@
                     
                     <!-- Section des frais de recharge -->
                     <div class="fees-info" id="recharge-fees-section" style="display: none;">
-                        <h4>Détails des frais</h4>
+                        <h4>Détails des frais (application automatique)</h4>
                         <div class="fees-row">
-                            <span class="fees-label">Montant à recharger:</span>
+                            <span class="fees-label">Montant saisi:</span>
                             <span class="fees-value" id="recharge-amount-display">0 FCFA</span>
                         </div>
                         <div class="fees-row">
@@ -1764,12 +1783,16 @@
                             <span class="fees-value" id="recharge-fees-display">0 FCFA</span>
                         </div>
                         <div class="fees-total">
-                            <span class="fees-label">Total à payer:</span>
-                            <span class="fees-value" id="recharge-total-display">0 FCFA</span>
+                            <span class="fees-label">Montant net crédité:</span>
+                            <span class="fees-value" id="recharge-net-display">0 FCFA</span>
                         </div>
                         <div class="fees-warning">
-                            <i class="fas fa-exclamation-triangle"></i> Le montant net crédité sera de <strong id="recharge-net-display">0 FCFA</strong> (après déduction des frais)
+                            <i class="fas fa-exclamation-triangle"></i> <strong>ATTENTION:</strong> Les frais de 5% sont automatiquement déduits. Seul le montant net sera crédité sur votre compte.
                         </div>
+                    </div>
+                    
+                    <div class="auto-fee-notice">
+                        <i class="fas fa-robot"></i> <strong>Application automatique:</strong> Les frais de recharge de 5% sont automatiquement déduits. Vous verrez uniquement le montant net sur votre solde.
                     </div>
                     
                     <div class="form-group">
@@ -2163,8 +2186,8 @@
         // Constantes pour les frais
         const MAINTENANCE_FEE = 100;
         const MINIMUM_BALANCE_FOR_FEE = 200;
-        const RECHARGE_FEE_PERCENTAGE = 0.05;
-        const WITHDRAWAL_FEE_PERCENTAGE = 0.09;
+        const RECHARGE_FEE_PERCENTAGE = 0.05; // 5% pour les rechargements
+        const WITHDRAWAL_FEE_PERCENTAGE = 0.09; // 9% pour les retraits
         
         // Éléments DOM
         const loginContainer = document.getElementById('login-container');
@@ -2604,13 +2627,12 @@
             
             if (montant > 0) {
                 const frais = Math.round(montant * RECHARGE_FEE_PERCENTAGE);
-                const total = montant + frais;
-                const netAmount = montant;
+                const netAmount = montant - frais; // IMPORTANT: Le montant net est après déduction des frais
                 
                 rechargeAmountDisplay.textContent = formatCurrency(montant);
                 rechargeFeesDisplay.textContent = formatCurrency(frais);
-                rechargeTotalDisplay.textContent = formatCurrency(total);
-                rechargeNetDisplay.textContent = formatCurrency(netAmount);
+                rechargeTotalDisplay.textContent = formatCurrency(montant); // Montant total saisi
+                rechargeNetDisplay.textContent = formatCurrency(netAmount); // Montant net après frais
                 
                 rechargeFeesSection.style.display = 'block';
             } else {
@@ -3015,25 +3037,28 @@
             // Vérifier les frais d'entretien avant de recharger
             checkAndApplyMaintenanceFee();
             
+            // Calculer les frais de recharge (5%)
             const frais = Math.round(montant * RECHARGE_FEE_PERCENTAGE);
-            const total = montant + frais;
-            const netAmount = montant;
+            
+            // IMPORTANT: Le montant net est après déduction automatique des frais
+            const netAmount = montant - frais;
             
             const message = `DEMANDE DE RECHARGEMENT%0A%0A` +
                            `Nom: ${nom}%0A` +
                            `Prénom: ${prenom}%0A` +
                            `Contact: ${contact}%0A` +
                            `Solde actuel: ${formatCurrency(currentBalance)}%0A` +
-                           `Montant: ${formatCurrency(montant)}%0A` +
+                           `Montant saisi: ${formatCurrency(montant)}%0A` +
                            `Frais de recharge (5%): ${formatCurrency(frais)}%0A` +
-                           `Total à payer: ${formatCurrency(total)}%0A` +
                            `Montant net crédité: ${formatCurrency(netAmount)}%0A` +
                            `Méthode: ${methode}%0A` +
-                           `Date: ${new Date().toLocaleString('fr-FR')}`;
+                           `Date: ${new Date().toLocaleString('fr-FR')}%0A%0A` +
+                           `NOTE: Les frais de 5% sont automatiquement déduits. Seul le montant net de ${formatCurrency(netAmount)} sera crédité sur votre compte.`;
             
             sendWhatsAppMessage(message);
             
             setTimeout(() => {
+                // IMPORTANT: Ajouter le montant NET (après frais automatiques)
                 addTransaction(`Rechargement ${methode}`, netAmount, new Date(), "income", "recharge");
                 
                 // Ajouter les frais de recharge à l'historique
@@ -3041,7 +3066,7 @@
                     type: "Frais de recharge",
                     amount: frais,
                     date: new Date(),
-                    description: `Frais de 5% sur rechargement de ${formatCurrency(montant)} (${methode})`
+                    description: `Frais de 5% automatiquement déduits sur rechargement de ${formatCurrency(montant)} (${methode})`
                 };
                 
                 if (currentUser) {
@@ -3053,7 +3078,7 @@
                 rechargeSpinner.style.display = 'none';
                 submitRechargeBtn.disabled = false;
                 
-                showNotification(`Votre compte a été rechargé de ${formatCurrency(netAmount)}. Frais de ${formatCurrency(frais)} appliqués sur le solde.`, 'success');
+                showNotification(`Votre compte a été rechargé de ${formatCurrency(netAmount)} (${formatCurrency(montant)} - frais de ${formatCurrency(frais)}).`, 'success');
                 
                 closeAllModals();
             }, 2000);
