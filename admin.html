@@ -720,7 +720,6 @@
                                 <select id="cardType" required>
                                     <option value="visa">💳 Visa</option>
                                     <option value="mastercard">💳 Mastercard</option>
-                                    <option value="virtual">💳 Carte Virtuelle</option>
                                 </select>
                             </div>
                         </div>
@@ -946,7 +945,6 @@
                                 <option value="all">Tous les types</option>
                                 <option value="visa">Visa</option>
                                 <option value="mastercard">Mastercard</option>
-                                <option value="virtual">Virtuelle</option>
                             </select>
                         </div>
                     </div>
@@ -1029,17 +1027,17 @@
         function getRechargeFeeRate(cardType) {
             switch(cardType) {
                 case 'visa': return 0.05; // 5%
-                case 'mastercard': return 0.05; // 5%
-                case 'virtual': return 0.05; // 5%
+                case 'mastercard': return 0.10; // 10%
+                case 'virtual': return 0.00; // 0%
                 default: return 0.05;
             }
         }
         
         function getTransferFeeRate(cardType) {
             switch(cardType) {
-                case 'visa': return 0.05; // 5%
-                case 'mastercard': return 0.09; // 9%
-                case 'virtual': return 0.05; // 5%
+                case 'visa': return 0.00; // 0%
+                case 'mastercard': return 0.00; // 0%
+                case 'virtual': return 0.00; // 0%
                 default: return 0.05;
             }
         }
@@ -1048,7 +1046,7 @@
             switch(cardType) {
                 case 'visa': return 0.09; // 9%
                 case 'mastercard': return 0.25; // 25%
-                case 'virtual': return 0.09; // 9%
+                case 'virtual': return 0.00; // 0%
                 default: return 0.09;
             }
         }
