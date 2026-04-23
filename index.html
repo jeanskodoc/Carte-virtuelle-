@@ -320,6 +320,10 @@
             color: #fdbb2d;
         }
         
+        .btn-commande {
+            background: linear-gradient(to right, #fdbb2d, #ff9800);
+        }
+        
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 32px;
@@ -354,10 +358,7 @@
                 <a href="admin.html" class="nav-btn">
                     <i class="fas fa-user-shield"></i> Administrateur
                 </a>
-                <a href="inscription.html" class="nav-btn">
-                    <i class="fas fa-shopping-cart"></i> Commande
-                </a>
-                <a href="client.html" class="nav-btn">
+                <a href="client.html" class="nav-btn btn-commande">
                     <i class="fas fa-credit-card"></i> Carte Bancaire
                 </a>
             </nav>
@@ -468,6 +469,7 @@
             const cardNumber = document.querySelector('.card-number');
             const cardHolder = document.querySelector('.card-holder .card-value');
             const expiry = document.querySelector('.card-expiry .card-value');
+            const cardLogo = document.querySelector('.card-logo');
             
             // Effet de chargement
             cardNumber.textContent = '**** **** **** ****';
@@ -476,20 +478,33 @@
             
             // Génération après un délai
             setTimeout(() => {
+                // Choisir aléatoirement entre Visa et MasterCard
+                const isVisa = Math.random() > 0.5;
+                const prefix = isVisa ? '4' : '5';
+                const cardBrand = isVisa ? 'VISA' : 'MasterCard';
+                cardLogo.textContent = cardBrand;
+                
                 // Générer un numéro de carte aléatoire
-                const newNumber = '**** **** **** ' + Math.floor(1000 + Math.random() * 9000);
-                cardNumber.textContent = newNumber;
+                let cardNumberStr = prefix;
+                for (let i = 0; i < 15; i++) {
+                    cardNumberStr += Math.floor(Math.random() * 10);
+                }
+                const formattedNumber = cardNumberStr.replace(/(\d{4})/g, '$1 ').trim();
+                cardNumber.textContent = formattedNumber;
                 
                 // Générer un nom aléatoire
-                const firstNames = ['MARIE', 'PIERRE', 'ANNE', 'JEAN', 'SOFIA', 'LUC'];
-                const lastNames = ['DUPONT', 'MARTIN', 'BERNARD', 'DUBOIS', 'MOREAU'];
+                const firstNames = ['MARIE', 'PIERRE', 'ANNE', 'JEAN', 'SOFIA', 'LUC', 'EMMA', 'THOMAS', 'JULIE', 'NICOLAS'];
+                const lastNames = ['DUPONT', 'MARTIN', 'BERNARD', 'DUBOIS', 'MOREAU', 'LAURENT', 'MICHEL', 'ROBERT'];
                 const randomName = firstNames[Math.floor(Math.random() * firstNames.length)] + ' ' + 
                                   lastNames[Math.floor(Math.random() * lastNames.length)];
                 cardHolder.textContent = randomName;
                 
-                // Générer une date d'expiration aléatoire
+                // Générer une date d'expiration aléatoire (valide entre 1 et 5 ans)
+                const now = new Date();
+                const currentYear = now.getFullYear() % 100;
+                const yearOffset = Math.floor(Math.random() * 5) + 1;
+                const year = String(currentYear + yearOffset).slice(-2);
                 const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
-                const year = String(Math.floor(Math.random() * 3) + 24);
                 expiry.textContent = `${month}/${year}`;
                 
                 // Animation de confirmation
@@ -498,6 +513,28 @@
                 setTimeout(() => {
                     card.style.transform = 'scale(1)';
                 }, 300);
+                
+                // Afficher une notification
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #4CAF50;
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 10px;
+                    z-index: 9999;
+                    font-weight: bold;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                    animation: slideIn 0.5s ease;
+                `;
+                notification.innerHTML = '✅ Nouvelle carte générée avec succès !';
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
             }, 1000);
         });
         
@@ -512,6 +549,15 @@
                 this.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.1)';
             });
         });
+        
+        // Animation de la carte au chargement
+        setTimeout(() => {
+            const card = document.querySelector('.demo-card');
+            card.style.transform = 'scale(1.02)';
+            setTimeout(() => {
+                card.style.transform = 'scale(1)';
+            }, 500);
+        }, 500);
     </script>
 </body>
 </html>
