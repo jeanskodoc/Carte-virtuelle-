@@ -1,0 +1,2086 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Portefeuille MasterCard Togo</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #000000;
+            --secondary-color: #ff5f00;
+            --accent-color: #eb001b;
+            --text-color: #333;
+            --light-color: #f5f5f5;
+            --danger-color: #d32f2f;
+            --warning-color: #ff9800;
+            --info-color: #2196f3;
+            --success-color: #388e3c;
+            --gold-color: #ffd700;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --gradient-primary: linear-gradient(135deg, #000000, #ff5f00);
+            --gradient-gold: linear-gradient(135deg, #ffd700, #ff5f00);
+            --mastercard-red: #eb001b;
+            --mastercard-orange: #ff5f00;
+            --mastercard-black: #000000;
+            --whatsapp-green: #25D366;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: var(--text-color);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+        
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            min-height: 100dvh;
+            background: linear-gradient(135deg, var(--mastercard-black), var(--mastercard-orange));
+            padding: 15px;
+        }
+        
+        .login-box {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .login-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .login-logo h1 {
+            color: var(--mastercard-black);
+            font-size: 1.5rem;
+        }
+        
+        .login-form .form-group {
+            margin-bottom: 18px;
+        }
+        
+        .login-form label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .login-form input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, var(--mastercard-red), var(--mastercard-orange));
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .login-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .login-error {
+            color: var(--danger-color);
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+            font-size: 0.9rem;
+        }
+        
+        .app-container {
+            display: none;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--mastercard-black), var(--mastercard-orange));
+            color: white;
+            padding: 12px 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logo h1 {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(to right, var(--mastercard-red), var(--mastercard-orange));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .logout-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-decoration: underline;
+        }
+        
+        .dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: var(--shadow);
+        }
+        
+        .balance-card {
+            background: linear-gradient(135deg, var(--mastercard-black), var(--mastercard-orange));
+            color: white;
+            text-align: center;
+        }
+        
+        .balance-amount {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 8px 0;
+        }
+        
+        .balance-label {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        .maintenance-fee-info {
+            background: rgba(255,255,255,0.15);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .fee-badge {
+            background: #ff9800;
+            color: #333;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.75rem;
+        }
+        
+        .fee-applied {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .fee-pending {
+            background: #ff9800;
+            color: #333;
+        }
+        
+        .fee-insufficient {
+            background: #f44336;
+            color: white;
+        }
+        
+        .virtual-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .virtual-card {
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #1a1a1a, #333333);
+        }
+        
+        .virtual-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            z-index: 1;
+        }
+        
+        .virtual-card.gold {
+            background: linear-gradient(135deg, #ffd700, #ff5f00);
+            color: #333;
+        }
+        
+        .card-chip {
+            width: 45px;
+            height: 35px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .card-number {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            letter-spacing: 1.5px;
+            margin: 15px 0;
+        }
+        
+        .card-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-holder {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .card-expiry {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .card-logo {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+        
+        .card-flag {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .transactions {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .transaction-list {
+            list-style: none;
+        }
+        
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+        
+        .transaction-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .transaction-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .transaction-date {
+            font-size: 0.75rem;
+            color: #777;
+        }
+        
+        .transaction-amount {
+            font-weight: bold;
+            align-self: center;
+            font-size: 0.9rem;
+        }
+        
+        .amount-positive {
+            color: var(--success-color);
+        }
+        
+        .amount-negative {
+            color: var(--danger-color);
+        }
+        
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 10px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            min-height: 42px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--mastercard-red), var(--mastercard-orange));
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .btn-info {
+            background-color: var(--info-color);
+            color: white;
+        }
+        
+        .btn-whatsapp {
+            background-color: var(--whatsapp-green);
+            color: white;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        
+        .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin: 8px 0;
+        }
+        
+        .stat-income {
+            color: var(--success-color);
+        }
+        
+        .stat-expense {
+            color: var(--danger-color);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #777;
+        }
+        
+        .form-group {
+            margin-bottom: 12px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        @media (min-width: 480px) {
+            .form-row {
+                flex-direction: row;
+            }
+            .form-row .form-group {
+                flex: 1;
+            }
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .fedapay-section {
+            margin: 15px 0;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid var(--mastercard-red);
+        }
+        
+        .fedapay-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 15px;
+            background: linear-gradient(to right, var(--mastercard-red), var(--mastercard-orange));
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .fedapay-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .whatsapp-confirmation-section {
+            background: linear-gradient(135deg, #25D36610, #128C7E10);
+            border: 2px solid #25D366;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+        
+        .whatsapp-confirmation-section h4 {
+            color: #25D366;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .payment-summary {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px 0;
+        }
+        
+        .payment-summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .payment-summary-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            color: #0066CC;
+        }
+        
+        .qr-code-container {
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        #payment-qrcode {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            padding: 15px 0;
+            color: #777;
+            font-size: 0.8rem;
+        }
+        
+        .transactions-tabs {
+            display: flex;
+            flex-direction: column;
+            margin-top: 15px;
+        }
+        
+        .transactions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .transactions-header h2 {
+            font-size: 1.3rem;
+            color: var(--mastercard-red);
+        }
+        
+        .transactions-tabs-nav {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            overflow-x: auto;
+        }
+        
+        .transaction-tab {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: center;
+            flex: 1;
+            min-width: 90px;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+        
+        .transaction-tab:hover {
+            background-color: rgba(235, 0, 27, 0.05);
+        }
+        
+        .transaction-tab.active {
+            border-bottom-color: var(--mastercard-red);
+            font-weight: bold;
+            color: var(--mastercard-red);
+            background-color: rgba(235, 0, 27, 0.08);
+        }
+        
+        .transaction-tab-content {
+            display: none;
+            padding: 15px 0;
+        }
+        
+        .transaction-tab-content.active {
+            display: block;
+        }
+        
+        .solde-actuel {
+            background-color: #e8f5e9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 12px;
+            text-align: center;
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .solde-montant {
+            font-size: 1.1rem;
+            color: var(--success-color);
+            font-weight: bold;
+        }
+        
+        .save-notification {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            display: none;
+            z-index: 1001;
+            animation: fadeInOut 3s ease;
+        }
+        
+        .notification-success { background: #388e3c; color: white; }
+        .notification-warning { background: #ff9800; color: white; }
+        .notification-danger { background: #d32f2f; color: white; }
+        .notification-info { background: #2196f3; color: white; }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(20px); }
+        }
+        
+        .fees-info {
+            background: #fff3e0;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 12px 0;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .fees-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .fees-total {
+            border-top: 1px solid #ddd;
+            padding-top: 5px;
+            margin-top: 5px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .fee-history {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        
+        .fee-history h4 {
+            margin-bottom: 10px;
+            color: #ff9800;
+            font-size: 0.9rem;
+        }
+        
+        .fee-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+            font-size: 0.85rem;
+        }
+        
+        .fee-item:last-child {
+            border-bottom: none;
+        }
+        
+        .balance-loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .password-container input {
+            padding-right: 40px;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #777;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        .auto-save-indicator {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            z-index: 1000;
+        }
+        
+        .last-save-time {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 9px;
+            z-index: 1000;
+        }
+        
+        .cleanup-info {
+            position: fixed;
+            bottom: 35px;
+            left: 10px;
+            background: rgba(0,0,0,0.5);
+            color: #ff9800;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 8px;
+            z-index: 1000;
+        }
+        
+        @media (max-width: 768px) {
+            .actions { grid-template-columns: 1fr; }
+            .transaction-tab { padding: 8px 12px; font-size: 0.8rem; min-width: 80px; }
+        }
+        
+        @media (max-width: 360px) {
+            .stats { grid-template-columns: 1fr; }
+            .virtual-card { min-height: 160px; }
+            .card-number { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="save-notification" id="save-notification"></div>
+    <div class="auto-save-indicator" id="auto-save-indicator">💾 Sauvegarde auto active</div>
+    <div class="last-save-time" id="last-save-time">Dernière sauvegarde: --</div>
+    <div class="cleanup-info" id="cleanup-info">🗑️ Transactions supprimées après 29 jours</div>
+    
+    <div class="login-container" id="login-container">
+        <div class="login-box">
+            <div class="login-logo">
+                <h1><i class="fab fa-cc-mastercard"></i> Portefeuille MasterCard Togo</h1>
+                <p>Connectez-vous à votre compte</p>
+            </div>
+            <form class="login-form" id="login-form">
+                <div class="form-group">
+                    <label>Identifiant</label>
+                    <input type="text" id="username" placeholder="Votre identifiant" required>
+                </div>
+                <div class="form-group">
+                    <label>Mot de passe</label>
+                    <div class="password-container">
+                        <input type="password" id="password" placeholder="Votre mot de passe" required>
+                        <button type="button" class="password-toggle" id="password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="login-btn">Se connecter</button>
+                <div class="login-error" id="login-error">Identifiant ou mot de passe incorrect</div>
+            </form>
+            <div style="margin-top: 15px; text-align: center; font-size: 11px; color: #888;">
+                <i class="fas fa-lock"></i> Connexion sécurisée
+            </div>
+        </div>
+    </div>
+    
+    <div class="app-container" id="app-container">
+        <header>
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <div class="avatar" id="user-avatar">KM</div>
+                        <h1>MasterCard</h1>
+                    </div>
+                    <div class="user-info">
+                        <span id="user-fullname">KOLA Maniwah</span>
+                        <div class="avatar">KM</div>
+                        <button class="logout-btn" id="logout-btn">Déconnexion</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="container">
+            <div class="virtual-cards">
+                <div class="virtual-card">
+                    <div class="card-logo">MasterCard</div>
+                    <div class="card-chip">CHIP</div>
+                    <div class="card-number">5254 9876 5432 1098</div>
+                    <div class="card-details">
+                        <div class="card-holder" id="card-holder">KOLA M ES</div>
+                        <div class="card-expiry">12/26</div>
+                    </div>
+                    <div class="card-flag">World Elite</div>
+                </div>
+            </div>
+            
+            <div class="dashboard">
+                <div class="card balance-card">
+                    <div class="balance-label">Solde actuel</div>
+                    <div class="balance-amount" id="balance-amount">
+                        <span id="balance-text">0 FCFA</span>
+                    </div>
+                    <div class="maintenance-fee-info" id="maintenance-fee-info">
+                        <span><i class="fas fa-calendar-alt"></i> Frais d'entretien mensuel: 200 FCFA</span>
+                        <span class="fee-badge" id="fee-status-badge">Vérification...</span>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="transactions-tabs-nav">
+                        <div class="transaction-tab active" data-tab="recharge">💰 Recharger</div>
+                        <div class="transaction-tab" data-tab="achat">🛒 Acheter</div>
+                        <div class="transaction-tab" data-tab="recevoir">📥 Recevoir</div>
+                        <div class="transaction-tab" data-tab="retrait">💸 Retrait</div>
+                    </div>
+                    
+                    <div id="recharge-tab" class="transaction-tab-content active">
+                        <div class="fedapay-section">
+                            <h4 style="margin-bottom: 10px;">💳 Paiement sécurisé via FedaPay</h4>
+                            <p style="margin-bottom: 15px; font-size: 0.85rem;">Cliquez sur le bouton ci-dessous pour effectuer votre paiement</p>
+                            <button class="fedapay-btn" id="fedapay-recharge-btn">
+                                <i class="fas fa-credit-card"></i> Payer avec FedaPay
+                            </button>
+                            <p style="margin-top: 10px; font-size: 0.75rem; color: #666;">
+                                <i class="fas fa-lock"></i> Paiement sécurisé - Frais de 10% appliqués automatiquement
+                            </p>
+                        </div>
+                        
+                        <!-- Section confirmation WhatsApp -->
+                        <div id="whatsapp-confirmation-section" class="whatsapp-confirmation-section">
+                            <h4><i class="fab fa-whatsapp"></i> Confirmation de paiement par WhatsApp</h4>
+                            <p style="font-size: 0.85rem; margin-bottom: 15px;">Votre paiement a été détecté. Veuillez confirmer les informations ci-dessous :</p>
+                            
+                            <div id="payment-summary" class="payment-summary"></div>
+                            
+                            <div class="form-group">
+                                <label>Votre numéro WhatsApp</label>
+                                <input type="tel" id="whatsapp-phone" class="form-control" placeholder="+228 XXXXXXXX">
+                            </div>
+                            <div class="form-group">
+                                <label>Nom complet</label>
+                                <input type="text" id="whatsapp-name" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Email (optionnel)</label>
+                                <input type="email" id="whatsapp-email" class="form-control" placeholder="votre@email.com">
+                            </div>
+                            
+                            <div class="qr-code-container" id="qr-code-container" style="display: none;">
+                                <p>Scannez ce QR code pour envoyer le message :</p>
+                                <div id="payment-qrcode"></div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button class="btn btn-whatsapp" id="send-whatsapp-confirmation" style="width: 100%;">
+                                    <i class="fab fa-whatsapp"></i> Envoyer la confirmation WhatsApp
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="achat-tab" class="transaction-tab-content">
+                        <div class="stats">
+                            <div class="stat-card">
+                                <div class="stat-icon">📈</div>
+                                <div>Revenus (30j)</div>
+                                <div class="stat-value stat-income" id="month-income">0 FCFA</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">📉</div>
+                                <div>Dépenses (30j)</div>
+                                <div class="stat-value stat-expense" id="month-expense">0 FCFA</div>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <button class="btn btn-danger" id="achat-btn">
+                                <i class="fas fa-shopping-cart"></i> Effectuer un achat
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="recevoir-tab" class="transaction-tab-content">
+                        <div class="actions">
+                            <button class="btn btn-warning" id="recevoir-btn">
+                                <i class="fas fa-download"></i> Recevoir de l'argent
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="retrait-tab" class="transaction-tab-content">
+                        <div class="actions">
+                            <button class="btn btn-info" id="retrait-btn">
+                                <i class="fas fa-money-check"></i> Retirer (25% frais)
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="transactions">
+                        <h3 style="margin-bottom: 10px;">📋 Historique des transactions (30 derniers jours)</h3>
+                        <ul class="transaction-list" id="transaction-list"></ul>
+                    </div>
+                    
+                    <div class="fee-history" id="fees-history">
+                        <h4><i class="fas fa-receipt"></i> Historique des frais d'entretien</h4>
+                        <div id="fees-history-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Achat -->
+    <div class="modal" id="achat-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Effectuer un achat</h3>
+                <button class="close-btn close-modal">&times;</button>
+            </div>
+            <form id="achat-form">
+                <div class="solde-actuel">
+                    <div>Solde actuel</div>
+                    <div class="solde-montant" id="solde-achat">0 FCFA</div>
+                </div>
+                <div class="form-group">
+                    <label>Nom du commerçant</label>
+                    <input type="text" id="commercant-nom" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Montant (FCFA)</label>
+                    <input type="number" id="achat-montant" class="form-control" min="100" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" id="achat-description" class="form-control" placeholder="Produit/service">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn close-modal">Annuler</button>
+                    <button type="submit" class="btn btn-danger">Payer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal Réception -->
+    <div class="modal" id="recevoir-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Recevoir de l'argent</h3>
+                <button class="close-btn close-modal">&times;</button>
+            </div>
+            <form id="recevoir-form">
+                <div class="form-group">
+                    <label>Nom de l'expéditeur</label>
+                    <input type="text" id="expediteur-nom" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Téléphone de l'expéditeur</label>
+                    <input type="tel" id="expediteur-phone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Montant (FCFA)</label>
+                    <input type="number" id="recevoir-montant" class="form-control" min="100" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn close-modal">Annuler</button>
+                    <button type="submit" class="btn btn-warning">Confirmer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal Retrait -->
+    <div class="modal" id="retrait-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Retirer de l'argent</h3>
+                <button class="close-btn close-modal">&times;</button>
+            </div>
+            <form id="retrait-form">
+                <div class="solde-actuel">
+                    <div>Solde actuel</div>
+                    <div class="solde-montant" id="solde-retrait">0 FCFA</div>
+                </div>
+                <div class="form-group">
+                    <label>Montant à retirer (FCFA)</label>
+                    <input type="number" id="retrait-montant" class="form-control" min="1000" required>
+                </div>
+                <div class="form-group">
+                    <label>Numéro de réception (TMoney/Moov)</label>
+                    <input type="tel" id="retrait-numero" class="form-control" placeholder="+228 XXXXXXXX" required>
+                </div>
+                <div class="fees-info" id="retrait-fees-info" style="display:none">
+                    <div class="fees-row"><span>Montant:</span><span id="retrait-montant-display">0 FCFA</span></div>
+                    <div class="fees-row"><span>Frais (25%):</span><span id="retrait-frais-display">0 FCFA</span></div>
+                    <div class="fees-total"><span>Total débité:</span><span id="retrait-total-display">0 FCFA</span></div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn close-modal">Annuler</button>
+                    <button type="submit" class="btn btn-info">Demander</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>Portefeuille MasterCard Togo &copy; 2025 - Paiements sécurisés par FedaPay</p>
+            <p style="font-size: 0.75rem; margin-top: 5px;">Frais d'entretien mensuel: 200 FCFA (prélevés une fois par mois si solde > 200 FCFA)</p>
+            <p style="font-size: 0.7rem;">Frais de recharge: 10% | Frais de retrait: 25%</p>
+            <p style="font-size: 0.7rem;">📊 Historique des transactions conservé 29 jours</p>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================
+        // CONSTANTES
+        // ============================================
+        const FEDAPAY_PAYMENT_URL = "https://me.fedapay.com/lmuOo1Nv";
+        const MAINTENANCE_FEE = 200;
+        const MIN_BALANCE_FOR_FEE = 200;
+        const RECHARGE_FEE_PERCENTAGE = 0.10;
+        const WITHDRAWAL_FEE_PERCENTAGE = 0.25;
+        const TRANSACTION_RETENTION_DAYS = 29;
+        const WHATSAPP_ADMIN_NUMBER = "22892871605";
+        
+        // Comptes enregistrés
+        let currentUser = {
+            id: 1,
+            username: "KOLA",
+            fullname: "KOLA Maniwah Essohouna",
+            phone: "+228 93 38 75 95",
+            email: "kola@example.com",
+            balance: 1000,
+            transactions: [],
+            feesHistory: [],
+            lastMaintenanceFeeDate: null,
+            pendingRecharge: null,
+            lastCleanupDate: null,
+            monthlyFeeLock: null
+        };
+        
+        let isLoggedIn = false;
+        let pendingPaymentAmount = null;
+        let autoSaveInterval = null;
+        
+        // Éléments DOM
+        const loginContainer = document.getElementById('login-container');
+        const appContainer = document.getElementById('app-container');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const logoutBtn = document.getElementById('logout-btn');
+        const balanceText = document.getElementById('balance-text');
+        const transactionList = document.getElementById('transaction-list');
+        const saveNotification = document.getElementById('save-notification');
+        const feesHistoryList = document.getElementById('fees-history-list');
+        const feeStatusBadge = document.getElementById('fee-status-badge');
+        const maintenanceFeeInfo = document.getElementById('maintenance-fee-info');
+        const userFullnameSpan = document.getElementById('user-fullname');
+        const userAvatar = document.getElementById('user-avatar');
+        const cardHolder = document.getElementById('card-holder');
+        const monthIncome = document.getElementById('month-income');
+        const monthExpense = document.getElementById('month-expense');
+        const soldeAchat = document.getElementById('solde-achat');
+        const soldeRetrait = document.getElementById('solde-retrait');
+        const retraitMontant = document.getElementById('retrait-montant');
+        const retraitMontantDisplay = document.getElementById('retrait-montant-display');
+        const retraitFraisDisplay = document.getElementById('retrait-frais-display');
+        const retraitTotalDisplay = document.getElementById('retrait-total-display');
+        const retraitFeesInfo = document.getElementById('retrait-fees-info');
+        const autoSaveIndicator = document.getElementById('auto-save-indicator');
+        const lastSaveTimeSpan = document.getElementById('last-save-time');
+        const whatsappConfirmationSection = document.getElementById('whatsapp-confirmation-section');
+        const paymentSummary = document.getElementById('payment-summary');
+        const sendWhatsappBtn = document.getElementById('send-whatsapp-confirmation');
+        
+        // ============================================
+        // FONCTION D'ENVOI WHATSAPP
+        // ============================================
+        function sendWhatsAppNotification(message) {
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${WHATSAPP_ADMIN_NUMBER}?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+        }
+        
+        // ============================================
+        // INITIALISATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            setupEventListeners();
+            startAutoSave();
+            if (isLoggedIn) {
+                showApp();
+                checkAndApplyMaintenanceFee();
+                runDailyCleanup();
+                checkForPendingFedaPayPayment();
+            }
+        });
+        
+        // ============================================
+        // SAUVEGARDE AUTOMATIQUE TOUTES LES 5 SECONDES
+        // ============================================
+        function startAutoSave() {
+            if (autoSaveInterval) {
+                clearInterval(autoSaveInterval);
+            }
+            autoSaveInterval = setInterval(function() {
+                if (isLoggedIn && currentUser) {
+                    saveData();
+                    if (autoSaveIndicator) {
+                        autoSaveIndicator.style.backgroundColor = '#4caf50';
+                        setTimeout(() => {
+                            if (autoSaveIndicator) autoSaveIndicator.style.backgroundColor = 'rgba(0,0,0,0.7)';
+                        }, 500);
+                    }
+                    if (lastSaveTimeSpan) {
+                        const now = new Date();
+                        lastSaveTimeSpan.textContent = `Dernière sauvegarde: ${now.toLocaleTimeString('fr-FR')}`;
+                    }
+                }
+            }, 5000);
+        }
+        
+        function stopAutoSave() {
+            if (autoSaveInterval) {
+                clearInterval(autoSaveInterval);
+                autoSaveInterval = null;
+            }
+        }
+        
+        // ============================================
+        // NETTOYAGE DES ANCIENNES TRANSACTIONS (29 JOURS)
+        // ============================================
+        function runDailyCleanup() {
+            if (!currentUser) return;
+            
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            if (currentUser.lastCleanupDate) {
+                const lastCleanup = new Date(currentUser.lastCleanupDate);
+                if (lastCleanup.toDateString() === today.toDateString()) {
+                    return;
+                }
+            }
+            
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - TRANSACTION_RETENTION_DAYS);
+            
+            const newTransactions = currentUser.transactions.filter(t => new Date(t.date) >= cutoffDate);
+            
+            if (newTransactions.length !== currentUser.transactions.length) {
+                const deletedCount = currentUser.transactions.length - newTransactions.length;
+                currentUser.transactions = newTransactions;
+                currentUser.lastCleanupDate = now;
+                
+                updateUI();
+                saveData();
+                showNotif(`🗑️ ${deletedCount} ancienne(s) transaction(s) supprimée(s) (plus de ${TRANSACTION_RETENTION_DAYS} jours)`, 'info');
+            }
+        }
+        
+        function setupEventListeners() {
+            loginForm.addEventListener('submit', handleLogin);
+            logoutBtn.addEventListener('click', handleLogout);
+            
+            const passwordToggle = document.getElementById('password-toggle');
+            if (passwordToggle) {
+                passwordToggle.addEventListener('click', function() {
+                    const passwordInput = document.getElementById('password');
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    this.querySelector('i').classList.toggle('fa-eye');
+                    this.querySelector('i').classList.toggle('fa-eye-slash');
+                });
+            }
+            
+            document.querySelectorAll('.transaction-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    document.querySelectorAll('.transaction-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.transaction-tab-content').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    const activeTab = document.getElementById(`${tabId}-tab`);
+                    if (activeTab) activeTab.classList.add('active');
+                });
+            });
+            
+            const fedapayBtn = document.getElementById('fedapay-recharge-btn');
+            if (fedapayBtn) fedapayBtn.addEventListener('click', handleFedaPayPayment);
+            
+            if (sendWhatsappBtn) sendWhatsappBtn.addEventListener('click', sendWhatsAppConfirmation);
+            
+            const achatBtn = document.getElementById('achat-btn');
+            if (achatBtn) achatBtn.addEventListener('click', () => openModal('achat-modal'));
+            
+            const recevoirBtn = document.getElementById('recevoir-btn');
+            if (recevoirBtn) recevoirBtn.addEventListener('click', () => openModal('recevoir-modal'));
+            
+            const retraitBtn = document.getElementById('retrait-btn');
+            if (retraitBtn) retraitBtn.addEventListener('click', () => openModal('retrait-modal'));
+            
+            document.querySelectorAll('.close-modal').forEach(btn => {
+                btn.addEventListener('click', () => closeAllModals());
+            });
+            
+            const achatForm = document.getElementById('achat-form');
+            if (achatForm) achatForm.addEventListener('submit', handleAchat);
+            
+            const recevoirForm = document.getElementById('recevoir-form');
+            if (recevoirForm) recevoirForm.addEventListener('submit', handleRecevoir);
+            
+            const retraitForm = document.getElementById('retrait-form');
+            if (retraitForm) retraitForm.addEventListener('submit', handleRetrait);
+            
+            if (retraitMontant) retraitMontant.addEventListener('input', updateRetraitFees);
+            
+            setInterval(() => {
+                if (isLoggedIn && currentUser) {
+                    checkAndApplyMaintenanceFee();
+                    runDailyCleanup();
+                }
+            }, 3600000);
+        }
+        
+        // ============================================
+        // GESTION DES FRAIS D'ENTRETIEN MENSUELS
+        // ============================================
+        function isFeeAlreadyAppliedForCurrentMonth() {
+            if (!currentUser || !currentUser.lastMaintenanceFeeDate) return false;
+            
+            const lastFeeDate = new Date(currentUser.lastMaintenanceFeeDate);
+            const now = new Date();
+            
+            return (lastFeeDate.getMonth() === now.getMonth() && 
+                    lastFeeDate.getFullYear() === now.getFullYear());
+        }
+        
+        function isMonthlyFeeLocked() {
+            if (!currentUser || !currentUser.monthlyFeeLock) return false;
+            
+            const lockDate = new Date(currentUser.monthlyFeeLock);
+            const now = new Date();
+            
+            return (lockDate.getMonth() === now.getMonth() && 
+                    lockDate.getFullYear() === now.getFullYear());
+        }
+        
+        function checkAndApplyMaintenanceFee() {
+            if (!currentUser) return false;
+            
+            const feeAlreadyApplied = isFeeAlreadyAppliedForCurrentMonth();
+            const feeLocked = isMonthlyFeeLocked();
+            
+            if (feeAlreadyApplied || feeLocked) {
+                updateFeeStatusDisplay(true);
+                return false;
+            }
+            
+            updateFeeStatusDisplay(false);
+            
+            if (!feeAlreadyApplied && currentUser.balance > MIN_BALANCE_FOR_FEE) {
+                applyMaintenanceFee();
+                return true;
+            } else if (!feeAlreadyApplied && currentUser.balance <= MIN_BALANCE_FOR_FEE) {
+                showNotif(`⚠️ Frais d'entretien mensuel (${formatCurrency(MAINTENANCE_FEE)}) non appliqués : solde insuffisant (minimum ${formatCurrency(MIN_BALANCE_FOR_FEE)})`, 'warning');
+            }
+            
+            return false;
+        }
+        
+        function applyMaintenanceFee() {
+            if (!currentUser || currentUser.balance <= MIN_BALANCE_FOR_FEE) return false;
+            
+            if (isFeeAlreadyAppliedForCurrentMonth() || isMonthlyFeeLocked()) {
+                console.log("Tentative de double prélèvement bloquée");
+                return false;
+            }
+            
+            const now = new Date();
+            const feeAmount = MAINTENANCE_FEE;
+            const monthName = now.toLocaleString('fr-FR', { month: 'long', year: 'numeric' });
+            
+            currentUser.balance -= feeAmount;
+            
+            currentUser.transactions.unshift({
+                id: Date.now(),
+                name: `Frais d'entretien mensuel - ${monthName}`,
+                amount: -feeAmount,
+                date: now,
+                type: "expense"
+            });
+            
+            currentUser.feesHistory.unshift({
+                id: Date.now(),
+                type: "Frais d'entretien mensuel",
+                amount: feeAmount,
+                date: now,
+                month: monthName,
+                description: "Frais de maintenance du compte"
+            });
+            
+            currentUser.lastMaintenanceFeeDate = now;
+            currentUser.monthlyFeeLock = now;
+            
+            updateFeeStatusDisplay(true);
+            updateFeesHistoryDisplay();
+            updateUI();
+            
+            const whatsappMsg = `🏦 FRAIS D'ENTRETIEN MENSUEL%0A%0A` +
+                `👤 Client: ${currentUser.fullname}%0A` +
+                `📞 Téléphone: ${currentUser.phone}%0A` +
+                `💰 Montant prélevé: ${formatCurrency(feeAmount)}%0A` +
+                `💵 Ancien solde: ${formatCurrency(currentUser.balance + feeAmount)}%0A` +
+                `💵 Nouveau solde: ${formatCurrency(currentUser.balance)}%0A` +
+                `📅 Période: ${monthName}%0A` +
+                `🕐 Date: ${now.toLocaleString('fr-FR')}`;
+            sendWhatsAppNotification(whatsappMsg);
+            
+            showNotif(`Frais d'entretien mensuel de ${formatCurrency(feeAmount)} prélevés pour ${monthName}`, 'warning');
+            
+            saveData();
+            return true;
+        }
+        
+        function updateFeeStatusDisplay(feeApplied) {
+            if (!feeStatusBadge || !maintenanceFeeInfo) return;
+            
+            const now = new Date();
+            const monthName = now.toLocaleString('fr-FR', { month: 'long' });
+            
+            if (feeApplied) {
+                feeStatusBadge.className = 'fee-badge fee-applied';
+                feeStatusBadge.innerHTML = `<i class="fas fa-check-circle"></i> Frais appliqués (${monthName})`;
+                maintenanceFeeInfo.style.background = 'rgba(76, 175, 80, 0.3)';
+            } else {
+                if (currentUser && currentUser.balance <= MIN_BALANCE_FOR_FEE) {
+                    feeStatusBadge.className = 'fee-badge fee-insufficient';
+                    feeStatusBadge.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Solde insuffisant (min ${formatCurrency(MIN_BALANCE_FOR_FEE)})`;
+                    maintenanceFeeInfo.style.background = 'rgba(244, 67, 54, 0.2)';
+                } else {
+                    feeStatusBadge.className = 'fee-badge fee-pending';
+                    feeStatusBadge.innerHTML = `<i class="fas fa-clock"></i> En attente (${monthName})`;
+                    maintenanceFeeInfo.style.background = 'rgba(255, 152, 0, 0.2)';
+                }
+            }
+        }
+        
+        function updateFeesHistoryDisplay() {
+            if (!feesHistoryList) return;
+            
+            feesHistoryList.innerHTML = '';
+            
+            if (!currentUser.feesHistory || currentUser.feesHistory.length === 0) {
+                feesHistoryList.innerHTML = '<div style="text-align: center; padding: 10px; color: #999;">Aucun frais prélevé</div>';
+                return;
+            }
+            
+            currentUser.feesHistory.slice(0, 12).forEach(fee => {
+                const feeDate = new Date(fee.date);
+                const dateStr = feeDate.toLocaleDateString('fr-FR');
+                
+                const div = document.createElement('div');
+                div.className = 'fee-item';
+                div.innerHTML = `
+                    <span><i class="fas fa-receipt"></i> ${fee.type} - ${fee.month || ''}</span>
+                    <span style="color: #d32f2f;">-${formatCurrency(fee.amount)}</span>
+                    <span style="font-size: 0.7rem; color: #999;">${dateStr}</span>
+                `;
+                feesHistoryList.appendChild(div);
+            });
+        }
+        
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === "KOLA" && password === "KOLA1@") {
+                isLoggedIn = true;
+                
+                const savedBalance = localStorage.getItem('balance_mastercard');
+                if (savedBalance !== null) {
+                    currentUser.balance = parseInt(savedBalance);
+                }
+                
+                const savedLock = localStorage.getItem('monthlyFeeLock_mastercard');
+                if (savedLock) {
+                    currentUser.monthlyFeeLock = savedLock;
+                }
+                
+                const savedLastFee = localStorage.getItem('lastMaintenanceFee_mastercard');
+                if (savedLastFee) {
+                    currentUser.lastMaintenanceFeeDate = savedLastFee;
+                }
+                
+                showApp();
+                loginError.style.display = 'none';
+                saveData();
+                checkAndApplyMaintenanceFee();
+                runDailyCleanup();
+            } else {
+                loginError.style.display = 'block';
+            }
+        }
+        
+        function showApp() {
+            loginContainer.style.display = 'none';
+            appContainer.style.display = 'block';
+            updateUI();
+        }
+        
+        function handleLogout() {
+            isLoggedIn = false;
+            stopAutoSave();
+            saveData();
+            loginContainer.style.display = 'flex';
+            appContainer.style.display = 'none';
+            const loginFormElement = document.getElementById('login-form');
+            if (loginFormElement) loginFormElement.reset();
+            showNotif('Déconnexion réussie', 'info');
+            startAutoSave();
+        }
+        
+        function updateUI() {
+            if (!currentUser) return;
+            
+            const initials = currentUser.fullname.split(' ').map(n => n[0]).join('').toUpperCase();
+            if (userFullnameSpan) userFullnameSpan.textContent = currentUser.fullname;
+            if (userAvatar) userAvatar.textContent = initials;
+            if (balanceText) balanceText.textContent = formatCurrency(currentUser.balance);
+            if (soldeAchat) soldeAchat.textContent = formatCurrency(currentUser.balance);
+            if (soldeRetrait) soldeRetrait.textContent = formatCurrency(currentUser.balance);
+            
+            const cardInitials = currentUser.fullname.split(' ').map(n => n[0]).join('').toUpperCase();
+            if (cardHolder) cardHolder.textContent = cardInitials;
+            
+            updateStatistics();
+            renderTransactions();
+            updateFeesHistoryDisplay();
+            updateFeeStatusDisplay(false);
+        }
+        
+        function renderTransactions() {
+            if (!transactionList) return;
+            transactionList.innerHTML = '';
+            
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - TRANSACTION_RETENTION_DAYS);
+            
+            const recentTransactions = currentUser.transactions.filter(t => new Date(t.date) >= cutoffDate);
+            const displayTransactions = [...recentTransactions].reverse().slice(0, 20);
+            
+            if (displayTransactions.length === 0) {
+                transactionList.innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">Aucune transaction récente</div>';
+                return;
+            }
+            
+            displayTransactions.forEach(t => {
+                const li = document.createElement('li');
+                li.className = 'transaction-item';
+                li.innerHTML = `
+                    <div class="transaction-info">
+                        <div class="transaction-name">${t.name}</div>
+                        <div class="transaction-date">${formatDate(t.date)}</div>
+                    </div>
+                    <div class="transaction-amount ${t.amount >= 0 ? 'amount-positive' : 'amount-negative'}">
+                        ${t.amount >= 0 ? '+' : ''}${formatCurrency(t.amount)}
+                    </div>
+                `;
+                transactionList.appendChild(li);
+            });
+        }
+        
+        function updateStatistics() {
+            if (!monthIncome || !monthExpense) return;
+            
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - TRANSACTION_RETENTION_DAYS);
+            
+            const recentTransactions = currentUser.transactions.filter(t => new Date(t.date) >= cutoffDate);
+            const income = recentTransactions.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+            const expense = recentTransactions.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
+            
+            monthIncome.textContent = formatCurrency(income);
+            monthExpense.textContent = formatCurrency(expense);
+        }
+        
+        function updateRetraitFees() {
+            if (!retraitMontant) return;
+            const montant = parseInt(retraitMontant.value) || 0;
+            if (montant > 0) {
+                const frais = Math.round(montant * WITHDRAWAL_FEE_PERCENTAGE);
+                const total = montant + frais;
+                if (retraitMontantDisplay) retraitMontantDisplay.textContent = formatCurrency(montant);
+                if (retraitFraisDisplay) retraitFraisDisplay.textContent = formatCurrency(frais);
+                if (retraitTotalDisplay) retraitTotalDisplay.textContent = formatCurrency(total);
+                if (retraitFeesInfo) retraitFeesInfo.style.display = 'block';
+            } else {
+                if (retraitFeesInfo) retraitFeesInfo.style.display = 'none';
+            }
+        }
+        
+        // ============================================
+        // PAIEMENT FEDAPAY AVEC CONFIRMATION WHATSAPP
+        // ============================================
+        function handleFedaPayPayment() {
+            const btn = document.getElementById('fedapay-recharge-btn');
+            if (!btn) return;
+            
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<div class="loading-spinner"></div> Chargement...';
+            btn.disabled = true;
+            
+            const montant = prompt("Entrez le montant à recharger (FCFA) :\nMinimum 5000 FCFA\nLes frais de 10% seront automatiquement déduits", "10000");
+            
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            
+            if (!montant) return;
+            
+            const montantInt = parseInt(montant);
+            if (montantInt < 5000) {
+                alert("Le montant minimum est de 5000 FCFA");
+                return;
+            }
+            
+            pendingPaymentAmount = montantInt;
+            currentUser.pendingRecharge = montantInt;
+            saveData();
+            
+            sessionStorage.setItem('pendingRecharge', montantInt);
+            sessionStorage.setItem('userEmail', currentUser.email);
+            sessionStorage.setItem('userPhone', currentUser.phone);
+            sessionStorage.setItem('userName', currentUser.fullname);
+            sessionStorage.setItem('paymentTimestamp', new Date().toISOString());
+            
+            window.location.href = FEDAPAY_PAYMENT_URL;
+        }
+        
+        function checkForPendingFedaPayPayment() {
+            const pendingRecharge = sessionStorage.getItem('pendingRecharge');
+            if (pendingRecharge && currentUser) {
+                const montant = parseInt(pendingRecharge);
+                const frais = Math.round(montant * RECHARGE_FEE_PERCENTAGE);
+                const net = montant - frais;
+                
+                pendingPaymentAmount = montant;
+                showWhatsAppConfirmationForm(montant, frais, net);
+            }
+        }
+        
+        function showWhatsAppConfirmationForm(montant, frais, net) {
+            if (!whatsappConfirmationSection) return;
+            whatsappConfirmationSection.style.display = 'block';
+            
+            if (paymentSummary) {
+                paymentSummary.innerHTML = `
+                    <div class="payment-summary-item">
+                        <span>💰 Montant saisi :</span>
+                        <strong>${formatCurrency(montant)}</strong>
+                    </div>
+                    <div class="payment-summary-item">
+                        <span>📊 Frais de recharge (10%) :</span>
+                        <strong>${formatCurrency(frais)}</strong>
+                    </div>
+                    <div class="payment-summary-item">
+                        <span>✨ Montant net crédité :</span>
+                        <strong style="color: #388e3c;">${formatCurrency(net)}</strong>
+                    </div>
+                    <div class="payment-summary-item">
+                        <span>💵 Ancien solde :</span>
+                        <strong>${formatCurrency(currentUser.balance)}</strong>
+                    </div>
+                    <div class="payment-summary-item">
+                        <span>💵 Nouveau solde après crédit :</span>
+                        <strong style="color: #0066CC;">${formatCurrency(currentUser.balance + net)}</strong>
+                    </div>
+                `;
+            }
+            
+            const whatsappPhone = document.getElementById('whatsapp-phone');
+            const whatsappName = document.getElementById('whatsapp-name');
+            const whatsappEmail = document.getElementById('whatsapp-email');
+            
+            if (whatsappPhone) whatsappPhone.value = currentUser.phone;
+            if (whatsappName) whatsappName.value = currentUser.fullname;
+            if (whatsappEmail) whatsappEmail.value = currentUser.email;
+            
+            generatePaymentQRCode(montant, frais, net);
+            whatsappConfirmationSection.scrollIntoView({ behavior: 'smooth' });
+            showNotif('✅ Paiement FedaPay détecté ! Veuillez confirmer via WhatsApp', 'success');
+        }
+        
+        function generatePaymentQRCode(montant, frais, net) {
+            const phoneInput = document.getElementById('whatsapp-phone');
+            const nameInput = document.getElementById('whatsapp-name');
+            const emailInput = document.getElementById('whatsapp-email');
+            
+            const phone = (phoneInput ? phoneInput.value : currentUser.phone) || currentUser.phone;
+            const name = (nameInput ? nameInput.value : currentUser.fullname) || currentUser.fullname;
+            const email = (emailInput ? emailInput.value : currentUser.email) || currentUser.email;
+            
+            const message = `✅ CONFIRMATION DE PAIEMENT FEDAPAY - MASTERCARD%0A%0A` +
+                `👤 Client: ${name}%0A` +
+                `📞 Téléphone: ${phone}%0A` +
+                `📧 Email: ${email}%0A` +
+                `💰 Montant saisi: ${formatCurrency(montant)}%0A` +
+                `📊 Frais de recharge (10%): ${formatCurrency(frais)}%0A` +
+                `✨ Montant net crédité: ${formatCurrency(net)}%0A` +
+                `💵 Ancien solde: ${formatCurrency(currentUser.balance)}%0A` +
+                `💵 Nouveau solde après crédit: ${formatCurrency(currentUser.balance + net)}%0A` +
+                `🕐 Date: ${new Date().toLocaleString('fr-FR')}%0A%0A` +
+                `🎉 Merci pour votre paiement ! Votre compte sera crédité après confirmation.`;
+            
+            const whatsappUrl = `https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${message}`;
+            
+            const qrcodeContainer = document.getElementById('payment-qrcode');
+            if (qrcodeContainer) {
+                qrcodeContainer.innerHTML = '';
+                
+                if (typeof QRCode !== 'undefined') {
+                    new QRCode(qrcodeContainer, {
+                        text: whatsappUrl,
+                        width: 180,
+                        height: 180,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                    const qrContainer = document.getElementById('qr-code-container');
+                    if (qrContainer) qrContainer.style.display = 'block';
+                }
+            }
+        }
+        
+        function sendWhatsAppConfirmation() {
+            const montant = pendingPaymentAmount;
+            if (!montant) {
+                alert("Aucun paiement en attente");
+                return;
+            }
+            
+            const frais = Math.round(montant * RECHARGE_FEE_PERCENTAGE);
+            const net = montant - frais;
+            const phoneInput = document.getElementById('whatsapp-phone');
+            const nameInput = document.getElementById('whatsapp-name');
+            const emailInput = document.getElementById('whatsapp-email');
+            
+            const phone = phoneInput ? phoneInput.value : currentUser.phone;
+            const name = nameInput ? nameInput.value : currentUser.fullname;
+            const email = emailInput ? emailInput.value : currentUser.email;
+            
+            if (!phone) {
+                alert("Veuillez entrer votre numéro WhatsApp");
+                return;
+            }
+            
+            currentUser.balance += net;
+            currentUser.transactions.unshift({
+                id: Date.now(),
+                name: `Rechargement FedaPay de ${formatCurrency(montant)} (${formatCurrency(frais)} frais)`,
+                amount: net,
+                date: new Date(),
+                type: "income"
+            });
+            
+            updateUI();
+            saveData();
+            
+            const message = `✅ CONFIRMATION DE PAIEMENT FEDAPAY - VALIDÉ%0A%0A` +
+                `👤 Client: ${name}%0A` +
+                `📞 Téléphone: ${phone}%0A` +
+                `📧 Email: ${email}%0A` +
+                `💰 Montant saisi: ${formatCurrency(montant)}%0A` +
+                `📊 Frais de recharge (10%): ${formatCurrency(frais)}%0A` +
+                `✨ Montant net crédité: ${formatCurrency(net)}%0A` +
+                `💵 Ancien solde: ${formatCurrency(currentUser.balance - net)}%0A` +
+                `💵 Nouveau solde: ${formatCurrency(currentUser.balance)}%0A` +
+                `🕐 Date: ${new Date().toLocaleString('fr-FR')}%0A%0A` +
+                `✅ TRANSACTION VALIDÉE ET COMPTE CRÉDITÉ !%0A` +
+                `🎉 Merci pour votre confiance !`;
+            
+            const whatsappUrl = `https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${message}`;
+            window.open(whatsappUrl, '_blank');
+            
+            if (whatsappConfirmationSection) whatsappConfirmationSection.style.display = 'none';
+            pendingPaymentAmount = null;
+            currentUser.pendingRecharge = null;
+            saveData();
+            
+            sessionStorage.removeItem('pendingRecharge');
+            sessionStorage.removeItem('userEmail');
+            sessionStorage.removeItem('userPhone');
+            sessionStorage.removeItem('userName');
+            sessionStorage.removeItem('paymentTimestamp');
+            
+            showNotif(`✅ ${formatCurrency(net)} crédité sur votre compte !`, 'success');
+        }
+        
+        // ============================================
+        // ACHAT AVEC ENVOI WHATSAPP
+        // ============================================
+        function handleAchat(e) {
+            e.preventDefault();
+            const commercant = document.getElementById('commercant-nom');
+            const montantInput = document.getElementById('achat-montant');
+            const description = document.getElementById('achat-description');
+            
+            if (!commercant || !montantInput) return;
+            
+            const commercantNom = commercant.value;
+            const montant = parseInt(montantInput.value);
+            const descriptionText = description ? description.value || "Achat" : "Achat";
+            
+            if (montant > currentUser.balance) {
+                alert("Solde insuffisant");
+                return;
+            }
+            
+            // Envoi WhatsApp avant la transaction
+            const whatsappMsg = `🛒 ACHAT EFFECTUÉ%0A%0A` +
+                `👤 Client: ${currentUser.fullname}%0A` +
+                `📞 Téléphone: ${currentUser.phone}%0A` +
+                `🏪 Commerçant: ${commercantNom}%0A` +
+                `📝 Description: ${descriptionText}%0A` +
+                `💰 Montant: ${formatCurrency(montant)}%0A` +
+                `💵 Ancien solde: ${formatCurrency(currentUser.balance)}%0A` +
+                `💵 Nouveau solde: ${formatCurrency(currentUser.balance - montant)}%0A` +
+                `🕐 Date: ${new Date().toLocaleString('fr-FR')}`;
+            sendWhatsAppNotification(whatsappMsg);
+            
+            currentUser.balance -= montant;
+            currentUser.transactions.unshift({
+                id: Date.now(),
+                name: `Achat chez ${commercantNom} - ${descriptionText}`,
+                amount: -montant,
+                date: new Date(),
+                type: "expense"
+            });
+            
+            updateUI();
+            saveData();
+            closeAllModals();
+            showNotif(`Achat de ${formatCurrency(montant)} effectué !`, 'success');
+        }
+        
+        // ============================================
+        // RÉCEPTION D'ARGENT AVEC ENVOI WHATSAPP
+        // ============================================
+        function handleRecevoir(e) {
+            e.preventDefault();
+            const expediteur = document.getElementById('expediteur-nom');
+            const phone = document.getElementById('expediteur-phone');
+            const montantInput = document.getElementById('recevoir-montant');
+            
+            if (!expediteur || !phone || !montantInput) return;
+            
+            const expediteurNom = expediteur.value;
+            const expediteurPhone = phone.value;
+            const montant = parseInt(montantInput.value);
+            
+            // Envoi WhatsApp avant la transaction
+            const whatsappMsg = `📥 RÉCEPTION D'ARGENT%0A%0A` +
+                `👤 Bénéficiaire: ${currentUser.fullname}%0A` +
+                `📞 Téléphone bénéficiaire: ${currentUser.phone}%0A` +
+                `📤 Expéditeur: ${expediteurNom}%0A` +
+                `📞 Téléphone expéditeur: ${expediteurPhone}%0A` +
+                `💰 Montant reçu: ${formatCurrency(montant)}%0A` +
+                `💵 Ancien solde: ${formatCurrency(currentUser.balance)}%0A` +
+                `💵 Nouveau solde: ${formatCurrency(currentUser.balance + montant)}%0A` +
+                `🕐 Date: ${new Date().toLocaleString('fr-FR')}`;
+            sendWhatsAppNotification(whatsappMsg);
+            
+            currentUser.balance += montant;
+            currentUser.transactions.unshift({
+                id: Date.now(),
+                name: `Réception de ${expediteurNom}`,
+                amount: montant,
+                date: new Date(),
+                type: "income"
+            });
+            
+            updateUI();
+            saveData();
+            closeAllModals();
+            showNotif(`${formatCurrency(montant)} reçu de ${expediteurNom} !`, 'success');
+        }
+        
+        // ============================================
+        // RETRAIT D'ARGENT AVEC ENVOI WHATSAPP
+        // ============================================
+        function handleRetrait(e) {
+            e.preventDefault();
+            const montantInput = document.getElementById('retrait-montant');
+            const numero = document.getElementById('retrait-numero');
+            
+            if (!montantInput || !numero) return;
+            
+            const montant = parseInt(montantInput.value);
+            const numeroReception = numero.value;
+            const frais = Math.round(montant * WITHDRAWAL_FEE_PERCENTAGE);
+            const total = montant + frais;
+            
+            if (total > currentUser.balance) {
+                alert("Solde insuffisant");
+                return;
+            }
+            
+            // Envoi WhatsApp avant la transaction
+            const whatsappMsg = `💸 DEMANDE DE RETRAIT%0A%0A` +
+                `👤 Client: ${currentUser.fullname}%0A` +
+                `📞 Téléphone: ${currentUser.phone}%0A` +
+                `💰 Montant demandé: ${formatCurrency(montant)}%0A` +
+                `📊 Frais (25%): ${formatCurrency(frais)}%0A` +
+                `💳 Total débité: ${formatCurrency(total)}%0A` +
+                `📞 Numéro de réception: ${numeroReception}%0A` +
+                `💵 Ancien solde: ${formatCurrency(currentUser.balance)}%0A` +
+                `💵 Nouveau solde: ${formatCurrency(currentUser.balance - total)}%0A` +
+                `🕐 Date: ${new Date().toLocaleString('fr-FR')}`;
+            sendWhatsAppNotification(whatsappMsg);
+            
+            currentUser.balance -= total;
+            currentUser.transactions.unshift({
+                id: Date.now(),
+                name: `Retrait de ${formatCurrency(montant)} (${formatCurrency(frais)} frais)`,
+                amount: -total,
+                date: new Date(),
+                type: "expense"
+            });
+            
+            updateUI();
+            saveData();
+            closeAllModals();
+            showNotif(`Demande de retrait de ${formatCurrency(montant)} envoyée !`, 'success');
+        }
+        
+        function openModal(modalId) {
+            closeAllModals();
+            const modal = document.getElementById(modalId);
+            if (modal) modal.style.display = 'flex';
+        }
+        
+        function closeAllModals() {
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+        }
+        
+        function formatCurrency(amount) {
+            return Math.abs(amount).toLocaleString('fr-FR') + ' FCFA';
+        }
+        
+        function formatDate(date) {
+            const d = new Date(date);
+            const today = new Date();
+            if (d.toDateString() === today.toDateString()) {
+                return `Aujourd'hui ${d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'})}`;
+            }
+            return d.toLocaleDateString('fr-FR');
+        }
+        
+        function showNotif(message, type) {
+            if (!saveNotification) return;
+            saveNotification.className = `save-notification notification-${type}`;
+            saveNotification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i> ${message}`;
+            saveNotification.style.display = 'block';
+            setTimeout(() => {
+                if (saveNotification) saveNotification.style.display = 'none';
+            }, 3000);
+        }
+        
+        function saveData() {
+            if (currentUser) {
+                const dataToSave = {
+                    id: currentUser.id,
+                    username: currentUser.username,
+                    fullname: currentUser.fullname,
+                    phone: currentUser.phone,
+                    email: currentUser.email,
+                    balance: currentUser.balance,
+                    transactions: currentUser.transactions,
+                    feesHistory: currentUser.feesHistory,
+                    lastMaintenanceFeeDate: currentUser.lastMaintenanceFeeDate,
+                    pendingRecharge: currentUser.pendingRecharge,
+                    lastCleanupDate: currentUser.lastCleanupDate,
+                    monthlyFeeLock: currentUser.monthlyFeeLock
+                };
+                localStorage.setItem('mastercardUser', JSON.stringify(dataToSave));
+                localStorage.setItem('balance_mastercard', currentUser.balance);
+                localStorage.setItem('lastUpdate_mastercard', new Date().toISOString());
+                if (currentUser.lastMaintenanceFeeDate) {
+                    localStorage.setItem('lastMaintenanceFee_mastercard', currentUser.lastMaintenanceFeeDate);
+                }
+                if (currentUser.monthlyFeeLock) {
+                    localStorage.setItem('monthlyFeeLock_mastercard', currentUser.monthlyFeeLock);
+                }
+            }
+            localStorage.setItem('isLoggedIn', isLoggedIn);
+        }
+        
+        function loadData() {
+            const saved = localStorage.getItem('mastercardUser');
+            const savedBalance = localStorage.getItem('balance_mastercard');
+            const isLoggedInSaved = localStorage.getItem('isLoggedIn') === 'true';
+            const savedLock = localStorage.getItem('monthlyFeeLock_mastercard');
+            const savedLastFee = localStorage.getItem('lastMaintenanceFee_mastercard');
+            
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    currentUser = data;
+                    isLoggedIn = isLoggedInSaved;
+                    
+                    if (savedBalance !== null) {
+                        currentUser.balance = parseInt(savedBalance);
+                        showNotif(`💰 Solde chargé: ${formatCurrency(currentUser.balance)}`, 'success');
+                    }
+                    
+                    if (savedLock) {
+                        currentUser.monthlyFeeLock = savedLock;
+                    }
+                    
+                    if (savedLastFee) {
+                        currentUser.lastMaintenanceFeeDate = savedLastFee;
+                    }
+                    
+                    if (!currentUser.transactions) currentUser.transactions = [];
+                    if (!currentUser.feesHistory) currentUser.feesHistory = [];
+                    if (!currentUser.lastCleanupDate) currentUser.lastCleanupDate = null;
+                    if (!currentUser.lastMaintenanceFeeDate) currentUser.lastMaintenanceFeeDate = null;
+                    
+                } catch(e) {
+                    console.error("Erreur lors du chargement:", e);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
